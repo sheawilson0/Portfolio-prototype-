@@ -112,6 +112,28 @@
     </div>
   </section>
 
+  <!-- The film: silent video with music and sound effects as separate tracks (assets/js/film-player.js) -->
+  <section class="sn-film reveal" aria-label="The film">
+    <figure class="film" data-film
+      data-wide="assets/media/snapshot/film/snapshot-film-wide.mp4" data-tall="assets/media/snapshot/film/snapshot-film-tall.mp4"
+      data-wide-poster="assets/media/snapshot/film/snapshot-film-wide.webp" data-tall-poster="assets/media/snapshot/film/snapshot-film-tall.webp"
+      data-music="assets/media/snapshot/film/snapshot-film-music.m4a" data-sfx="assets/media/snapshot/film/snapshot-film-sfx.m4a">
+      <div class="film-frame">
+        <video playsinline muted loop preload="metadata" aria-label="A 32-second film of Smoking Snapshot: pick an answer, move the sliders, see 288 cigarettes a year, then the campaign results"></video>
+        <button class="film-big" type="button" aria-label="Play the film"></button>
+      </div>
+      <div class="film-scrub"><input type="range" min="0" max="1000" value="0" step="1" aria-label="Position in the film"><span class="film-time">0:00 / 0:32</span></div>
+      <figcaption class="film-bar">
+        <button type="button" data-toggle="music" aria-pressed="false">Music</button>
+        <button type="button" data-toggle="sfx" aria-pressed="false">Sound effects</button>
+        <button type="button" data-play aria-label="Play">
+          <svg class="i-play" viewBox="0 0 14 14" fill="currentColor" aria-hidden="true"><path d="M3 1.5v11l9-5.5z"/></svg>
+          <svg class="i-pause" viewBox="0 0 14 14" fill="currentColor" aria-hidden="true"><path d="M3 1.5h3v11H3zM8 1.5h3v11H8z"/></svg>
+        </button>
+      </figcaption>
+    </figure>
+  </section>
+
   <!-- How it works: the phone stays put and changes screen as each step comes into view -->
   <section class="sn-flow" aria-labelledby="flow-title">
     <div class="sn-flow-head reveal">
@@ -464,5 +486,6 @@
 <script src="assets/js/site.js" defer></script>
 <script src="assets/js/case.js" defer></script>
 <script src="assets/js/snapshot.js" defer></script>
+<script src="assets/js/film-player.js" defer></script>
 </body>
 </html>
