@@ -109,6 +109,9 @@
     disc.style.scale = sc.toFixed(4);
     corona.style.translate = `${(px * 6 * drift).toFixed(2)}px ${(y + py * 4 * drift).toFixed(2)}px`;
     corona.style.scale = sc.toFixed(4);
+    // The sun from the sky lab (sky.js) rides with the ring.
+    const sunGlow = eclipse.querySelector('.sun');
+    if (sunGlow) { sunGlow.style.translate = corona.style.translate; sunGlow.style.scale = corona.style.scale; }
     // The words come towards you and fade, as if you were moving through them into the page.
     copy.style.transform = `translate3d(0, ${(-24 * e).toFixed(1)}px, 0) scale(${(1 + .22 * e).toFixed(4)})`;
     copy.style.opacity = String(clamp(1 - 1.15 * e, 0, 1));

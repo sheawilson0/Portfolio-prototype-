@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Sky lab · sheawilson.uk</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=Spectral:ital,wght@0,300;1,300&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #0b0c10; color: #f2f0eb; font: 300 14px/1.5 'DM Sans', system-ui, sans-serif; padding: 36px clamp(16px, 3vw, 40px) 60px; }
+  button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+  a { color: inherit; }
+  h1 { font: 300 clamp(34px, 4vw, 52px)/1.1 'Spectral', Georgia, serif; letter-spacing: -.03em; }
+  h1 em { font-style: italic; }
+  .lede { margin-top: 10px; max-width: 46em; color: rgba(242, 240, 235, .6); }
+  .bar { position: sticky; top: 0; z-index: 5; margin: 26px calc(-1 * clamp(16px, 3vw, 40px)) 0; padding: 12px clamp(16px, 3vw, 40px);
+    display: flex; flex-wrap: wrap; gap: 8px 22px; background: rgba(11, 12, 16, .86); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); }
+  .grp { display: flex; align-items: center; gap: 2px; }
+  .grp > span { margin-right: 6px; color: rgba(242, 240, 235, .42); font-weight: 400; }
+  .grp button { padding: 7px 11px; border-radius: 10px; font-weight: 400; color: rgba(242, 240, 235, .6); transition: background-color .2s, color .2s; }
+  .grp button:hover { color: #fff; }
+  .grp button[aria-pressed="true"] { color: #fff; background: rgba(255, 255, 255, .13); }
+  .grp button i { display: inline-block; width: 5px; height: 5px; margin-left: 6px; border-radius: 50%; background: #2fd67b; vertical-align: 2px; }
+
+  .day { position: relative; margin: 22px 0 8px; height: 58px; border-radius: 14px; overflow: hidden; box-shadow: 0 0 0 1px rgba(255, 255, 255, .08); }
+  .day canvas { width: 100%; height: 100%; display: block; }
+  .mark.low b { top: auto; bottom: 4px; }
+  .ticks { position: relative; height: 34px; margin-bottom: 18px; font-size: 12px; color: rgba(242, 240, 235, .5); }
+  .ticks span { position: absolute; top: 0; translate: -50% 0; white-space: nowrap; }
+  .ticks span::before { content: ""; display: block; width: 1px; height: 8px; margin: -8px auto 4px; background: rgba(255, 255, 255, .5); }
+  .ticks .sun { color: #ffcf8a; }
+  .mark { position: absolute; top: 0; bottom: 0; width: 2px; translate: -1px 0; background: #fff; box-shadow: 0 0 0 1px rgba(0, 0, 0, .3); pointer-events: none; }
+  .mark b { position: absolute; top: 4px; left: 6px; font: 500 11px/1 'DM Sans'; color: #fff; text-shadow: 0 1px 4px rgba(0, 0, 0, .6); white-space: nowrap; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); gap: 26px 20px; }
+  .phone .grid { grid-template-columns: repeat(auto-fill, minmax(max(190px, calc(25% - 15px)), 1fr)); }
+  figure { display: grid; gap: 10px; }
+  .frame { position: relative; aspect-ratio: 16 / 10; border-radius: 12px; overflow: hidden; background: #000; box-shadow: 0 0 0 1px rgba(255, 255, 255, .1), 0 20px 50px rgba(0, 0, 0, .4); }
+  .phone .frame { aspect-ratio: 390 / 844; border-radius: 26px; }
+  .frame iframe { position: absolute; left: 0; top: 0; width: 1440px; height: 900px; border: 0; transform-origin: 0 0; pointer-events: none; }
+  .phone .frame iframe { width: 390px; height: 844px; }
+  .frame a { position: absolute; inset: 0; }
+  figcaption { display: flex; justify-content: space-between; gap: 12px; }
+  figcaption b { font-weight: 500; }
+  figcaption span { color: rgba(242, 240, 235, .5); }
+  .notes { margin-top: 44px; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px 28px; color: rgba(242, 240, 235, .66); }
+  .notes b { display: block; margin-bottom: 4px; color: #fff; font-weight: 500; }
+</style>
+</head>
+<body>
+<h1>What time is it <em>there?</em></h1>
+<p class="lede">The homepage at eight moments across one day, wherever you are. The page fades between white and the eclipse through dusk and dawn, a sun walks the horizon while it’s up, and the ring leans cooler in winter and warmer in summer. Click a frame to open the real page with the lab bar, to scrub or play the day.</p>
+
+<div class="bar" id="bar"></div>
+<div class="day"><canvas id="strip" width="1440" height="58"></canvas><div id="marks"></div></div>
+<div class="ticks" id="ticks"></div>
+<div class="grid" id="grid"></div>
+
+<script>
+(() => {
+  const GROUPS = [
+    ['d', 'Season', [['', 'Today'], ['12-21', 'Winter'], ['03-20', 'Spring'], ['06-21', 'Summer'], ['09-22', 'Autumn']]],
+    ['device', 'Frame', [['desk', 'Desktop'], ['phone', 'Phone']]],
+  ];
+  const state = { d: '', device: 'desk' };
+  const q = new URLSearchParams(location.search);
+  for (const [k] of GROUPS) if (q.has(k)) state[k] = q.get(k);
+  const date = () => state.d ? `${new Date().getFullYear()}-${state.d}` : '';
+  const wrap = (m) => ((m % 1440) + 1440) % 1440;
+  const hm = (m) => `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`;
+  const fmt = (m) => { const h = Math.floor(m / 60); return `${h % 12 || 12}:${String(m % 60).padStart(2, '0')}${h < 12 ? 'am' : 'pm'}`; };
+
+  // The moments, worked out from the sun so they land in the right sky whatever the date.
+  const MOMENTS = [
+    ['now', 'Right now', () => null],
+    ['predawn', 'Before dawn', (R) => R - 40],
+    ['sunrise', 'Sunrise', (R) => R + 15],
+    ['morning', 'Mid-morning', (R) => Math.max(R + 150, 600)],
+    ['golden', 'Late afternoon', (R, S) => S - 45],
+    ['dusk', 'Just after sunset', (R, S) => S + 20],
+    ['evening', 'Late evening', (R, S) => Math.max(S + 150, 1350)],
+    ['small', 'Small hours', () => 180],
+  ];
+
+  const bar = document.getElementById('bar');
+  bar.innerHTML = GROUPS.map(([k, label, opts]) => `<div class="grp"><span>${label}</span>${opts.map(([v, t]) =>
+    `<button type="button" data-k="${k}" data-v="${v}">${t}</button>`).join('')}</div>`).join('');
+
+  const grid = document.getElementById('grid');
+  const frames = MOMENTS.map(([id, label]) => {
+    const fig = document.createElement('figure');
+    fig.innerHTML = `<div class="frame"><iframe loading="eager" tabindex="-1" title="${label}"></iframe><a target="_blank" rel="noopener" aria-label="Open ${label}"></a></div><figcaption><b>${label}</b><span></span></figcaption>`;
+    grid.append(fig);
+    return { id, label, fig, iframe: fig.querySelector('iframe'), link: fig.querySelector('a'), cap: fig.querySelector('span'), t: null, ready: false };
+  });
+
+  const optsFor = (f) => ({ d: date() || null, t: f.t });
+  const url = (f, embed) => {
+    const p = new URLSearchParams();
+    if (f.t) p.set('t', f.t);
+    if (date()) p.set('d', date());
+    p.set(embed ? 'embed' : 'lab', embed ? f.id : '');
+    return `../?${p}`;
+  };
+  // Every frame loads once; after that, options arrive as messages.
+  frames.forEach((f) => { f.iframe.src = url(f, true); f.iframe.addEventListener('load', () => { f.ready = true; send(f); }); });
+  const send = (f) => { if (f.ready) f.iframe.contentWindow.postMessage({ sky: optsFor(f) }, location.origin); f.link.href = url(f, false); };
+
+  addEventListener('message', (e) => {
+    const i = e.data && e.data.skyInfo;
+    if (!i || e.origin !== location.origin) return;
+    const f = frames.find((x) => x.id === i.id);
+    if (f) f.cap.textContent = `${fmt(i.min)} · ${i.name}`;
+  });
+
+  function fit() {
+    const w = state.device === 'phone' ? 390 : 1440;
+    frames.forEach((f) => { f.iframe.style.transform = `scale(${f.fig.querySelector('.frame').clientWidth / w})`; });
+  }
+  new ResizeObserver(fit).observe(grid);
+
+  // A probe for sun times and the strip: any frame's sky.js will do once it's loaded.
+  const sky = () => frames.find((f) => f.ready && f.iframe.contentWindow.__sky)?.iframe.contentWindow.__sky;
+
+  function update() {
+    document.body.classList.toggle('phone', state.device === 'phone');
+    bar.querySelectorAll('[data-k]').forEach((b) => b.setAttribute('aria-pressed', String(state[b.dataset.k] === b.dataset.v)));
+    const s = sky();
+    if (s) {
+      const { rise: R, set: S } = s.sun(date());
+      MOMENTS.forEach(([, , at], i) => { const m = at(R, S); frames[i].t = m == null ? null : hm(wrap(Math.round(m / 5) * 5)); });
+      drawStrip(s, R, S);
+    }
+    frames.forEach(send);
+    fit();
+    history.replaceState(null, '', `?${new URLSearchParams(state)}`);
+  }
+
+  function drawStrip(s, R, S) {
+    const c = document.getElementById('strip'), g = c.getContext('2d'), W = c.width, H = c.height;
+    for (let x = 0; x < W; x += 4) {
+      const look = s.at(x / W * 1440, date());
+      const dark = look.theme === 'dark';
+      g.fillStyle = look.bg;
+      g.fillRect(x, 0, 4, H);
+      // The ring as it would sit on the horizon.
+      if (look.p) {
+        const grad = g.createLinearGradient(0, H * .45, 0, H);
+        grad.addColorStop(0, 'rgba(0,0,0,0)'); grad.addColorStop(.5, look.p[1]); grad.addColorStop(1, look.p[0]);
+        g.fillStyle = grad; g.globalAlpha = dark ? .9 : .75; g.fillRect(x, H * .45, 4, H * .55); g.globalAlpha = 1;
+      }
+    }
+    // Neighbouring labels alternate top and bottom so close moments don't collide.
+    document.getElementById('marks').innerHTML = frames.filter((f) => f.t).map((f) => [f, f.t.split(':').map(Number)]).sort((a, b) => a[1][0] * 60 + a[1][1] - b[1][0] * 60 - b[1][1]).map(([f, [h, m]], i) => {
+      return `<span class="mark${i % 2 ? ' low' : ''}" style="left:${(h * 60 + m) / 14.4}%"><b>${f.label}</b></span>`;
+    }).join('');
+    const ticks = [[0, '12am'], [360, '6am'], [720, '12pm'], [1080, '6pm'], [1439, '12am']].map(([m, t]) => `<span style="left:${m / 14.4}%">${t}</span>`);
+    ticks.push(`<span class="sun" style="left:${R / 14.4}%">↑ ${fmt(R)}</span>`, `<span class="sun" style="left:${S / 14.4}%">↓ ${fmt(S)}</span>`);
+    document.getElementById('ticks').innerHTML = ticks.join('');
+  }
+
+  bar.addEventListener('click', (e) => {
+    const b = e.target.closest('[data-k]');
+    if (!b) return;
+    state[b.dataset.k] = b.dataset.v;
+    update();
+  });
+  // Frames need their sky.js before the moments can be worked out; the first to load triggers it.
+  const first = () => { if (sky()) { update(); } else setTimeout(first, 120); };
+  update(); first();
+})();
+</script>
+</body>
+</html>

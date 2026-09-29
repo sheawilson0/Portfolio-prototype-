@@ -1,0 +1,60 @@
+/* The sky (assets/js/sky.js). Loaded only when the sky is on. */
+@property --pale-a { syntax: '<color>'; inherits: true; initial-value: #fde9cf; }
+@property --pale-b { syntax: '<color>'; inherits: true; initial-value: #e3ebff; }
+:root[data-sky] .corona { transition: opacity 1.4s var(--ease); }
+:root[data-sky]:not([data-sky="held"]) .corona { opacity: var(--sky-glow, 1); }
+
+/* The sun sits on the rim of the disc, half behind it, under the words. It rides with the ring (site.js). */
+.sun { position: absolute; z-index: 3; inset: -9%; border-radius: 50%; pointer-events: none; will-change: transform;
+  --sc: var(--sun-c, #ffc65c);
+  background:
+    radial-gradient(circle 2.6vw at var(--sun-x, 50%) var(--sun-y, 8%), color-mix(in srgb, var(--sc) 70%, white) 0, var(--sc) 80%, transparent 100%),
+    radial-gradient(circle 16vw at var(--sun-x, 50%) var(--sun-y, 8%), color-mix(in srgb, var(--sc) 75%, transparent) 0, color-mix(in srgb, var(--sc) 40%, transparent) 14%,
+      color-mix(in srgb, var(--sc) 16%, transparent) 40%, color-mix(in srgb, var(--sc) 5%, transparent) 70%, transparent 100%);
+  opacity: var(--sun-a, 0); transition: opacity 1.4s var(--ease); }
+/* The light above the horizon. The disc covers everything below it. */
+.sky-wash { position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background: linear-gradient(to top, var(--wash, transparent) 30%, color-mix(in srgb, var(--wash, transparent) 45%, transparent) 46%, transparent 72%);
+  opacity: var(--wash-a, 0); }
+:root[data-sky="held"] :is(.sun, .sky-wash) { opacity: 0; }
+
+/* ───────── The toggle's hint ───────── */
+.tt-hint { position: absolute; top: calc(100% + 10px); right: -4px; display: grid; gap: 3px; justify-items: end; padding: 8px 12px; border-radius: 12px;
+  font-size: 12px; line-height: 1.2; white-space: nowrap; color: var(--ink); pointer-events: none;
+  background: var(--glass-strong); border: 1px solid var(--glass-edge); box-shadow: 0 10px 30px rgba(0, 0, 0, .12);
+  -webkit-backdrop-filter: blur(16px) saturate(1.6); backdrop-filter: blur(16px) saturate(1.6);
+  opacity: 0; translate: 0 -4px; transition: opacity .3s var(--ease), translate .4s var(--ease); }
+.tt-hint b { font-weight: 500; }
+.tt-hint small { font-size: 11px; color: var(--whisper); }
+@media (hover: hover) { .theme-toggle:hover .tt-hint { opacity: 1; translate: 0 0; transition-delay: .35s; } }
+.theme-toggle:focus-visible .tt-hint { opacity: 1; translate: 0 0; }
+
+/* ───────── Lab bar ───────── */
+.sky-lab { position: fixed; z-index: 120; left: 50%; bottom: max(14px, env(safe-area-inset-bottom)); translate: -50% 0; width: min(640px, calc(100vw - 20px));
+  display: grid; gap: 4px; padding: 6px; border-radius: 16px; font: 500 13px/1 'DM Sans', system-ui, sans-serif; letter-spacing: -.005em; color: #fff;
+  background: rgba(20, 20, 24, .82); box-shadow: 0 0 0 1px rgba(255, 255, 255, .08), 0 12px 40px rgba(0, 0, 0, .28);
+  -webkit-backdrop-filter: blur(20px) saturate(1.6); backdrop-filter: blur(20px) saturate(1.6); }
+.sky-lab button { flex: none; padding: 9px 11px; border-radius: 11px; color: rgba(255, 255, 255, .62); white-space: nowrap; transition: background-color .25s, color .25s; }
+.sky-lab button:hover { color: #fff; }
+.sky-lab button[aria-pressed="true"] { color: #fff; background: rgba(255, 255, 255, .15); }
+.sl-time { display: flex; align-items: center; gap: 8px; }
+.sl-play { width: 34px; font-size: 11px; }
+.sl-read { flex: none; min-width: 190px; display: grid; gap: 4px; color: rgba(255, 255, 255, .78); white-space: nowrap; }
+.sl-read em { font-style: normal; }
+.sl-read b { font-weight: 500; color: #fff; margin-right: 4px; }
+.sl-read span { font-size: 11px; color: rgba(255, 255, 255, .42); }
+.sky-lab input[type="range"] { flex: 1; min-width: 80px; height: 26px; appearance: none; -webkit-appearance: none; background: none; cursor: pointer; }
+/* The track is the day: dark before sunrise and after sunset, light between. */
+.sky-lab input[type="range"]::-webkit-slider-runnable-track { height: 8px; border-radius: 99px;
+  background: linear-gradient(90deg, #1b1d3a 0, #1b1d3a calc(var(--rise) - 3%), #ff8fb0 var(--rise), #ffe6b0 calc(var(--rise) + 5%), #e9f0ff calc(var(--rise) + 12%),
+    #e9f0ff calc(var(--set) - 12%), #ffb24d calc(var(--set) - 3%), #ed4f7d var(--set), #3a1f6e calc(var(--set) + 4%), #1b1d3a calc(var(--set) + 10%), #1b1d3a 100%); }
+.sky-lab input[type="range"]::-moz-range-track { height: 8px; border-radius: 99px;
+  background: linear-gradient(90deg, #1b1d3a 0, #1b1d3a calc(var(--rise) - 3%), #ff8fb0 var(--rise), #ffe6b0 calc(var(--rise) + 5%), #e9f0ff calc(var(--rise) + 12%),
+    #e9f0ff calc(var(--set) - 12%), #ffb24d calc(var(--set) - 3%), #ed4f7d var(--set), #3a1f6e calc(var(--set) + 4%), #1b1d3a calc(var(--set) + 10%), #1b1d3a 100%); }
+.sky-lab input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; margin-top: -5px; border-radius: 50%; background: #fff; box-shadow: 0 0 0 3px rgba(0, 0, 0, .35); }
+.sky-lab input[type="range"]::-moz-range-thumb { width: 18px; height: 18px; border: 0; border-radius: 50%; background: #fff; box-shadow: 0 0 0 3px rgba(0, 0, 0, .35); }
+.sl-row { display: flex; align-items: center; gap: 2px; overflow-x: auto; scrollbar-width: none; }
+.sl-row::-webkit-scrollbar { display: none; }
+.sl-board { margin-left: auto; padding: 9px 11px; color: rgba(255, 255, 255, .78); white-space: nowrap; }
+.sl-board:hover { color: #fff; }
+@media (max-width: 560px) { .sl-read { min-width: 0; } .sl-read span { display: none; } }
