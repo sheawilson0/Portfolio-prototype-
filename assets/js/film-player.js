@@ -1,5 +1,5 @@
-// Film player: a silent video with music and sound effects as separate, synced tracks,
-// so each can be switched on or off on its own. A scrubber shows where you are and lets you drag.
+// Film player: a silent video with music and sound effects as separate tracks, played through
+// Web Audio so each can be switched on or off with a fade, never a seek. A scrubber shows where you are and lets you drag.
 // No dependencies.
 //
 // <figure class="film" data-film data-wide="wide.mp4" data-tall="tall.mp4" data-wide-poster="…" data-tall-poster="…"
@@ -17,10 +17,12 @@
 // root.film.setSources({ video, poster, music, sfx }) swaps any of them and keeps the position.
 // root.film.setSpeed(0.5) slows picture and sound together.
 (() => {
-  const JUMP = 0.1; // beyond this a track jumps back to the picture
-  const NUDGE = 0.02; // beyond this it runs slightly fast or slow until it catches up
+  const RESYNC = 0.12; // seconds the sound may drift from the picture before it restarts in place
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+  const AC = window.AudioContext || window.webkitAudioContext;
+  // let Web Audio play with the iPhone's silent switch on, like a video would
+  try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch (e) {}
 
   function mount(root) {
     const video = root.querySelector('video');
@@ -29,31 +31,61 @@
     const scrub = root.querySelector('.film-scrub input');
     const time = root.querySelector('.film-time');
     const tall = matchMedia('(max-width: 720px), (max-aspect-ratio: 4/5)').matches;
-    let speed = 1, dragging = false, wasPlaying = false;
+    let speed = 1, dragging = false, wasPlaying = false, restarts = 0;
 
+    // Audio: one context, a gain per track, sources restarted only on play, seek, loop or a real drift.
+    const ctx = AC ? new AC() : null;
     const tracks = {};
     for (const key of ['music', 'sfx']) {
-      const a = new Audio(); a.preload = 'auto';
-      tracks[key] = { audio: a, on: false, button: root.querySelector(`[data-toggle="${key}"]`) };
+      const gain = ctx ? ctx.createGain() : null;
+      if (gain) { gain.gain.value = 0; gain.connect(ctx.destination); }
+      tracks[key] = { key, on: false, url: '', buffer: null, gain, button: root.querySelector(`[data-toggle="${key}"]`) };
     }
+    let anchor = null; // the context time and film time the sounds started from
+
+    const latency = () => (ctx ? (ctx.outputLatency || 0) + (ctx.baseLatency || 0) : 0);
+    const stopTrack = t => { if (t.source) { try { t.source.stop(); } catch (e) {} t.source.disconnect(); t.source = null; } };
+    const stop = () => { Object.values(tracks).forEach(stopTrack); anchor = null; };
+    // one track joins the running sounds at the anchor's position, so the other is untouched
+    const startTrack = t => {
+      stopTrack(t);
+      if (!anchor || !t.buffer) return;
+      const at = anchor.film + (ctx.currentTime - anchor.ctx) * speed;
+      if (at >= t.buffer.duration) return;
+      const s = ctx.createBufferSource(); s.buffer = t.buffer; s.playbackRate.value = speed; s.connect(t.gain);
+      s.start(0, Math.max(0, at)); t.source = s;
+    };
+    const start = () => {
+      stop();
+      if (!ctx || video.paused || ctx.state !== 'running') return;
+      // start a touch ahead of the picture so the sound is heard on time
+      anchor = { ctx: ctx.currentTime, film: video.currentTime + latency() * speed };
+      Object.values(tracks).forEach(startTrack);
+      restarts++;
+    };
+    const audioTime = () => (anchor ? anchor.film + (ctx.currentTime - anchor.ctx) * speed - latency() * speed : null);
+    const drift = () => { const a = audioTime(); return a === null ? 0 : a - video.currentTime; };
+
+    const load = async (t, url) => {
+      if (!url || !ctx) return;
+      const abs = new URL(url, location.href).href;
+      if (t.url === abs) return;
+      t.url = abs; t.buffer = null;
+      // keep the old track playing until the new one is decoded, then swap in place
+      try {
+        const data = await (await fetch(abs)).arrayBuffer();
+        const buf = await new Promise((ok, no) => ctx.decodeAudioData(data, ok, no));
+        if (t.url === abs) { t.buffer = buf; if (anchor) startTrack(t); else if (!video.paused) start(); }
+      } catch (e) {}
+    };
+
+    const fade = t => { if (t.gain) t.gain.gain.setTargetAtTime(t.on ? 1 : 0, ctx.currentTime, 0.02); };
 
     const setState = () => {
       const playing = !video.paused;
       root.classList.toggle('is-playing', playing);
       if (playBtn) playBtn.setAttribute('aria-label', playing ? 'Pause' : 'Play');
       for (const t of Object.values(tracks)) if (t.button) t.button.setAttribute('aria-pressed', String(t.on));
-    };
-
-    const syncTrack = t => {
-      const a = t.audio;
-      if (!t.on || video.paused || !a.src) { if (!a.paused) a.pause(); return; }
-      const want = video.currentTime;
-      if (want >= (a.duration || Infinity)) { if (!a.paused) a.pause(); return; }
-      const d = a.currentTime - want;
-      if (Math.abs(d) > JUMP * Math.max(1, speed)) { a.currentTime = want; a.playbackRate = speed; }
-      else if (Math.abs(d) > NUDGE) a.playbackRate = speed * (1 - Math.max(-0.06, Math.min(0.06, d * 1.5)));
-      else if (a.playbackRate !== speed) a.playbackRate = speed;
-      if (a.paused) a.play().catch(() => {});
     };
 
     const showTime = () => {
@@ -63,19 +95,30 @@
       if (time) time.textContent = `${fmt(video.currentTime)} / ${fmt(d)}`;
     };
 
-    let raf = 0;
-    const loop = () => { Object.values(tracks).forEach(syncTrack); showTime(); raf = video.paused ? 0 : requestAnimationFrame(loop); };
+    let raf = 0, last = 0;
+    const loop = () => {
+      const now = video.currentTime;
+      if (now + 0.5 < last) start(); // the video looped
+      else if (anchor && Math.abs(drift()) > RESYNC) start();
+      else if (!anchor && ctx && ctx.state === 'running' && !video.paused) start();
+      last = now; showTime();
+      raf = video.paused ? 0 : requestAnimationFrame(loop);
+    };
     const kick = () => { if (!raf) raf = requestAnimationFrame(loop); };
 
+    video.addEventListener('playing', () => { start(); setState(); kick(); });
     video.addEventListener('play', () => { setState(); kick(); });
-    video.addEventListener('pause', () => { setState(); Object.values(tracks).forEach(syncTrack); showTime(); });
-    video.addEventListener('seeked', () => { Object.values(tracks).forEach(t => { if (t.on) t.audio.currentTime = video.currentTime; }); showTime(); });
+    video.addEventListener('pause', () => { stop(); setState(); showTime(); });
+    video.addEventListener('waiting', stop);
+    video.addEventListener('seeked', () => { if (!video.paused) start(); showTime(); });
+    video.addEventListener('ratechange', () => { if (!video.paused) start(); });
     video.addEventListener('loadedmetadata', showTime);
 
     const play = () => video.play().catch(() => {});
-    const toggle = () => { root.dataset.userPaused = video.paused ? '' : '1'; video.paused ? play() : video.pause(); };
+    const unlock = () => { if (ctx && ctx.state !== 'running') ctx.resume().then(() => { if (!video.paused) start(); }).catch(() => {}); };
+    const toggle = () => { unlock(); root.dataset.userPaused = video.paused ? '' : '1'; video.paused ? play() : video.pause(); };
     video.addEventListener('click', toggle);
-    if (big) big.addEventListener('click', play);
+    if (big) big.addEventListener('click', () => { unlock(); play(); });
     if (playBtn) playBtn.addEventListener('click', toggle);
 
     if (scrub) {
@@ -89,25 +132,24 @@
       if (!t.button) continue;
       t.button.addEventListener('click', () => {
         t.on = !t.on;
-        // switching sound on is a gesture, so start the track inside it
-        if (t.on) { t.audio.currentTime = video.currentTime; t.audio.playbackRate = speed; if (video.paused) play(); t.audio.play().catch(() => {}); }
-        else t.audio.pause();
+        unlock(); fade(t);
+        if (t.on && video.paused) play();
+        else if (t.on && !anchor) start();
         setState(); kick();
       });
     }
 
     const setSources = ({ video: v, poster, music, sfx }) => {
-      const at = video.currentTime, playing = !video.paused;
-      if (music !== undefined && tracks.music.audio.src !== new URL(music, location.href).href) { tracks.music.audio.src = music; }
-      if (sfx !== undefined && tracks.sfx.audio.src !== new URL(sfx, location.href).href) { tracks.sfx.audio.src = sfx; }
+      load(tracks.music, music); load(tracks.sfx, sfx);
       if (v && video.src !== new URL(v, location.href).href) {
+        const at = video.currentTime, playing = !video.paused;
+        stop();
         if (poster) video.poster = poster;
         video.src = v;
-        video.addEventListener('loadedmetadata', () => { video.currentTime = Math.min(at, (video.duration || at) - 0.05); if (playing) play(); }, { once: true });
-      } else if (playing) { Object.values(tracks).forEach(t => { if (t.on) { t.audio.currentTime = video.currentTime; t.audio.play().catch(() => {}); } }); }
-      video.playbackRate = speed;
+        video.addEventListener('loadedmetadata', () => { video.currentTime = Math.min(at, (video.duration || at) - 0.05); video.playbackRate = speed; if (playing) play(); }, { once: true });
+      }
     };
-    const setSpeed = r => { speed = r; video.playbackRate = r; Object.values(tracks).forEach(t => (t.audio.playbackRate = r)); };
+    const setSpeed = r => { if (r === speed) return; speed = r; video.playbackRate = r; };
 
     root.classList.toggle('is-tall', tall);
     video.muted = true;
@@ -122,7 +164,7 @@
         }
       }, { threshold: [0, 0.5] }).observe(root);
     }
-    root.film = { video, tracks, setSources, setSpeed, tall };
+    root.film = { video, tracks, setSources, setSpeed, tall, drift, get restarts() { return restarts; } };
     setState();
     root.dispatchEvent(new CustomEvent('film:ready'));
   }
