@@ -22,6 +22,8 @@
   };
   syncToggle();
   toggle.addEventListener('click', (e) => {
+    // With the sky on (sky.js), the toggle clicks through Sky, Light and Dark instead.
+    if (window.__skyToggle) { window.__skyToggle(e); return; }
     const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
     const apply = () => {
       if (next === 'dark') root.dataset.theme = 'dark'; else delete root.dataset.theme;

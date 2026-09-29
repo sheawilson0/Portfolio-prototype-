@@ -1,18 +1,18 @@
 /* The sky for sheawilson.uk. The page follows the sun where the visitor is: white while it's up, the eclipse
    after dark, and a slow fade through dusk and dawn rather than a switch. A sun travels along the horizon
    during the day, the ring leans cooler in winter and warmer in summer, and the favicon matches the page.
-   The toggle still wins, until the sky next crosses between light and dark.
+   The toggle clicks through Sky, Light and Dark. The sun only comes out with the time bar (tap the full stop).
 
    Runs in <head>, before first paint, so there's no flash of the wrong theme.
    On sheawilson.uk and vercel.app it does nothing without ?lab or ?sky, so visitors see today's site.
-   URL overrides: ?t=HH:MM freezes the clock, ?d=YYYY-MM-DD the date, ?embed hides the lab bar (the /sky/ board). */
+   URL overrides: ?t=HH:MM freezes the clock, ?d=YYYY-MM-DD the date, ?bar opens the time bar,
+   ?embed is a frame on the /sky/ board (add &sun to show the sun). */
 (() => {
   const root = document.documentElement;
   const params = new URLSearchParams(location.search);
   const liveHost = /(^|\.)sheawilson\.uk$|\.vercel\.app$/.test(location.hostname);
   if (liveHost && !params.has('lab') && !params.has('sky')) return;
   const embed = params.has('embed');
-  const showLab = !embed;
   const css = document.createElement('link');
   css.rel = 'stylesheet'; css.href = new URL('../css/sky.css', document.currentScript.src).href;
   document.head.append(css);
@@ -38,12 +38,14 @@
   };
 
   // The moment each look is at its fullest, from that day's sunrise R and sunset S (local minutes).
-  function anchors(R, S) {
+  // T is that day's civil twilight in minutes; the spacing below was tuned at T = 38 (Belfast, late September).
+  function anchors(R, S, T) {
     // Light and dark meet in a few saturated minutes (blue hour and first light, afterglow and last light), never a grey.
-    const out = [['predawn', R - 55], ['bluehour', R - 26], ['firstlight', R - 10], ['dawn', R + 14], ['morning', R + 90], ['day', R + 160], ['day', S - 150],
-      ['golden', S - 50], ['sunset', S + 2], ['afterglow', S + 14], ['lastlight', S + 26], ['dusk', S + 50], ['night', S + 120]];
-    const gap = wrap(R - 55 - (S + 120)); // the dark between night falling and the sky starting to lift
-    if (gap > 90) out.push(['night', S + 120 + gap * .3], ['small', S + 120 + gap * .6], ['small', R - 90]);
+    const out = [['predawn', R - 1.45 * T], ['bluehour', R - .68 * T], ['firstlight', R - .26 * T], ['dawn', R + .37 * T], ['morning', R + Math.max(90, 2 * T)],
+      ['day', R + 160], ['day', S - 150], ['golden', S - 1.3 * T], ['sunset', S + 2], ['afterglow', S + .37 * T], ['lastlight', S + .68 * T],
+      ['dusk', S + 1.3 * T], ['night', S + 3.2 * T]];
+    const gap = wrap(R - 1.45 * T - (S + 3.2 * T)); // the dark between night falling and the sky starting to lift
+    if (gap > 90) out.push(['night', S + 3.2 * T + gap * .3], ['small', S + 3.2 * T + gap * .6], ['small', R - 1.45 * T - 35]);
     return out.map(([k, m]) => [k, wrap(m)]).sort((a, b) => a[1] - b[1]);
   }
 
@@ -80,8 +82,12 @@
     const dec = Math.asin(Math.sin(L * rad) * Math.sin(23.44 * rad));
     const cosW = (Math.sin(-.833 * rad) - Math.sin(LAT * rad) * Math.sin(dec)) / (Math.cos(LAT * rad) * Math.cos(dec));
     const w = Math.acos(Math.max(-1, Math.min(1, cosW))) / rad;
+    // Civil twilight (the sun 6° below the horizon) sets how long dusk and dawn last where the visitor is:
+    // about 40 minutes in Belfast in autumn, an hour at midsummer, 20-odd near the equator.
+    const cos6 = (Math.sin(-6 * rad) - Math.sin(LAT * rad) * Math.sin(dec)) / (Math.cos(LAT * rad) * Math.cos(dec));
+    const w6 = Math.acos(Math.max(-1, Math.min(1, cos6))) / rad;
     const local = (jd) => wall((jd - 2440587.5) * 864e5).min;
-    return { rise: local(transit - w / 360), set: local(transit + w / 360) };
+    return { rise: local(transit - w / 360), set: local(transit + w / 360), tw: Math.max(20, Math.min(90, (w6 - w) * 4)) };
   }
 
   /* ───────── The season ─────────
@@ -114,8 +120,8 @@
   }
 
   function lookAt(min, ymd) {
-    const { rise: R, set: S } = sun(ymd);
-    const list = anchors(R, S);
+    const { rise: R, set: S, tw } = sun(ymd);
+    const list = anchors(R, S, tw);
     let i = list.findIndex((a) => a[1] > min);
     if (i === -1) i = 0;
     const [bk, bm] = list[i], [ak, am] = list[(i - 1 + list.length) % list.length];
@@ -126,7 +132,7 @@
     // The sun walks the rim of the disc from the left at sunrise to the right at sunset.
     const dayFrac = (wrap(min - R) <= wrap(S - R) + 60 ? wrap(min - R) : wrap(min - R) - 1440) / (wrap(S - R) || 1);
     return {
-      key: t < .5 ? ak : bk, name: A.name === B.name || t < .15 ? A.name : t > .85 ? B.name : `${A.name} into ${B.name.toLowerCase()}`,
+      key: t < .5 ? ak : bk, name: (t < .5 ? A : B).name,
       bg, theme: lum(bg) < .18 ? 'dark' : 'light', // where black and white text read equally well
       p: A.p.map((c, j) => mix(mix(c, B.p[j], t), s.tint, j % 2 ? .38 : .12)),
       pa: mix(A.pa, B.pa, t), pb: mix(A.pb, B.pb, t), glow: A.glow + (B.glow - A.glow) * t,
@@ -143,25 +149,28 @@
     return 1440;
   }
 
-  /* ───────── Holding the toggle ───────── */
-  // A press holds that theme until the sky next crosses over; a frozen lab clock holds only for that minute.
-  let hold = null;
-  try { hold = JSON.parse(localStorage.getItem('sky-hold') || 'null'); } catch (e) {}
-  const heldTheme = () => hold && (frozen ? hold.at === frozen : !hold.at && hold.until > Date.now()) ? hold.theme : null;
+  /* ───────── Modes ─────────
+     Sky (the default), Light or Dark. The toggle clicks through them, always changing what you see first:
+     from Sky it goes to the opposite of what's showing, then the other fixed theme, then back to Sky. */
+  let mode = 'sky';
+  try { const m = localStorage.getItem('sky-mode'); if (m === 'light' || m === 'dark') mode = m; } catch (e) {}
+  let barOpen = false; // the time bar always shows the sky
+  const effective = () => (barOpen ? 'sky' : mode);
 
   /* ───────── Painting ───────── */
-  const VARS = ['--p1', '--p2', '--p3', '--p4', '--p5', '--p6', '--pale-a', '--pale-b', '--bg', '--sky-glow', '--wash', '--wash-a', '--sun-c', '--sun-a', '--sun-x', '--sun-y'];
+  const VARS = ['--p1', '--p2', '--p3', '--p4', '--p5', '--p6', '--pale-a', '--pale-b', '--bg', '--sky-glow', '--wash', '--wash-a', '--sun-c', '--sun-a', '--sun-x', '--sun-y', '--moon-x'];
   let last = null;
 
   function paint() {
     const n = now();
     const L = lookAt(n.min, n.ymd);
-    const held = heldTheme();
-    const theme = held || L.theme;
-    if (held && held !== L.theme) {
-      // Held against the sky: that theme as the site draws it today, no sun.
+    const m = effective();
+    const theme = m === 'sky' ? L.theme : m;
+    root.dataset.mode = m;
+    if (m !== 'sky') {
+      // A fixed theme is the site as it's drawn today.
       VARS.forEach((v) => root.style.removeProperty(v));
-      root.dataset.sky = 'held';
+      root.dataset.sky = 'fixed';
     } else {
       root.dataset.sky = L.key;
       const set = (k, v) => root.style.setProperty(k, v);
@@ -171,18 +180,21 @@
       // On the ring's box (the disc plus 9% each side), the rim sits 42.4% out from the centre.
       set('--sun-x', `${(50 + 42.4 * Math.sin(L.angle * rad)).toFixed(2)}%`);
       set('--sun-y', `${(50 - 42.4 * Math.cos(L.angle * rad)).toFixed(2)}%`);
+      // The toggle's moon covers as much of its disc as the sky is dark, so twilight shows a crescent.
+      const dark = Math.max(0, Math.min(1, (.62 - lum(L.bg)) / .6));
+      set('--moon-x', `${(-115 * (1 - dark)).toFixed(1)}%`);
     }
     if (theme === 'dark') root.dataset.theme = 'dark'; else delete root.dataset.theme;
     const meta = document.querySelector('meta[name="theme-color"]');
-    if (meta) meta.setAttribute('content', held && held !== L.theme ? (held === 'dark' ? '#05070b' : '#ffffff') : L.bg);
-    last = { n, L, theme, held: !!held && held !== L.theme };
+    if (meta) meta.setAttribute('content', m === 'sky' ? L.bg : theme === 'dark' ? '#05070b' : '#ffffff');
+    last = { n, L, theme, mode: m };
     favicon();
     decorate();
-    syncLab();
+    syncBar();
     report();
   }
 
-  /* ───────── The sun and the glow above the horizon ───────── */
+  /* ───────── The page's extra pieces ───────── */
   function decorate() {
     const hero = document.querySelector('.hero'), eclipse = hero?.querySelector('.eclipse');
     if (eclipse && !eclipse.querySelector('.sun')) {
@@ -190,38 +202,150 @@
       eclipse.querySelector('.corona').after(sunEl);
       const wash = document.createElement('div'); wash.className = 'sky-wash'; wash.setAttribute('aria-hidden', 'true');
       hero.prepend(wash);
+      // The easter egg: the headline's full stop is a little sun. Tap it and the time bar opens.
+      const em = hero.querySelector('h1 em');
+      if (em && em.lastChild?.nodeType === 3 && em.lastChild.data.endsWith('.')) {
+        em.lastChild.data = em.lastChild.data.slice(0, -1);
+        const dot = document.createElement('span');
+        dot.className = 'sky-dot'; dot.textContent = '.'; dot.tabIndex = 0;
+        dot.setAttribute('role', 'button'); dot.setAttribute('aria-label', 'Play with the time of day');
+        dot.addEventListener('click', () => openBar());
+        dot.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openBar(); } });
+        em.append(dot);
+      }
+    }
+    const foot = document.querySelector('footer nav');
+    if (foot && !foot.querySelector('.sky-open')) {
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'sky-open'; b.textContent = 'Change the time of day';
+      b.addEventListener('click', () => openBar());
+      foot.prepend(b);
     }
     const toggle = document.querySelector('.theme-toggle');
     if (toggle && last) {
       let hint = toggle.querySelector('.tt-hint');
       if (!hint) { hint = document.createElement('span'); hint.className = 'tt-hint'; hint.setAttribute('aria-hidden', 'true'); toggle.append(hint); }
+      const next = nextMode();
+      const label = next === 'sky' ? 'Follow the sun' : next === 'dark' ? 'Lights off' : 'Lights on';
       toggle.setAttribute('aria-pressed', String(last.theme === 'dark'));
-      toggle.setAttribute('aria-label', last.theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
-      hint.innerHTML = `<b>${last.theme === 'dark' ? 'Lights on' : 'Lights off'}</b>${hintLine}`;
+      toggle.setAttribute('aria-label', next === 'sky' ? 'Follow the time of day' : `Switch to ${next} mode`);
+      hint.innerHTML = `<b>${label}</b>${hintLine}`;
     }
   }
-  // The second line says the page follows the sun. Worked out when the pointer arrives, not every paint.
+  const nextMode = () => {
+    if (!last) return 'dark';
+    const auto = lookAt(last.n.min, last.n.ymd).theme;
+    if (last.mode === 'sky') return last.theme === 'dark' ? 'light' : 'dark';
+    return last.mode === auto ? 'sky' : auto;
+  };
+  // The hint's second line: what's happening now. Worked out when the pointer arrives, not every paint.
   let hintLine = '';
   function refreshHint() {
     if (!last) return;
-    if (last.held) { hintLine = '<small>Back to the sky at the next change</small>'; decorate(); return; }
-    const at = wrap(last.n.min + nextCross(last.n));
-    hintLine = `<small>${last.theme === 'dark' ? 'Light again' : 'Goes dark'} about ${fmt(Math.round(at / 5) * 5 % 1440)}</small>`;
+    if (last.mode === 'sky') {
+      const at = wrap(last.n.min + nextCross(last.n));
+      hintLine = `<small>Following the sun, ${last.theme === 'dark' ? 'light' : 'dark'} about ${fmt(Math.round(at / 5) * 5 % 1440)}</small>`;
+    } else hintLine = `<small>Lights ${last.mode === 'dark' ? 'off' : 'on'} for now</small>`;
     decorate();
   }
+
+  /* ───────── The switch ───────── */
+  // A tactile light switch, made in Web Audio: a sharp snap and a low knock on the press, a lighter tick on the
+  // release. Off sits a little lower than on; back to the sky is softer, with a small bright ring.
+  let actx = null;
+  function switchSound(kind) {
+    try {
+      actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+      if (actx.state === 'suspended') actx.resume();
+      const t0 = actx.currentTime + .005, out = actx.destination;
+      const snap = (at, freq, gain, len) => {
+        const buf = actx.createBuffer(1, Math.ceil(actx.sampleRate * len), actx.sampleRate), d = buf.getChannelData(0);
+        for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / d.length) ** 4;
+        const src = actx.createBufferSource(); src.buffer = buf;
+        const bp = actx.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = freq; bp.Q.value = 1.2;
+        const g = actx.createGain(); g.gain.value = gain;
+        src.connect(bp).connect(g).connect(out); src.start(at);
+      };
+      const tone = (at, f0, f1, gain, len, type = 'sine') => {
+        const o = actx.createOscillator(), g = actx.createGain();
+        o.type = type; o.frequency.setValueAtTime(f0, at); o.frequency.exponentialRampToValueAtTime(f1, at + len);
+        g.gain.setValueAtTime(0, at); g.gain.linearRampToValueAtTime(gain, at + .003); g.gain.exponentialRampToValueAtTime(.0001, at + len);
+        o.connect(g).connect(out); o.start(at); o.stop(at + len + .02);
+      };
+      const k = kind === 'dark' ? .82 : 1;
+      const soft = kind === 'sky' ? .55 : 1;
+      snap(t0, 3000 * k, .7 * soft, .016); tone(t0, 170 * k, 70, .32 * soft, .06);
+      snap(t0 + .075, 4400 * k, .28 * soft, .01);
+      if (kind === 'sky') {
+        // The day going by: a soft breath of air that rises and falls with the sweep, and a small bright ring.
+        tone(t0 + .02, 1568, 1480, .05, .5);
+        const len = SWEEP / 1000, buf = actx.createBuffer(1, Math.ceil(actx.sampleRate * len), actx.sampleRate), d = buf.getChannelData(0);
+        for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+        const src = actx.createBufferSource(); src.buffer = buf;
+        const bp = actx.createBiquadFilter(); bp.type = 'bandpass'; bp.Q.value = 2.2;
+        bp.frequency.setValueAtTime(380, t0); bp.frequency.exponentialRampToValueAtTime(2600, t0 + len * .5); bp.frequency.exponentialRampToValueAtTime(420, t0 + len);
+        const g = actx.createGain(); g.gain.setValueAtTime(0, t0); g.gain.linearRampToValueAtTime(.09, t0 + len * .45); g.gain.linearRampToValueAtTime(0, t0 + len);
+        src.connect(bp).connect(g).connect(out); src.start(t0);
+      }
+    } catch (e) {}
+  }
+
+  // Back to the sky: the page runs through a whole day in under two seconds and lands on now. The toggle's
+  // moon crosses its disc as night comes and goes, and the ring spins once.
+  const SWEEP = 1900;
+  let sweepRaf = 0;
+  function sweep() {
+    const start = now().min, t0 = performance.now();
+    root.classList.add('sky-sweep');
+    const step = (t) => {
+      const k = Math.min(1, (t - t0) / SWEEP), e = k < .5 ? 4 * k * k * k : 1 - (-2 * k + 2) ** 3 / 2;
+      frozen = k < 1 ? toHM(Math.floor(wrap(start + 1440 * e))) : null;
+      paint();
+      if (k < 1) sweepRaf = requestAnimationFrame(step); else endSweep();
+    };
+    sweepRaf = requestAnimationFrame(step);
+  }
+  function endSweep() {
+    if (!root.classList.contains('sky-sweep')) return;
+    cancelAnimationFrame(sweepRaf); frozen = null;
+    root.classList.remove('sky-sweep');
+    paint(); refreshHint();
+  }
+
+  function setMode(next, e) {
+    endSweep();
+    const before = last?.theme;
+    mode = next;
+    try { next === 'sky' ? localStorage.removeItem('sky-mode') : localStorage.setItem('sky-mode', next); } catch (err) {}
+    switchSound(next);
+    const apply = () => { paint(); refreshHint(); };
+    if (next === 'sky' && !matchMedia('(prefers-reduced-motion: reduce)').matches) { sweep(); return; }
+    const after = next === 'sky' ? lookAt(last.n.min, last.n.ymd).theme : next;
+    const toggle = document.querySelector('.theme-toggle');
+    if (e && toggle) {
+      const r = toggle.getBoundingClientRect();
+      root.style.setProperty('--vx', `${e.clientX || r.left + r.width / 2}px`);
+      root.style.setProperty('--vy', `${e.clientY || r.top + r.height / 2}px`);
+    }
+    // The same soft umbra as before, whenever what you see actually flips.
+    if (before === after || !document.startViewTransition || matchMedia('(prefers-reduced-motion: reduce)').matches) { apply(); return; }
+    root.classList.add('theme-switching');
+    document.startViewTransition(apply).finished.finally(() => root.classList.remove('theme-switching'));
+  }
+  window.__skyToggle = (e) => { if (barOpen) closeBar(); setMode(nextMode(), e); };
 
   /* ───────── Favicon ───────── */
   // The eclipse, drawn in the page's colours: a white disc by day, dark after sunset, ring in the sky's colours.
   let favKey = '', favAt = 0, favTimer = 0, favLink = null;
   function favicon() {
-    const L = last?.L, key = last?.held ? `held-${last.theme}` : `${L.bg}${L.p.join('')}`;
+    const L = last.L, fixed = last.mode !== 'sky';
+    const key = fixed ? `fixed-${last.theme}` : `${L.bg}${L.p.join('')}`;
     if (key === favKey) return;
     const wait = 400 - (performance.now() - favAt);
     if (wait > 0) { clearTimeout(favTimer); favTimer = setTimeout(favicon, wait); return; }
     favKey = key; favAt = performance.now();
     const c = document.createElement('canvas'); c.width = c.height = 64;
     const g = c.getContext('2d');
-    const ring = last.held ? BRAND : L.p, disc = last.held ? (last.theme === 'dark' ? '#05070b' : '#ffffff') : L.bg;
+    const ring = fixed ? BRAND : L.p, disc = fixed ? (last.theme === 'dark' ? '#05070b' : '#ffffff') : L.bg;
     if (g.createConicGradient) {
       const cg = g.createConicGradient(-Math.PI / 2, 32, 32);
       [...ring, ring[0]].forEach((col, i) => cg.addColorStop(i / 6, col));
@@ -244,34 +368,58 @@
     favLink.href = c.toDataURL('image/png');
   }
 
-  /* ───────── Lab bar ───────── */
+  /* ───────── The time bar ─────────
+     For visitors: opened from the full stop or the footer. Scrub or play the day, try a season, and the sun
+     comes out to show where it is. Closing it goes back to now. */
   const fmt = (m) => { const h = Math.floor(m / 60), mm = String(m % 60).padStart(2, '0'); return `${h % 12 || 12}:${mm}${h < 12 ? 'am' : 'pm'}`; };
-  const DATES = [['', 'Today'], ['12-21', 'Winter'], ['03-20', 'Spring'], ['06-21', 'Summer'], ['09-22', 'Autumn']];
-  let lab = null, playing = 0;
-  function buildLab() {
-    lab = document.createElement('div');
-    lab.className = 'sky-lab';
-    lab.setAttribute('role', 'toolbar');
-    lab.setAttribute('aria-label', 'Sky lab');
-    lab.innerHTML = `
-      <div class="sl-time">
-        <button type="button" class="sl-play" aria-label="Play the day">▶</button>
+  const SEASON_DAYS = [['12-21', 'Winter'], ['03-20', 'Spring'], ['06-21', 'Summer'], ['09-22', 'Autumn']];
+  let bar = null, playing = 0;
+  function buildBar() {
+    bar = document.createElement('div');
+    bar.className = 'sky-bar';
+    bar.setAttribute('role', 'dialog');
+    bar.setAttribute('aria-label', 'Time of day');
+    bar.innerHTML = `
+      <div class="sb-time">
+        <button type="button" class="sb-play" aria-label="Play the day"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 1.8v8.4L10 6z" fill="currentColor"/></svg></button>
         <input type="range" min="0" max="1439" step="1" aria-label="Time of day">
-        <span class="sl-read"></span>
+        <button type="button" class="sb-now">Now</button>
+        <button type="button" class="sb-close" aria-label="Close and go back to now"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 3l6 6M9 3l-6 6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
       </div>
-      <div class="sl-row">${DATES.map(([d, t]) => `<button type="button" data-d="${d}">${t}</button>`).join('')}
-        <button type="button" class="sl-now">Now</button><a class="sl-board" href="sky/">Compare times →</a></div>`;
-    document.body.append(lab);
-    lab.addEventListener('click', onLab);
-    const range = lab.querySelector('input');
+      <div class="sb-row">
+        <span class="sb-read"></span>
+        <span class="sb-seasons">${SEASON_DAYS.map(([d, t]) => `<button type="button" data-d="${d}">${t}</button>`).join('')}</span>
+        ${liveHost && !params.has('lab') ? '' : '<a class="sb-board" href="sky/">Compare times</a>'}
+      </div>`;
+    document.body.append(bar);
+    bar.addEventListener('click', onBar);
+    const range = bar.querySelector('input');
     range.addEventListener('input', () => { stopPlay(); frozen = toHM(+range.value); paint(); });
-    syncLab();
   }
-  const stopPlay = () => { cancelAnimationFrame(playing); playing = 0; lab?.querySelector('.sl-play')?.replaceChildren('▶'); };
+  function openBar() {
+    if (!bar) buildBar();
+    if (barOpen) return;
+    barOpen = true;
+    root.classList.add('sun-on');
+    bar.classList.add('is-open');
+    paint();
+    // Opening it plays the day straight away; touching the slider or pause stops it.
+    play();
+  }
+  function closeBar() {
+    if (!bar) return;
+    stopPlay(); barOpen = false; frozen = null; frozenDate = null;
+    root.classList.remove('sun-on');
+    bar.classList.remove('is-open');
+    paint();
+  }
+  const PLAY = '<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 1.8v8.4L10 6z" fill="currentColor"/></svg>';
+  const PAUSE = '<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 2h2v8H3zM7 2h2v8H7z" fill="currentColor"/></svg>';
+  const stopPlay = () => { cancelAnimationFrame(playing); playing = 0; const b = bar?.querySelector('.sb-play'); if (b) { b.innerHTML = PLAY; b.setAttribute('aria-label', 'Play the day'); } };
   function play() {
     if (playing) { stopPlay(); return; }
     let m = frozen ? hm(frozen) : now().min, prev = performance.now();
-    lab.querySelector('.sl-play').replaceChildren('❚❚');
+    const b = bar.querySelector('.sb-play'); b.innerHTML = PAUSE; b.setAttribute('aria-label', 'Pause');
     const tick = (t) => {
       m = wrap(m + (t - prev) / 1000 * 60); prev = t; // an hour a second: the whole day in 24 s
       frozen = toHM(Math.floor(m));
@@ -280,23 +428,31 @@
     };
     playing = requestAnimationFrame(tick);
   }
-  function onLab(e) {
+  function onBar(e) {
     const b = e.target.closest('button');
     if (!b) return;
-    if (b.classList.contains('sl-play')) return play();
-    if (b.classList.contains('sl-now')) { stopPlay(); frozen = null; frozenDate = null; }
-    else if ('d' in b.dataset) frozenDate = b.dataset.d ? `${new Date().getFullYear()}-${b.dataset.d}` : null;
+    if (b.classList.contains('sb-play')) return play();
+    if (b.classList.contains('sb-close')) return closeBar();
+    if (b.classList.contains('sb-now')) { stopPlay(); frozen = null; frozenDate = null; }
+    // A season sets the date to its solstice or equinox; pressing it again goes back to today.
+    else if (b.dataset.d) { const d = `${new Date().getFullYear()}-${b.dataset.d}`; frozenDate = frozenDate === d ? null : d; }
     paint();
   }
-  function syncLab() {
-    if (!lab || !last) return;
-    lab.querySelectorAll('[data-d]').forEach((b) => b.setAttribute('aria-pressed', String((b.dataset.d || '') === (frozenDate ? frozenDate.slice(5) : ''))));
-    const { n, L } = last, range = lab.querySelector('input');
-    if (document.activeElement !== range) range.value = n.min;
+  function syncBar() {
+    if (!bar || !last) return;
+    bar.querySelectorAll('[data-d]').forEach((b) => b.setAttribute('aria-pressed', String(!!frozenDate && frozenDate.slice(5) === b.dataset.d)));
+    bar.querySelector('.sb-now').hidden = !frozen && !frozenDate;
+    const { n, L } = last, range = bar.querySelector('input');
+    if (document.activeElement !== range || playing) range.value = n.min;
     range.style.setProperty('--rise', `${n.rise / 14.4}%`);
     range.style.setProperty('--set', `${n.set / 14.4}%`);
-    lab.querySelector('.sl-read').innerHTML = `<em><b>${fmt(n.min)}</b> ${last.held ? `${last.theme === 'dark' ? 'Dark' : 'Light'}, held` : L.name}</em><span>${L.season} · sun ${fmt(n.rise)}–${fmt(n.set)}</span>`;
+    const read = bar.querySelector('.sb-read');
+    if (!read.firstChild) read.innerHTML = '<b class="sb-clock"></b><span class="sb-name"></span>';
+    read.firstChild.textContent = fmt(n.min);
+    const name = read.lastChild;
+    if (name.textContent !== L.name) { name.textContent = L.name; name.classList.remove('is-new'); void name.offsetWidth; name.classList.add('is-new'); }
   }
+  addEventListener('keydown', (e) => { if (e.key === 'Escape' && barOpen) closeBar(); });
 
   /* ───────── For the board at /sky/ ───────── */
   window.__sky = {
@@ -312,30 +468,21 @@
     if (!m || e.origin !== location.origin) return;
     if ('t' in m) frozen = m.t;
     if ('d' in m) frozenDate = m.d;
+    if (m.sun != null) root.classList.toggle('sun-on', !!m.sun);
     paint();
   });
 
   /* ───────── Go ───────── */
+  if (embed && params.has('sun')) root.classList.add('sun-on');
   paint();
   document.addEventListener('DOMContentLoaded', () => {
-    if (showLab) buildLab();
     paint();
+    if (params.has('bar')) openBar();
     const toggle = document.querySelector('.theme-toggle');
     if (!toggle) return;
     toggle.addEventListener('pointerenter', refreshHint);
     toggle.addEventListener('focus', refreshHint);
-    // Capture runs before site.js flips the theme, so `last.theme` is the one being left.
-    toggle.addEventListener('click', () => {
-      if (!last) return;
-      const chosen = last.theme === 'dark' ? 'light' : 'dark';
-      const auto = lookAt(last.n.min, last.n.ymd).theme;
-      if (chosen === auto) hold = null;
-      else hold = frozen ? { theme: chosen, at: frozen } : { theme: chosen, until: Date.now() + nextCross(last.n) * 60000 };
-      if (!frozen) try { hold ? localStorage.setItem('sky-hold', JSON.stringify(hold)) : localStorage.removeItem('sky-hold'); } catch (err) {}
-      // site.js applies the theme inside a view transition; paint once it has.
-      setTimeout(() => { paint(); refreshHint(); }, 60);
-    }, true);
   });
-  setInterval(() => { if (!frozen) paint(); }, 30000);
+  setInterval(() => { if (!frozen) paint(); }, 10000);
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && !frozen) paint(); });
 })();

@@ -2,7 +2,7 @@
 @property --pale-a { syntax: '<color>'; inherits: true; initial-value: #fde9cf; }
 @property --pale-b { syntax: '<color>'; inherits: true; initial-value: #e3ebff; }
 :root[data-sky] .corona { transition: opacity 1.4s var(--ease); }
-:root[data-sky]:not([data-sky="held"]) .corona { opacity: var(--sky-glow, 1); }
+:root[data-sky]:not([data-sky="fixed"]) .corona { opacity: var(--sky-glow, 1); }
 
 /* The sun sits on the rim of the disc, half behind it, under the words. It rides with the ring (site.js). */
 .sun { position: absolute; z-index: 3; inset: -9%; border-radius: 50%; pointer-events: none; will-change: transform;
@@ -16,7 +16,33 @@
 .sky-wash { position: absolute; inset: 0; z-index: 1; pointer-events: none;
   background: linear-gradient(to top, var(--wash, transparent) 30%, color-mix(in srgb, var(--wash, transparent) 45%, transparent) 46%, transparent 72%);
   opacity: var(--wash-a, 0); }
-:root[data-sky="held"] :is(.sun, .sky-wash) { opacity: 0; }
+:root[data-sky="fixed"] :is(.sun, .sky-wash) { opacity: 0; }
+/* The sun only comes out with the time bar. */
+:root:not(.sun-on) .sun { opacity: 0; }
+
+/* ───────── The toggle in Sky mode ─────────
+   Same icon and slide, but the ring takes the sky's colours and the moon covers as much of the disc as the
+   sky is dark, so dusk and dawn show a crescent. */
+:root[data-mode="sky"] .tt-ring { background: conic-gradient(from 0deg, var(--p1), var(--p2), var(--p3), var(--p4), var(--p5), var(--p6), var(--p1)); }
+:root[data-mode="sky"] .tt-moon { transform: translateX(var(--moon-x, -115%)); }
+/* The moon keeps sliding while the theme's umbra spreads (everything else holds still for it). */
+.theme-switching .tt-moon { transition: transform .8s var(--ease-io) !important; }
+/* Back to the sky: the day runs through in under two seconds (sky.js). Nothing eases behind it,
+   the ring spins once and a glow in the sky's colours blooms out of the icon. */
+.sky-sweep *, .sky-sweep *::before, .sky-sweep *::after { transition: none !important; }
+.sky-sweep .tt-ring { animation: tt-spin 1.9s var(--ease-io); }
+.tt::after { content: ""; position: absolute; z-index: -1; inset: -4px; border-radius: 50%; opacity: 0; pointer-events: none;
+  background: conic-gradient(from 0deg, var(--p1), var(--p2), var(--p3), var(--p4), var(--p5), var(--p6), var(--p1)); filter: blur(7px); }
+.sky-sweep .tt::after { animation: tt-bloom 1.9s var(--ease-io); }
+@keyframes tt-spin { to { rotate: 1turn; } }
+@keyframes tt-bloom { 0% { opacity: 0; scale: .5; } 35% { opacity: .85; scale: 1.5; } 100% { opacity: 0; scale: 2.4; } }
+
+/* ───────── The full stop ───────── */
+.sky-dot { cursor: pointer; border-radius: 50%; outline: none; transition: color .5s var(--ease), text-shadow .6s var(--ease); }
+.sky-dot:hover, .sky-dot:focus-visible { color: var(--p2, #ff6a1a); text-shadow: 0 0 .3em color-mix(in srgb, var(--p2, #ff6a1a) 70%, transparent); }
+:root.sun-on .sky-dot { color: var(--sun-c, #ffc65c); }
+footer .sky-open { color: inherit; transition: color .3s var(--ease); }
+footer .sky-open:hover { color: var(--ink); }
 
 /* ───────── The toggle's hint ───────── */
 .tt-hint { position: absolute; top: calc(100% + 10px); right: -4px; display: grid; gap: 3px; justify-items: end; padding: 8px 12px; border-radius: 12px;
@@ -29,32 +55,48 @@
 @media (hover: hover) { .theme-toggle:hover .tt-hint { opacity: 1; translate: 0 0; transition-delay: .35s; } }
 .theme-toggle:focus-visible .tt-hint { opacity: 1; translate: 0 0; }
 
-/* ───────── Lab bar ───────── */
-.sky-lab { position: fixed; z-index: 120; left: 50%; bottom: max(14px, env(safe-area-inset-bottom)); translate: -50% 0; width: min(640px, calc(100vw - 20px));
-  display: grid; gap: 4px; padding: 6px; border-radius: 16px; font: 500 13px/1 'DM Sans', system-ui, sans-serif; letter-spacing: -.005em; color: #fff;
-  background: rgba(20, 20, 24, .82); box-shadow: 0 0 0 1px rgba(255, 255, 255, .08), 0 12px 40px rgba(0, 0, 0, .28);
-  -webkit-backdrop-filter: blur(20px) saturate(1.6); backdrop-filter: blur(20px) saturate(1.6); }
-.sky-lab button { flex: none; padding: 9px 11px; border-radius: 11px; color: rgba(255, 255, 255, .62); white-space: nowrap; transition: background-color .25s, color .25s; }
-.sky-lab button:hover { color: #fff; }
-.sky-lab button[aria-pressed="true"] { color: #fff; background: rgba(255, 255, 255, .15); }
-.sl-time { display: flex; align-items: center; gap: 8px; }
-.sl-play { width: 34px; font-size: 11px; }
-.sl-read { flex: none; min-width: 190px; display: grid; gap: 4px; color: rgba(255, 255, 255, .78); white-space: nowrap; }
-.sl-read em { font-style: normal; }
-.sl-read b { font-weight: 500; color: #fff; margin-right: 4px; }
-.sl-read span { font-size: 11px; color: rgba(255, 255, 255, .42); }
-.sky-lab input[type="range"] { flex: 1; min-width: 80px; height: 26px; appearance: none; -webkit-appearance: none; background: none; cursor: pointer; }
+/* ───────── The time bar ───────── */
+.sky-bar { position: fixed; z-index: 120; left: 50%; bottom: max(16px, env(safe-area-inset-bottom)); width: min(600px, calc(100vw - 24px)); translate: -50% 24px;
+  display: grid; gap: 6px; padding: 8px 10px 10px; border-radius: 20px; font: 400 13px/1 var(--sans); letter-spacing: -.005em; color: var(--ink);
+  background: var(--glass-strong); border: 1px solid var(--glass-edge); box-shadow: 0 18px 50px rgba(0, 0, 0, .18);
+  -webkit-backdrop-filter: blur(24px) saturate(1.8); backdrop-filter: blur(24px) saturate(1.8);
+  opacity: 0; visibility: hidden; transition: opacity .45s var(--ease), translate .6s var(--ease), visibility 0s .6s; }
+.sky-bar.is-open { opacity: 1; visibility: visible; translate: -50% 0; transition: opacity .45s var(--ease), translate .6s var(--ease); }
+.sky-bar button { flex: none; display: inline-grid; place-items: center; padding: 8px 10px; border-radius: 10px; color: var(--ink-2); white-space: nowrap; transition: background-color .25s, color .25s; }
+.sky-bar button:hover { color: var(--ink); }
+.sky-bar button[aria-pressed="true"] { color: var(--ink); background: color-mix(in srgb, var(--ink) 9%, transparent); }
+.sky-bar svg { width: 12px; height: 12px; }
+.sb-time { display: flex; align-items: center; gap: 6px; }
+.sb-play, .sb-close { width: 34px; height: 34px; padding: 0 !important; border-radius: 50% !important; }
+.sb-play { color: var(--ink) !important; background: color-mix(in srgb, var(--ink) 8%, transparent); }
+.sb-row { display: flex; align-items: center; gap: 2px; padding-left: 4px; overflow-x: auto; scrollbar-width: none; }
+.sb-row::-webkit-scrollbar { display: none; }
+.sb-read { flex: 1 1 auto; min-width: 0; display: flex; align-items: baseline; gap: 8px; overflow: hidden; line-height: 1.5; padding: 2px 0; color: var(--ink-2); white-space: nowrap; }
+/* Every digit is the same width and the clock's box never changes size, so nothing beside it moves. */
+.sb-clock { flex: none; width: 4.6em; font-weight: 500; color: var(--ink); font-variant-numeric: tabular-nums; font-feature-settings: "tnum"; }
+.sb-name { overflow: hidden; text-overflow: ellipsis; line-height: 1.5; padding-bottom: 1px; }
+.sb-name.is-new { animation: sb-name .5s var(--ease); }
+@keyframes sb-name { from { opacity: 0; translate: 0 3px; } }
+.sb-seasons { display: flex; gap: 2px; }
+.sb-now[hidden] { display: none !important; }
+.sb-board { padding: 8px 10px; color: var(--whisper); white-space: nowrap; }
+.sb-board:hover { color: var(--ink); }
+.sky-bar input[type="range"] { flex: 1; min-width: 80px; height: 30px; appearance: none; -webkit-appearance: none; background: none; cursor: pointer; }
 /* The track is the day: dark before sunrise and after sunset, light between. */
-.sky-lab input[type="range"]::-webkit-slider-runnable-track { height: 8px; border-radius: 99px;
-  background: linear-gradient(90deg, #1b1d3a 0, #1b1d3a calc(var(--rise) - 3%), #ff8fb0 var(--rise), #ffe6b0 calc(var(--rise) + 5%), #e9f0ff calc(var(--rise) + 12%),
-    #e9f0ff calc(var(--set) - 12%), #ffb24d calc(var(--set) - 3%), #ed4f7d var(--set), #3a1f6e calc(var(--set) + 4%), #1b1d3a calc(var(--set) + 10%), #1b1d3a 100%); }
-.sky-lab input[type="range"]::-moz-range-track { height: 8px; border-radius: 99px;
-  background: linear-gradient(90deg, #1b1d3a 0, #1b1d3a calc(var(--rise) - 3%), #ff8fb0 var(--rise), #ffe6b0 calc(var(--rise) + 5%), #e9f0ff calc(var(--rise) + 12%),
-    #e9f0ff calc(var(--set) - 12%), #ffb24d calc(var(--set) - 3%), #ed4f7d var(--set), #3a1f6e calc(var(--set) + 4%), #1b1d3a calc(var(--set) + 10%), #1b1d3a 100%); }
-.sky-lab input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; margin-top: -5px; border-radius: 50%; background: #fff; box-shadow: 0 0 0 3px rgba(0, 0, 0, .35); }
-.sky-lab input[type="range"]::-moz-range-thumb { width: 18px; height: 18px; border: 0; border-radius: 50%; background: #fff; box-shadow: 0 0 0 3px rgba(0, 0, 0, .35); }
-.sl-row { display: flex; align-items: center; gap: 2px; overflow-x: auto; scrollbar-width: none; }
-.sl-row::-webkit-scrollbar { display: none; }
-.sl-board { margin-left: auto; padding: 9px 11px; color: rgba(255, 255, 255, .78); white-space: nowrap; }
-.sl-board:hover { color: #fff; }
-@media (max-width: 560px) { .sl-read { min-width: 0; } .sl-read span { display: none; } }
+.sky-bar input[type="range"]::-webkit-slider-runnable-track { height: 10px; border-radius: 99px; box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ink) 10%, transparent);
+  background: linear-gradient(90deg, #1b1d3a 0, #1b1d3a calc(var(--rise) - 3%), #ff8fb0 var(--rise), #ffe6b0 calc(var(--rise) + 5%), #eef3ff calc(var(--rise) + 12%),
+    #eef3ff calc(var(--set) - 12%), #ffb24d calc(var(--set) - 3%), #ed4f7d var(--set), #3a1f6e calc(var(--set) + 4%), #1b1d3a calc(var(--set) + 10%), #1b1d3a 100%); }
+.sky-bar input[type="range"]::-moz-range-track { height: 10px; border-radius: 99px;
+  background: linear-gradient(90deg, #1b1d3a 0, #1b1d3a calc(var(--rise) - 3%), #ff8fb0 var(--rise), #ffe6b0 calc(var(--rise) + 5%), #eef3ff calc(var(--rise) + 12%),
+    #eef3ff calc(var(--set) - 12%), #ffb24d calc(var(--set) - 3%), #ed4f7d var(--set), #3a1f6e calc(var(--set) + 4%), #1b1d3a calc(var(--set) + 10%), #1b1d3a 100%); }
+.sky-bar input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; margin-top: -5px; border-radius: 50%; background: #fff; box-shadow: 0 0 0 1px rgba(0, 0, 0, .12), 0 4px 12px rgba(0, 0, 0, .25); }
+.sky-bar input[type="range"]::-moz-range-thumb { width: 20px; height: 20px; border: 0; border-radius: 50%; background: #fff; box-shadow: 0 0 0 1px rgba(0, 0, 0, .12), 0 4px 12px rgba(0, 0, 0, .25); }
+/* The site's squircle corners. Round buttons stay round. */
+@supports (corner-shape: squircle) {
+  .sky-bar, .tt-hint { corner-shape: squircle; }
+  .sky-bar { border-radius: 34px; }
+  .tt-hint { border-radius: 20px; }
+  .sky-bar button { corner-shape: squircle; border-radius: 16px; }
+  .sb-play, .sb-close { corner-shape: round; }
+}
+@media (max-width: 480px) { .sb-seasons button { padding: 8px 7px; } }
