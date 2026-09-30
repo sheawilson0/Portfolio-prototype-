@@ -87,6 +87,7 @@ html.vt-theme::view-transition-new(root) {
 .lab-row.is-sub { padding-top: 3px; border-top: 1px solid rgba(255, 255, 255, .08); font-size: 11.5px; }
 .lab-group { display: flex; align-items: center; flex: none; }
 .lab-group[hidden] { display: none; }
+.lab-row:not(:has(.lab-group:not([hidden]))) { display: none; }
 .lab-group + .lab-group { padding-left: 6px; margin-left: 2px; border-left: 1px solid rgba(255, 255, 255, .1); }
 .lab-tag { padding: 0 6px 0 8px; color: rgba(255, 255, 255, .42); white-space: nowrap; }
 .lab button { position: relative; flex: none; padding: 8px 11px; border-radius: 10px; color: rgba(255, 255, 255, .62); white-space: nowrap; transition: background-color .25s, color .25s; }
@@ -117,10 +118,20 @@ html.has-lab body { padding-bottom: 96px; }
 
 /* ═════════ 1. Eclipse ═════════ */
 body[data-style="eclipse"] { background: var(--bg); color: var(--ink); font-family: var(--sans); font-weight: 300; }
-.ec-sky { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none;
+.ec-page { position: relative; min-height: 100svh; overflow-x: clip;
   transition: --p1 1.2s var(--ease), --p2 1.2s var(--ease), --p3 1.2s var(--ease), --p4 1.2s var(--ease), --p5 1.2s var(--ease), --p6 1.2s var(--ease); }
-.ec-eclipse { position: absolute; left: 50%; top: 74svh; width: max(128vw, 820px); aspect-ratio: 1; translate: -50% 0; }
-.corona { position: absolute; inset: -9%; border-radius: 50%;
+/* Horizon: pinned behind everything. It's the height of the tallest viewport and on its own layer, so the
+   address bar sliding in and out on a phone doesn't resize (and repaint) a screen-sized masked gradient. */
+.ec-sky { position: fixed; left: 0; top: 0; width: 100vw; height: 100lvh; z-index: 0; overflow: hidden; pointer-events: none; contain: strict; transform: translateZ(0); }
+.ec-eclipse { position: absolute; left: 50%; top: 74lvh; width: max(128vw, 820px); aspect-ratio: 1; translate: -50% 0; }
+/* At the end: the eclipse rises behind Save contact and the footer, so nothing sits on it while you read the links */
+.ec-end { position: absolute; inset: auto 0 0; height: 300px; overflow: hidden; pointer-events: none; }
+.ec-end .ec-eclipse { top: 150px; width: max(150vw, 900px); }
+.ring-end .ec { padding-bottom: 110px; }
+/* Behind photo: the only ring is a soft corona round the headshot */
+.ring-halo .ec-photo::before { content: ""; position: absolute; inset: -16px; border-radius: 50%; background: conic-gradient(from 0deg, var(--p1), var(--p2), var(--p3), var(--p4), var(--p5), var(--p6), var(--p1));
+  animation: turn 30s linear infinite; -webkit-mask: radial-gradient(closest-side, #000 60%, rgba(0, 0, 0, .45) 78%, transparent 100%); mask: radial-gradient(closest-side, #000 60%, rgba(0, 0, 0, .45) 78%, transparent 100%); }
+.corona { position: absolute; inset: -9%; border-radius: 50%; will-change: transform;
   background: conic-gradient(from 0deg, var(--p1) 0deg, var(--p2) 36deg, var(--p3) 64deg, var(--pale-a) 96deg, var(--pale-b) 140deg,
     var(--p4) 182deg, var(--pale-b) 220deg, var(--p5) 256deg, var(--pale-a) 292deg, var(--p6) 326deg, var(--p1) 360deg);
   animation: turn 90s linear infinite;
@@ -181,6 +192,46 @@ body[data-style="eclipse"] { background: var(--bg); color: var(--ink); font-fami
 .ec-recent i { width: 6px; height: 6px; border-radius: 50%; background: var(--c); }
 .ec-foot { display: flex; align-items: center; gap: 10px; margin-top: 30px; font-size: 13px; color: var(--whisper); animation: rise 1s var(--ease) .6s both; }
 .ec.is-centre .ec-foot { justify-content: center; }
+
+/* ── Card finishes ── */
+body[data-style="eclipse"] { --card: #ffffff; --card-edge: rgba(10, 10, 10, .07); }
+[data-theme="dark"] body[data-style="eclipse"] { --card: #0f1218; --card-edge: rgba(255, 255, 255, .07); }
+.cards-opaque .ec-link { background: var(--card); border-color: var(--card-edge); -webkit-backdrop-filter: none; backdrop-filter: none; }
+.cards-opaque .ec-link:hover { background: var(--card); }
+.cards-outline .ec-link { background: transparent; border-color: color-mix(in srgb, var(--ink) 14%, transparent); box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
+.cards-outline .ec-link:hover { background: color-mix(in srgb, var(--ink) 3%, transparent); box-shadow: none; border-color: color-mix(in srgb, var(--ink) 24%, transparent); }
+.cards-plain .ec-list { gap: 0; }
+.cards-plain .ec-list li + li { border-top: 1px solid var(--hair); }
+.cards-plain .ec-link { background: transparent; border-color: transparent; box-shadow: none; border-radius: 18px; -webkit-backdrop-filter: none; backdrop-filter: none; padding-left: 4px; }
+.cards-plain .ec-link:hover { background: color-mix(in srgb, var(--ink) 4%, transparent); box-shadow: none; }
+.cards-plain .ec-grid .ec-link { border-color: var(--hair); }
+.cards-plain .ec-icon, .cards-outline .ec-icon { background: transparent; box-shadow: none; border-color: color-mix(in srgb, var(--ink) 14%, transparent); -webkit-backdrop-filter: none; backdrop-filter: none; }
+.cards-opaque .ec-icon { background: var(--card); border-color: var(--card-edge); -webkit-backdrop-filter: none; backdrop-filter: none; }
+
+/* ── Layouts ── */
+/* Icon row: the four socials as round buttons under the name, then the bigger destinations as cards */
+.ec-icons { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 24px; }
+.ec.is-centre .ec-icons { justify-content: center; }
+.ec-icons li { animation: rise .9s var(--ease) both; animation-delay: calc(.1s + var(--i) * .05s); }
+.ec-icon { display: grid; place-items: center; width: 56px; height: 56px; border-radius: 50%; color: var(--ink); background: var(--glass); border: 1px solid var(--glass-edge);
+  box-shadow: var(--shadow-rest); -webkit-backdrop-filter: blur(24px) saturate(1.7); backdrop-filter: blur(24px) saturate(1.7); transition: color .4s var(--ease), box-shadow .5s var(--ease), background-color .4s var(--ease); }
+.ec-icon .ico { width: 22px; height: 22px; }
+.ec-icon:hover, .ec-icon:focus-visible { color: var(--tone); box-shadow: var(--shadow-hover); }
+.ec-icon:focus-visible { outline: 2px solid color-mix(in srgb, var(--tone) 60%, transparent); outline-offset: 3px; }
+.layout-icons .ec-list { margin-top: 24px; }
+/* Grid: portfolio across the top, the socials as a two-by-two of tiles, then email and 3D */
+.ec-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+.ec-grid li { animation: rise .9s var(--ease) both; animation-delay: calc(.1s + var(--i) * .05s); }
+.ec-list + .ec-grid + .ec-list { margin-top: 12px; }
+.ec-tile { grid-template-columns: 1fr auto; grid-template-rows: auto auto; align-items: start; gap: 14px 8px; min-height: 0; padding: 14px 16px 16px 14px; }
+.ec-tile .ec-ico { width: 40px; height: 40px; }
+.ec-tile .ec-txt { grid-column: 1 / -1; }
+.ec-tile .arr { grid-row: 1; grid-column: 2; margin-top: 4px; }
+/* Compact: every link the same slim row, no featured card */
+.layout-compact .ec-list { gap: 8px; }
+.layout-compact .ec-link { min-height: 58px; padding: 8px 18px 8px 9px; grid-template-columns: 40px 1fr auto; gap: 14px; }
+.layout-compact .ec-ico { width: 40px; height: 40px; }
+.layout-compact .ec-link:first-child .ec-ico .ring-mark { width: 26px; height: 26px; }
 
 /* The coin: the findable easter egg. A 10-pixel coin that turns on its edge every few seconds. */
 .coin { position: relative; width: 20px; height: 20px; flex: none; touch-action: manipulation; }
