@@ -51,8 +51,8 @@
   const pad2 = (n) => String(n).padStart(2, '0');
   const RECENT = [['#ed1652', 'Smoking Snapshot'], ['#4fae86', 'JumpStart'], ['#43d9ff', 'Heart Health'], ['#8a3cff', 'Brain Dump']];
 
-  /* ───────── Theme: light while the sun is up where the visitor is, dark after sunset ─────────
-     No toggle. Same sunrise maths as the homepage's sky lab (assets/js/sky.js). */
+  /* ───────── Theme: follows the visitor's system setting ─────────
+     No toggle. The lab can switch to Sun (light by day, dark after dusk, same sunrise maths as assets/js/sky.js). */
   const PLACES = {
     'Europe/London': [53.5, -2.5], 'Europe/Dublin': [53.35, -6.26], 'Europe/Paris': [48.86, 2.35], 'Europe/Berlin': [52.52, 13.4],
     'Europe/Madrid': [40.42, -3.7], 'Europe/Rome': [41.9, 12.5], 'Europe/Amsterdam': [52.37, 4.9], 'Europe/Stockholm': [59.33, 18.07],
@@ -340,8 +340,13 @@
       // Night: stars on a coarse grid, twinkling in steps. Day: blocky clouds drifting a pixel at a time.
       const sky = el.querySelector('.ar-stars'), kx = sky.getContext('2d');
       let stars = [], clouds = [];
+      // Sized to the tallest the screen gets (address bar hidden) and only rebuilt when the width changes,
+      // because phones fire resize every time the address bar slides in or out while scrolling.
+      let skyW = 0;
       const sizeSky = () => {
-        sky.width = Math.ceil(innerWidth / 4); sky.height = Math.ceil(innerHeight / 4);
+        if (innerWidth === skyW) return;
+        skyW = innerWidth;
+        sky.width = Math.ceil(innerWidth / 4); sky.height = Math.ceil(Math.max(innerHeight, screen.height) / 4);
         const W = sky.width, H = sky.height;
         stars = Array.from({ length: Math.round(W * H / 260) }, () => ({ x: Math.random() * W | 0, y: Math.random() * H | 0, p: Math.random() * 6, c: Math.random() < .15 ? SPECTRUM[Math.random() * 6 | 0] : '#ffffff' }));
         clouds = Array.from({ length: Math.max(4, Math.round(W / 40)) }, () => ({ x: Math.random() * W, y: 6 + Math.random() * H * .8 | 0, w: 14 + Math.random() * 22 | 0, v: .15 + Math.random() * .25 }));
@@ -429,10 +434,10 @@
     style: Object.keys(STYLES).map((k) => [k, STYLES[k].name]),
     photo: [['photo', 'Photo'], ['none', 'No photo']],
     align: [['left', 'Left'], ['centre', 'Centre']],
-    theme: [['sun', 'Sun'], ['device', 'Device'], ['light', 'Light'], ['dark', 'Dark']],
+    theme: [['device', 'System'], ['sun', 'Sun'], ['light', 'Light'], ['dark', 'Dark']],
     extras: [['1', 'On'], ['0', 'Off']],
   };
-  const DEFAULTS = { style: DEFAULT_STYLE, photo: 'photo', align: 'centre', theme: 'sun', extras: '1' };
+  const DEFAULTS = { style: DEFAULT_STYLE, photo: 'photo', align: 'centre', theme: 'device', extras: '1' };
   const LABELS = { style: 'Style', photo: 'Photo', align: 'Align', theme: 'Theme', extras: 'Email + 3D' };
   const valid = (k, v) => OPTIONS[k].some(([o]) => o === v);
   let savedLab = {};
