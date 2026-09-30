@@ -22,7 +22,7 @@
     { id: 'threads', label: 'Threads', short: 'Threads', sub: '@sheawilson0', href: 'https://www.threads.net/@sheawilson0', icon: 'threads', palette: 'x', tone: 'var(--ink)', status: 'Soon', hidden: true },
     { id: 'youtube', label: 'YouTube', short: 'YouTube', sub: '@sheawilson0', href: 'https://www.youtube.com/@sheawilson0', icon: 'youtube', palette: 'youtube', tone: '#ff0033', status: 'Soon', hidden: true },
     { id: 'email', label: 'Email me', short: 'Email', sub: 'design@sheawilson.uk', href: 'mailto:design@sheawilson.uk', icon: 'mail', palette: 'email', tone: '#ff6a1a', status: 'Open', extra: true },
-    { id: 'world', label: 'Walk through my work in 3D', short: 'In 3D', sub: 'sheawilson.uk/ar', href: 'https://sheawilson.uk/ar/world.html', icon: 'cube', palette: 'world', tone: '#8a3cff', status: 'Open', extra: true },
+    { id: 'world', label: 'Walk through my work in 3D', tile: '3D walkthrough', short: 'In 3D', sub: 'sheawilson.uk/ar', href: 'https://sheawilson.uk/ar/world.html', icon: 'cube', palette: 'world', tone: '#8a3cff', status: 'Open', extra: true },
   ];
   const PHOTO = '/links/shea.jpg';
 
@@ -48,12 +48,19 @@
   };
   const ARROW = '<svg class="arr" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.5l5-5M4.5 3.5h4v4"/></svg>';
   const pad2 = (n) => String(n).padStart(2, '0');
-  // The work row: the homepage's four "Recently" projects.
+  // Recent work: the homepage's four "Recently" projects. Snapshot and JumpStart are the homepage's mockups
+  // rebuilt in miniature (JumpStart swaps to its dark screens after dark); the other two are single images.
+  const W = '/links/work/';
+  const jumpScreen = (cls, name) => `<span class="mk-screen ${cls}"><img class="img-light" src="${W}${name}.webp" alt="" loading="lazy"><img class="img-dark" src="${W}${name}-dark.webp" alt="" loading="lazy"></span>`;
   const WORK = [
-    { name: 'Smoking Snapshot', note: '975 uses', img: '/links/work/snapshot.webp', href: 'https://sheawilson.uk/snapshot.html', tone: '#ed1652', fit: 'cover' },
-    { name: 'JumpStart', note: 'In pilot', img: '/links/work/jumpstart.webp', href: 'https://sheawilson.uk/jumpstart.html', tone: '#4fae86', fit: 'cover' },
-    { name: 'Heart Health', note: 'Live now', img: '/links/work/heart.webp', href: 'https://hearthealth.smokingendshere.com/', tone: '#43d9ff', fit: 'contain' },
-    { name: 'Brain Dump', note: 'In beta', img: '/links/work/brain.webp', href: 'https://sheawilson.uk/braindump.html', tone: '#8a3cff', fit: 'contain' },
+    { name: 'Smoking Snapshot', note: '975 uses', href: 'https://sheawilson.uk/snapshot.html', tone: '#ed1652',
+      art: `<span class="mk mk-snap"><span class="mk-screen s1"><img src="${W}snapshot-results.webp" alt="" loading="lazy"></span><img class="mk-phone" src="${W}snapshot-phone.webp" alt="" loading="lazy"></span>` },
+    { name: 'JumpStart', note: 'In pilot', href: 'https://sheawilson.uk/jumpstart.html', tone: '#4fae86',
+      art: `<span class="mk mk-jump">${jumpScreen('j1', 'jumpstart-agency')}${jumpScreen('j2', 'jumpstart-report')}${jumpScreen('j3', 'jumpstart-export')}</span>` },
+    { name: 'Heart Health', note: 'Live now', href: 'https://hearthealth.smokingendshere.com/', tone: '#43d9ff',
+      art: `<span class="mk mk-one"><img src="${W}heart.webp" alt="" loading="lazy"></span>` },
+    { name: 'Brain Dump', note: 'In beta', href: 'https://sheawilson.uk/braindump.html', tone: '#8a3cff',
+      art: `<span class="mk mk-one mk-tall"><img src="${W}brain.webp" alt="" loading="lazy"></span>` },
   ];
   const RECENT = [['#ed1652', 'Smoking Snapshot'], ['#4fae86', 'JumpStart'], ['#43d9ff', 'Heart Health'], ['#8a3cff', 'Brain Dump']];
 
@@ -150,70 +157,45 @@
   }
 
   /* ═════════ 1. Eclipse: the portfolio, as a link page ═════════ */
-  /* Eclipse options (lab). ring: where the eclipse sits. cards: the finish. layout: how the links are arranged.
-     icons: mono (colour on hover) or each brand's colour. arrows: off, plain or in a circle. work: a row of project
-     cards. header: name first, or a statement with the name small above it (after links.oliur.com). */
+  /* Eclipse, settled 2026-09-30: the eclipse rises in the header, name first, the socials as a row of
+     brand-coloured icons, Portfolio across the width, Email and 3D as two tiles, then recent work. No arrows:
+     the whole card is the button. The lab still compares card finishes (none with hairlines) and work layouts. */
   const eclipseRing = () => `<div class="ec-eclipse" aria-hidden="true"><div class="corona"></div><div class="disc"></div></div>`;
-  const featured = (l) => l.featured && state.layout !== 'compact' && state.layout !== 'bento';
   const linkAttrs = (l) => `${attrs(l)} data-id="${l.id}" data-palette="${l.palette}" style="--tone:${l.tone || '#ed1652'}"`;
-  const ecCard = (l, i, cls = '') => `<li style="--i:${i}"><a class="ec-link${featured(l) ? ' is-featured' : ''}${cls}" ${linkAttrs(l)}>
-    <span class="ec-ico">${icon(l.icon)}</span>
-    <span class="ec-txt"><b>${esc(l.label)}</b><span>${esc(l.sub)}</span>
-      ${featured(l) && state.work === 'off' ? `<span class="ec-recent">${RECENT.map(([c, n]) => `<span><i style="--c:${c}"></i>${n}</span>`).join('')}</span>` : ''}</span>
-    <span class="ec-arr">${ARROW}</span></a></li>`;
-  const ecTile = (l, i, cls = '') => `<li style="--i:${i}"${cls}><a class="ec-link ec-tile" ${linkAttrs(l)}>
-    <span class="ec-ico">${icon(l.icon)}</span><span class="ec-txt"><b>${esc(l.short === 'X' ? 'X' : l.label)}</b><span>${esc(l.sub)}</span></span><span class="ec-arr">${ARROW}</span></a></li>`;
-  const ecIcons = (socials) => `<ul class="ec-icons">${socials.map((l, i) => `<li style="--i:${i}"><a class="ec-icon" ${linkAttrs(l)} aria-label="${esc(l.label)}, ${esc(l.sub)}" title="${esc(l.label)}">${icon(l.icon)}</a></li>`).join('')}</ul>`;
-  const ecWork = () => `<section class="ec-work" aria-label="Recent work"><p class="ec-label">Recent work</p>
-    <ul class="ec-rail">${WORK.map((w, i) => `<li style="--i:${i}"><a class="ec-shot" href="${w.href}" target="_blank" rel="noopener" style="--tone:${w.tone}">
-      <span class="ec-shot-img is-${w.fit}"><img src="${w.img}" alt="" loading="lazy" style="object-fit:${w.fit}"></span>
-      <span class="ec-shot-txt"><b>${w.name}</b><span>${w.note}</span></span></a></li>`).join('')}</ul></section>`;
-  function ecLinks(links) {
-    const socials = links.filter((l) => l.social), rest = links.filter((l) => !l.social);
-    const [feat, ...after] = rest;
-    switch (state.layout) {
-      case 'icons': return `${ecIcons(socials)}<ul class="ec-list">${rest.map((l, i) => ecCard(l, i + socials.length)).join('')}</ul>`;
-      case 'iconsgrid': return `${ecIcons(socials)}<ul class="ec-list">${feat ? ecCard(feat, socials.length) : ''}</ul>
-        <ul class="ec-grid">${after.map((l, i) => ecTile(l, i + socials.length + 1)).join('')}</ul>`;
-      case 'grid': return `<ul class="ec-list">${feat ? ecCard(feat, 0) : ''}</ul>
-        <ul class="ec-grid">${socials.map((l, i) => ecTile(l, i + 1)).join('')}</ul>
-        <ul class="ec-list">${after.map((l, i) => ecCard(l, i + socials.length + 1)).join('')}</ul>`;
-      case 'bento': return `<ul class="ec-bento">${feat ? ecTile(feat, 0, ' class="is-wide"') : ''}
-        ${socials.map((l, i) => `<li style="--i:${i + 1}"><a class="ec-link ec-square" ${linkAttrs(l)} aria-label="${esc(l.label)}, ${esc(l.sub)}"><span class="ec-ico">${icon(l.icon)}</span><b>${esc(l.label)}</b></a></li>`).join('')}
-        ${after.map((l, i) => ecTile(l, i + socials.length + 1, ' class="is-half"')).join('')}</ul>`;
-      default: return `<ul class="ec-list">${links.map((l, i) => ecCard(l, i)).join('')}</ul>`;
-    }
-  }
+  const GRID_ICON = '<svg class="ec-label-ico" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><rect x="1.75" y="1.75" width="5" height="5" rx="1.6"/><rect x="9.25" y="1.75" width="5" height="5" rx="1.6"/><rect x="1.75" y="9.25" width="5" height="5" rx="1.6"/><rect x="9.25" y="9.25" width="5" height="5" rx="1.6"/></svg>';
   const IG_GRADIENT = '<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="ig-grad" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#feda75"/><stop offset=".3" stop-color="#fa7e1e"/><stop offset=".6" stop-color="#d62976"/><stop offset="1" stop-color="#4f5bd5"/></linearGradient></defs></svg>';
+  const ecWork = () => `<section class="ec-work work-${state.work}" aria-labelledby="ec-work-title">
+    <div class="ec-label"><h2 id="ec-work-title">${GRID_ICON}Recent work</h2><a href="https://sheawilson.uk/#work" target="_blank" rel="noopener">All work</a></div>
+    <ul class="ec-rail">${WORK.map((w, i) => `<li style="--i:${i}"><a class="ec-shot" href="${w.href}" target="_blank" rel="noopener" style="--tone:${w.tone}">
+      <span class="ec-shot-img">${w.art}</span>
+      <span class="ec-shot-txt"><b>${w.name}</b><span>${w.note}</span></span></a></li>`).join('')}</ul></section>`;
 
   const eclipse = {
     name: 'Eclipse', themed: true,
     render: (links) => {
-      const statement = state.header === 'statement';
-      const photo = state.photo === 'none' ? '' : `<span class="ec-photo"><img src="${PHOTO}" alt="Shea Wilson" width="240" height="240"></span>`;
+      const socials = links.filter((l) => l.social);
+      const [feat, ...after] = links.filter((l) => !l.social);
       return `${IG_GRADIENT}
-      <div class="ec-page ring-${state.ring} cards-${state.cards} layout-${state.layout} icons-${state.icons} arrows-${state.arrows} header-${state.header} is-${state.align}${state.photo === 'none' ? ' no-photo' : ''}">
-        ${state.ring === 'horizon' ? `<div class="ec-sky" aria-hidden="true">${eclipseRing()}</div>` : ''}
-        ${state.ring === 'end' ? `<div class="ec-end" aria-hidden="true">${eclipseRing()}</div>` : ''}
+      <div class="ec-page cards-${state.cards}">
         <div class="ec-band">
-          ${state.ring === 'header' ? eclipseRing() : ''}
+          ${eclipseRing()}
           <header class="ec-head">
-            ${photo}
-            <div class="ec-id">
-              ${statement
-                ? `<p class="ec-name" data-egg>Shea Wilson</p><h1>Always making <em>something.</em></h1><p class="ec-role">Design engineer.</p>`
-                : `<h1 data-egg>Shea Wilson</h1><p class="ec-role"><span>Design engineer.</span> <span>Always making <em>something.</em></span></p>`}
-            </div>
+            <span class="ec-photo"><img src="${PHOTO}" alt="Shea Wilson" width="240" height="240"></span>
+            <h1 data-egg>Shea Wilson</h1>
+            <p class="ec-role">Design engineer. Always making <em>something.</em></p>
           </header>
         </div>
         <main class="ec">
-          ${ecLinks(links)}
-          ${state.work === 'rail' ? ecWork() : ''}
+          <ul class="ec-icons">${socials.map((l, i) => `<li style="--i:${i}"><a class="ec-icon" ${linkAttrs(l)} aria-label="${esc(l.label)}, ${esc(l.sub)}" title="${esc(l.label)}">${icon(l.icon)}</a></li>`).join('')}</ul>
+          ${feat ? `<a class="ec-link is-featured" ${linkAttrs(feat)} style="--i:4"><span class="ec-ico">${icon(feat.icon)}</span><span class="ec-txt"><b>${esc(feat.label)}</b><span>${esc(feat.sub)}</span></span></a>` : ''}
+          <ul class="ec-grid">${after.map((l, i) => `<li style="--i:${i + 5}"><a class="ec-link ec-tile" ${linkAttrs(l)}>
+            <span class="ec-ico">${icon(l.icon)}</span><span class="ec-txt"><b>${esc(l.tile || l.label)}</b><span>${esc(l.sub)}</span></span></a></li>`).join('')}</ul>
+          ${ecWork()}
           <footer class="ec-foot"><span>© ${new Date().getFullYear()} Shea Wilson</span><button class="coin" type="button" title="Insert coin" aria-label="Insert coin"><i></i></button></footer>
         </main>
       </div>`;
     },
-    // The page wrapper carries the hover palette, so whichever ring is showing takes the link's colours.
+    // The page wrapper carries the hover palette, so the eclipse takes the colours of whatever link is under the pointer.
     mount(el) { wirePalette(el, el.querySelector('.ec-page')); wireName(el); wireCoin(el); },
   };
 
@@ -436,22 +418,14 @@
   // Options: [value, label].
   const OPTIONS = {
     style: Object.keys(STYLES).map((k) => [k, STYLES[k].name]),
-    ring: [['horizon', 'Horizon'], ['header', 'In the header'], ['end', 'At the end'], ['halo', 'Behind photo'], ['off', 'Off']],
-    cards: [['glass', 'Smoked glass'], ['opaque', 'Opaque']],
-    layout: [['icons', 'Icon row'], ['iconsgrid', 'Icon row + grid'], ['grid', 'Grid'], ['bento', 'Bento'], ['stack', 'Stack'], ['compact', 'Compact']],
-    icons: [['mono', 'Mono'], ['brand', 'Brand colours']],
-    arrows: [['plain', 'Plain'], ['circle', 'In a circle'], ['off', 'Off']],
-    work: [['off', 'Off'], ['rail', 'Row of work']],
-    header: [['classic', 'Name first'], ['statement', 'Statement']],
-    photo: [['photo', 'Photo'], ['none', 'No photo']],
-    align: [['left', 'Left'], ['centre', 'Centre']],
-    theme: [['device', 'System'], ['sun', 'Sun'], ['light', 'Light'], ['dark', 'Dark']],
-    extras: [['1', 'On'], ['0', 'Off']],
+    cards: [['lifted', 'Lifted'], ['glow', 'Top light'], ['tinted', 'Tinted'], ['hairline', 'Hairline']],
+    work: [['rail', 'Peek row'], ['wide', 'One at a time'], ['grid', 'Two by two'], ['list', 'List']],
+    theme: [['device', 'System'], ['light', 'Light'], ['dark', 'Dark'], ['sun', 'Sun']],
   };
-  // DEFAULTS is what visitors get; PICKS are my recommendations (the green dots in the lab) until Shea chooses.
-  const DEFAULTS = { style: DEFAULT_STYLE, ring: 'horizon', cards: 'glass', layout: 'icons', icons: 'mono', arrows: 'plain', work: 'off', header: 'classic', photo: 'photo', align: 'centre', theme: 'device', extras: '1' };
-  const PICKS = { ...DEFAULTS, ring: 'header', layout: 'iconsgrid', icons: 'brand', arrows: 'off', work: 'rail', header: 'statement' };
-  const LABELS = { style: 'Style', ring: 'Ring', cards: 'Cards', layout: 'Layout', icons: 'Icons', arrows: 'Arrows', work: 'Work', header: 'Header', photo: 'Photo', align: 'Align', theme: 'Theme', extras: 'Email + 3D' };
+  // DEFAULTS is what visitors get; PICKS are my recommendations (the green dots in the lab).
+  const DEFAULTS = { style: DEFAULT_STYLE, cards: 'lifted', work: 'rail', theme: 'device', extras: '1' };
+  const PICKS = { ...DEFAULTS };
+  const LABELS = { style: 'Style', cards: 'Cards', work: 'Recent work', theme: 'Theme' };
   const valid = (k, v) => OPTIONS[k].some(([o]) => o === v);
   let savedLab = {};
   try { savedLab = showLab ? JSON.parse(saved('links-lab') || '{}') : {}; } catch (e) {}
@@ -509,10 +483,10 @@
     lab.className = 'lab';
     lab.setAttribute('role', 'toolbar');
     lab.setAttribute('aria-label', 'Try a style');
-    const ECLIPSE_ONLY = ['ring', 'cards', 'layout', 'icons', 'arrows', 'work', 'header', 'photo', 'align'];
+    const ECLIPSE_ONLY = ['cards', 'work'];
     const group = (k) => `<span class="lab-group"${ECLIPSE_ONLY.includes(k) ? ' data-only="eclipse"' : ''}><span class="lab-tag">${LABELS[k]}</span>${OPTIONS[k].map(([v, name], i) =>
       `<button type="button" data-k="${k}" data-v="${v}"${v === PICKS[k] ? ' class="rec"' : ''}${k === 'style' ? ` title="${name} (${i + 1})"` : ''}>${name}</button>`).join('')}</span>`;
-    lab.innerHTML = `<div class="lab-row">${group('style')}</div><div class="lab-row is-sub">${group('ring')}${group('cards')}</div><div class="lab-row is-sub">${group('layout')}</div><div class="lab-row is-sub">${group('header')}${group('work')}${group('icons')}</div><div class="lab-row is-sub">${group('arrows')}${group('photo')}${group('align')}</div><div class="lab-row is-sub">${group('theme')}${group('extras')}</div>`;
+    lab.innerHTML = `<div class="lab-row">${group('style')}</div><div class="lab-row is-sub">${group('cards')}</div><div class="lab-row is-sub">${group('work')}${group('theme')}</div>`;
     document.body.append(lab);
     lab.addEventListener('click', (e) => {
       const b = e.target.closest('button[data-k]');
