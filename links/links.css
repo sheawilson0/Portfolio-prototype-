@@ -96,41 +96,22 @@ html.vt-theme::view-transition-new(root) {
 .lab button[aria-pressed="true"] { color: #fff; background: rgba(255, 255, 255, .15); }
 .lab button.rec::after { content: ""; position: absolute; top: 4px; right: 3px; width: 4px; height: 4px; border-radius: 50%; background: #2fd67b; }
 
-/* ───────── Save-contact sheet (in-app browsers only) ───────── */
-.sheet { position: fixed; z-index: 120; inset: 0; display: grid; align-items: end; justify-items: center; padding: 12px; background: rgba(0, 0, 0, 0); transition: background-color .3s; }
-.sheet.is-open { background: rgba(0, 0, 0, .35); }
-.sheet-card { width: min(420px, 100%); padding: 26px 22px 16px; border-radius: 28px; text-align: center; color: #0a0a0a; background: #fff;
-  font: 400 15px/1.5 'DM Sans', system-ui, sans-serif; box-shadow: 0 30px 80px rgba(0, 0, 0, .3); translate: 0 110%; transition: translate .45s cubic-bezier(.2, .9, .25, 1); }
-.sheet.is-open .sheet-card { translate: 0 0; }
-.sheet-card img { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; margin: 0 auto 12px; }
-.sheet-card h2 { font: 300 24px/1.15 'Spectral', Georgia, serif; letter-spacing: -.02em; margin-bottom: 8px; }
-.sheet-card p { color: rgba(10, 10, 10, .64); text-wrap: pretty; }
-.sheet-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 18px; }
-.sheet-actions > * { display: grid; place-items: center; height: 48px; border-radius: 14px; font-weight: 500; }
-.sheet-copy { background: #0a0a0a; color: #fff; }
-.sheet-try { background: rgba(10, 10, 10, .06); }
-.sheet-close { margin-top: 8px; padding: 10px; color: rgba(10, 10, 10, .5); }
-
 /* Room for the lab bar, only when it's there */
 html.has-lab body { padding-bottom: 96px; }
 
 @keyframes rise { from { opacity: 0; translate: 0 18px; } }
 
 /* ═════════ 1. Eclipse ═════════ */
-body[data-style="eclipse"] { background: var(--bg); color: var(--ink); font-family: var(--sans); font-weight: 300; }
+body[data-style="eclipse"] { background: var(--bg); color: var(--ink); font-family: var(--sans); font-weight: 300; --card: #ffffff; --card-edge: rgba(10, 10, 10, .07); --bubble: color-mix(in srgb, var(--ink) 5%, transparent); }
+[data-theme="dark"] body[data-style="eclipse"] { --card: #0f1218; --card-edge: rgba(255, 255, 255, .07); }
 .ec-page { position: relative; min-height: 100svh; overflow-x: clip;
   transition: --p1 1.2s var(--ease), --p2 1.2s var(--ease), --p3 1.2s var(--ease), --p4 1.2s var(--ease), --p5 1.2s var(--ease), --p6 1.2s var(--ease); }
-/* Horizon: pinned behind everything. It's the height of the tallest viewport and on its own layer, so the
-   address bar sliding in and out on a phone doesn't resize (and repaint) a screen-sized masked gradient. */
-.ec-sky { position: fixed; left: 0; top: 0; width: 100vw; height: 100lvh; z-index: 0; overflow: hidden; pointer-events: none; contain: strict; transform: translateZ(0); }
-.ec-eclipse { position: absolute; left: 50%; top: 74lvh; width: max(128vw, 820px); aspect-ratio: 1; translate: -50% 0; }
-/* At the end: the eclipse rises behind Save contact and the footer, so nothing sits on it while you read the links */
-.ec-end { position: absolute; inset: auto 0 0; height: 300px; overflow: hidden; pointer-events: none; }
-.ec-end .ec-eclipse { top: 150px; width: max(150vw, 900px); }
-.ring-end .ec { padding-bottom: 110px; }
-/* Behind photo: the only ring is a soft corona round the headshot */
-.ring-halo .ec-photo::before { content: ""; position: absolute; inset: -16px; border-radius: 50%; background: conic-gradient(from 0deg, var(--p1), var(--p2), var(--p3), var(--p4), var(--p5), var(--p6), var(--p1));
-  animation: turn 30s linear infinite; -webkit-mask: radial-gradient(closest-side, #000 60%, rgba(0, 0, 0, .45) 78%, transparent 100%); mask: radial-gradient(closest-side, #000 60%, rgba(0, 0, 0, .45) 78%, transparent 100%); }
+.ec-band, .ec { position: relative; z-index: 1; }
+.ec-head { width: min(100% - 32px, 480px); margin: 0 auto; }
+.ec { width: min(100% - 32px, 480px); margin: 0 auto; padding-bottom: 56px; }
+
+/* ── The eclipse ── */
+.ec-eclipse { position: absolute; left: 50%; top: 74lvh; width: max(128vw, 820px); aspect-ratio: 1; translate: -50% 0; pointer-events: none; }
 .corona { position: absolute; inset: -9%; border-radius: 50%; will-change: transform;
   background: conic-gradient(from 0deg, var(--p1) 0deg, var(--p2) 36deg, var(--p3) 64deg, var(--pale-a) 96deg, var(--pale-b) 140deg,
     var(--p4) 182deg, var(--pale-b) 220deg, var(--p5) 256deg, var(--pale-a) 292deg, var(--p6) 326deg, var(--p1) 360deg);
@@ -140,48 +121,60 @@ body[data-style="eclipse"] { background: var(--bg); color: var(--ink); font-fami
 .disc { position: absolute; inset: 0; border-radius: 50%; background: var(--bg); transition: background-color .6s var(--ease); }
 [data-theme="dark"] .corona { opacity: .92; }
 @keyframes turn { to { transform: rotate(1turn); } }
+/* Horizon: pinned behind everything, the height of the tallest viewport and on its own layer, so the address bar
+   sliding on a phone doesn't resize and repaint a screen-sized masked gradient */
+.ec-sky { position: fixed; left: 0; top: 0; width: 100vw; height: 100lvh; z-index: 0; overflow: hidden; pointer-events: none; contain: strict; transform: translateZ(0); }
+/* In the header: the eclipse rises at the foot of the header band and stays there (after links.oliur.com's glow) */
+.ring-header .ec-band { overflow: hidden; padding-bottom: 96px; margin-bottom: -40px; }
+.ring-header .ec-band .ec-eclipse { top: calc(100% - 70px); width: max(140vw, 900px); }
+/* At the end: rises behind the footer */
+.ec-end { position: absolute; inset: auto 0 0; height: 260px; overflow: hidden; pointer-events: none; }
+.ec-end .ec-eclipse { top: 150px; width: max(150vw, 900px); }
+.ring-end .ec { padding-bottom: 110px; }
+/* Behind photo */
+.ring-halo .ec-photo::before { content: ""; position: absolute; inset: -16px; border-radius: 50%; background: conic-gradient(from 0deg, var(--p1), var(--p2), var(--p3), var(--p4), var(--p5), var(--p6), var(--p1));
+  animation: turn 30s linear infinite; -webkit-mask: radial-gradient(closest-side, #000 60%, rgba(0, 0, 0, .45) 78%, transparent 100%); mask: radial-gradient(closest-side, #000 60%, rgba(0, 0, 0, .45) 78%, transparent 100%); }
 
-.ec { position: relative; z-index: 1; width: min(100% - 32px, 480px); margin: 0 auto; padding: clamp(40px, 9svh, 96px) 0 56px; }
-
-/* Header. Left: photo beside the name, so the links start high on a phone. Centre: stacked. */
+/* ── Header ── */
+.ec-band { padding-top: clamp(40px, 9svh, 96px); }
 .ec-head { display: grid; grid-template-columns: auto 1fr; grid-template-areas: "photo id"; align-items: center; column-gap: 16px; row-gap: 18px; animation: rise 1s var(--ease) both; }
-.ec.no-photo .ec-head { grid-template-columns: 1fr; grid-template-areas: "id"; }
-.ec.is-centre .ec-head { grid-template-columns: 1fr; grid-template-areas: "photo" "id"; justify-items: center; text-align: center; row-gap: 20px; }
+.no-photo .ec-head { grid-template-columns: 1fr; grid-template-areas: "id"; }
+.is-centre .ec-head { grid-template-columns: 1fr; grid-template-areas: "photo" "id"; justify-items: center; text-align: center; row-gap: 20px; }
 .ec-photo { grid-area: photo; position: relative; width: 72px; height: 72px; border-radius: 50%; }
-.ec.is-centre .ec-photo { width: 92px; height: 92px; }
+.is-centre .ec-photo { width: 92px; height: 92px; }
 .ec-photo img { position: relative; width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: block; box-shadow: 0 0 0 1px var(--glass-line), 0 10px 30px rgba(0, 0, 0, .12); }
 .ec-id { grid-area: id; min-width: 0; }
-.ec h1 { font-family: var(--serif); font-weight: 300; font-size: clamp(36px, 9vw, 50px); line-height: 1.02; letter-spacing: -.03em; -webkit-user-select: none; user-select: none; }
-.ec.is-left h1 { font-size: clamp(32px, 8.4vw, 42px); }
+.ec-head h1 { font-family: var(--serif); font-weight: 300; font-size: clamp(36px, 9vw, 50px); line-height: 1.02; letter-spacing: -.03em; -webkit-user-select: none; user-select: none; }
+.is-left .ec-head h1 { font-size: clamp(32px, 8.4vw, 42px); }
 .ec-role { margin-top: 6px; font-size: 15.5px; color: var(--ink-2); }
-.ec.is-left .ec-role span { display: block; }
-.ec-role em { font-family: var(--serif); font-size: 1.12em; font-weight: 300; letter-spacing: -.01em; }
-.ec-save { display: flex; width: max-content; margin-top: 26px; animation: rise 1s var(--ease) .45s both;
-  display: inline-flex; align-items: center; gap: 8px; height: 44px; padding: 0 18px 0 14px; border-radius: 14px; corner-shape: squircle;
-  font-size: 14.5px; font-weight: 400; color: var(--bg); background: var(--ink); box-shadow: 0 8px 22px rgba(10, 10, 10, .14); transition: box-shadow .5s var(--ease), background-color .6s var(--ease), color .6s var(--ease); }
-.ec.is-centre .ec-save { display: flex; margin-left: auto; margin-right: auto; }
-.ec-save:hover { box-shadow: 0 14px 36px rgba(10, 10, 10, .24); }
-.ec-save .ico { width: 18px; height: 18px; }
-@supports (corner-shape: squircle) { .ec-save { border-radius: 22px; } }
+.is-left .ec-role span { display: block; }
+.ec-head em { font-family: var(--serif); font-weight: 300; letter-spacing: -.01em; }
+.ec-role em { font-size: 1.12em; }
+/* Statement: the name small, the line big */
+.ec-name { font-size: 15px; font-weight: 400; color: var(--ink); -webkit-user-select: none; user-select: none; }
+.header-statement .ec-head h1 { margin-top: 10px; font-size: clamp(38px, 10.5vw, 56px); line-height: 1; letter-spacing: -.035em; text-wrap: balance; }
+.header-statement .ec-role { margin-top: 12px; }
+.header-statement.is-centre .ec-head { row-gap: 16px; }
 
+/* ── Cards ── */
 .ec-list { display: grid; gap: 12px; margin-top: 28px; }
-.ec-list li { animation: rise .9s var(--ease) both; animation-delay: calc(.1s + var(--i) * .05s); }
+.ec-list li, .ec-grid li, .ec-bento li, .ec-icons li, .ec-rail li { animation: rise .9s var(--ease) both; animation-delay: calc(.1s + var(--i) * .05s); }
 .ec-link { position: relative; display: grid; grid-template-columns: 46px 1fr auto; align-items: center; gap: 16px; min-height: 72px; padding: 12px 22px 12px 13px;
   border-radius: 24px; corner-shape: squircle; background: var(--glass); border: 1px solid var(--glass-edge); box-shadow: var(--shadow-rest);
   -webkit-backdrop-filter: blur(24px) saturate(1.7); backdrop-filter: blur(24px) saturate(1.7);
   transition: box-shadow .6s var(--ease), background-color .6s var(--ease); }
 @supports (corner-shape: squircle) { .ec-link { border-radius: 36px; } .ec-ico { border-radius: 22px !important; } }
 .ec-link:hover, .ec-link:focus-visible { background: var(--glass-strong); box-shadow: var(--shadow-hover); }
-.ec-link:focus-visible { outline: 2px solid color-mix(in srgb, var(--tone) 60%, transparent); outline-offset: 3px; }
+.ec-link:focus-visible, .ec-icon:focus-visible, .ec-shot:focus-visible { outline: 2px solid color-mix(in srgb, var(--tone, #8a3cff) 60%, transparent); outline-offset: 3px; }
+.cards-opaque .ec-link, .cards-opaque .ec-icon { background: var(--card); border-color: var(--card-edge); -webkit-backdrop-filter: none; backdrop-filter: none; }
+.cards-opaque .ec-link:hover { background: var(--card); }
 .ec-ico { width: 46px; height: 46px; display: grid; place-items: center; border-radius: 15px; corner-shape: squircle; color: var(--ink);
-  background: color-mix(in srgb, var(--ink) 5%, transparent); transition: color .5s var(--ease), background-color .5s var(--ease); }
+  background: var(--bubble); transition: color .5s var(--ease), background-color .5s var(--ease); }
 .ec-link:not(.is-featured):hover .ec-ico, .ec-link:not(.is-featured):focus-visible .ec-ico { color: var(--tone); background: color-mix(in srgb, var(--tone) 12%, transparent); }
 .ec-ico .ring-mark { width: 22px; height: 22px; }
 .ec-txt { display: grid; gap: 2px; min-width: 0; }
 .ec-txt b { font-weight: 400; font-size: 16px; letter-spacing: -.01em; }
 .ec-txt > span { font-size: 13.5px; color: var(--whisper); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.ec-link .arr { width: 12px; height: 12px; color: var(--whisper); transition: transform .5s var(--ease), color .5s var(--ease); }
-.ec-link:hover .arr { transform: translate(2px, -2px); color: var(--ink); }
 .ec-link.is-featured { grid-template-columns: 58px 1fr auto; min-height: 104px; padding: 18px 24px 18px 18px; }
 .is-featured .ec-ico { width: 58px; height: 58px; border-radius: 18px; background: transparent; }
 .is-featured .ec-ico .ring-mark { width: 50px; height: 50px; animation: turn 18s linear infinite;
@@ -190,48 +183,87 @@ body[data-style="eclipse"] { background: var(--bg); color: var(--ink); font-fami
 .ec-recent { display: flex; flex-wrap: wrap; gap: 4px 12px; margin-top: 7px; font-size: 12.5px; color: var(--ink-2); }
 .ec-recent span { display: inline-flex; align-items: center; gap: 6px; }
 .ec-recent i { width: 6px; height: 6px; border-radius: 50%; background: var(--c); }
-.ec-foot { display: flex; align-items: center; gap: 10px; margin-top: 30px; font-size: 13px; color: var(--whisper); animation: rise 1s var(--ease) .6s both; }
-.ec.is-centre .ec-foot { justify-content: center; }
 
-/* ── Card finishes ── */
-body[data-style="eclipse"] { --card: #ffffff; --card-edge: rgba(10, 10, 10, .07); }
-[data-theme="dark"] body[data-style="eclipse"] { --card: #0f1218; --card-edge: rgba(255, 255, 255, .07); }
-.cards-opaque .ec-link { background: var(--card); border-color: var(--card-edge); -webkit-backdrop-filter: none; backdrop-filter: none; }
-.cards-opaque .ec-link:hover { background: var(--card); }
-.cards-outline .ec-link { background: transparent; border-color: color-mix(in srgb, var(--ink) 14%, transparent); box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
-.cards-outline .ec-link:hover { background: color-mix(in srgb, var(--ink) 3%, transparent); box-shadow: none; border-color: color-mix(in srgb, var(--ink) 24%, transparent); }
-.cards-plain .ec-list { gap: 0; }
-.cards-plain .ec-list li + li { border-top: 1px solid var(--hair); }
-.cards-plain .ec-link { background: transparent; border-color: transparent; box-shadow: none; border-radius: 18px; -webkit-backdrop-filter: none; backdrop-filter: none; padding-left: 4px; }
-.cards-plain .ec-link:hover { background: color-mix(in srgb, var(--ink) 4%, transparent); box-shadow: none; }
-.cards-plain .ec-grid .ec-link { border-color: var(--hair); }
-.cards-plain .ec-icon, .cards-outline .ec-icon { background: transparent; box-shadow: none; border-color: color-mix(in srgb, var(--ink) 14%, transparent); -webkit-backdrop-filter: none; backdrop-filter: none; }
-.cards-opaque .ec-icon { background: var(--card); border-color: var(--card-edge); -webkit-backdrop-filter: none; backdrop-filter: none; }
+/* ── Arrows ── */
+.ec-arr { display: grid; place-items: center; color: var(--whisper); transition: color .5s var(--ease), background-color .5s var(--ease); }
+.ec-arr .arr { width: 12px; height: 12px; transition: transform .5s var(--ease); }
+.ec-link:hover .ec-arr { color: var(--ink); }
+.ec-link:hover .arr { transform: translate(2px, -2px); }
+.arrows-circle .ec-arr { width: 32px; height: 32px; border-radius: 50%; background: var(--bubble); }
+.arrows-circle .ec-link { padding-right: 16px; }
+.arrows-off .ec-arr { display: none; }
+.arrows-off .ec-link { grid-template-columns: 46px 1fr; }
+.arrows-off .ec-link.is-featured { grid-template-columns: 58px 1fr; }
+
+/* ── Icon colours: mono takes the brand colour on hover; brand colours shows it all the time ── */
+.icons-brand [data-id="linkedin"] { --brand: #0a66c2; }
+.icons-brand [data-id="x"] { --brand: var(--ink); }
+.icons-brand [data-id="github"] { --brand: #8250df; }
+.icons-brand [data-id="instagram"] { --brand: #d62976; }
+.icons-brand [data-id="instagram"] svg { fill: url(#ig-grad); }
+.icons-brand :is(.ec-icon, .ec-link)[data-id]:not([data-id="portfolio"], [data-id="email"], [data-id="world"]) :is(.ec-ico, svg) { color: var(--brand); }
+.icons-brand .ec-icon[data-id] { color: var(--brand, var(--ink)); }
 
 /* ── Layouts ── */
-/* Icon row: the four socials as round buttons under the name, then the bigger destinations as cards */
-.ec-icons { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 24px; }
-.ec.is-centre .ec-icons { justify-content: center; }
-.ec-icons li { animation: rise .9s var(--ease) both; animation-delay: calc(.1s + var(--i) * .05s); }
+/* Icon row: the socials as round buttons under the name */
+.ec-icons { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 26px; }
+.is-centre .ec-icons { justify-content: center; }
 .ec-icon { display: grid; place-items: center; width: 56px; height: 56px; border-radius: 50%; color: var(--ink); background: var(--glass); border: 1px solid var(--glass-edge);
-  box-shadow: var(--shadow-rest); -webkit-backdrop-filter: blur(24px) saturate(1.7); backdrop-filter: blur(24px) saturate(1.7); transition: color .4s var(--ease), box-shadow .5s var(--ease), background-color .4s var(--ease); }
+  box-shadow: var(--shadow-rest); -webkit-backdrop-filter: blur(24px) saturate(1.7); backdrop-filter: blur(24px) saturate(1.7); transition: color .4s var(--ease), box-shadow .5s var(--ease); }
 .ec-icon .ico { width: 22px; height: 22px; }
 .ec-icon:hover, .ec-icon:focus-visible { color: var(--tone); box-shadow: var(--shadow-hover); }
-.ec-icon:focus-visible { outline: 2px solid color-mix(in srgb, var(--tone) 60%, transparent); outline-offset: 3px; }
-.layout-icons .ec-list { margin-top: 24px; }
-/* Grid: portfolio across the top, the socials as a two-by-two of tiles, then email and 3D */
+.icons-brand .ec-icon:hover { color: var(--brand, var(--tone)); }
+.ec-icons + .ec-list { margin-top: 24px; }
+/* Grids: tiles two across */
 .ec-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
-.ec-grid li { animation: rise .9s var(--ease) both; animation-delay: calc(.1s + var(--i) * .05s); }
 .ec-list + .ec-grid + .ec-list { margin-top: 12px; }
-.ec-tile { grid-template-columns: 1fr auto; grid-template-rows: auto auto; align-items: start; gap: 14px 8px; min-height: 0; padding: 14px 16px 16px 14px; }
+.ec-tile { grid-template-columns: 1fr auto; grid-template-rows: auto auto; align-items: start; gap: 14px 8px; min-height: 0; padding: 14px 14px 16px; }
 .ec-tile .ec-ico { width: 40px; height: 40px; }
 .ec-tile .ec-txt { grid-column: 1 / -1; }
-.ec-tile .arr { grid-row: 1; grid-column: 2; margin-top: 4px; }
-/* Compact: every link the same slim row, no featured card */
+.ec-tile .ec-arr { grid-row: 1; grid-column: 2; }
+.arrows-off .ec-tile { grid-template-columns: 1fr; }
+/* Bento: portfolio across the top, four square social tiles, then email and 3D side by side */
+.ec-bento { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 28px; }
+.ec-bento > li { min-width: 0; }
+.ec-bento .is-wide { grid-column: 1 / -1; }
+.ec-bento .is-half { grid-column: span 2; }
+.ec-bento .is-wide .ec-tile { grid-template-columns: auto 1fr auto; grid-template-rows: auto; align-items: center; padding: 16px 18px 16px 16px; }
+.ec-bento .is-wide .ec-tile .ec-txt { grid-column: 2; }
+.ec-bento .is-wide .ec-tile .ec-arr { grid-column: 3; }
+.ec-bento .is-wide .ec-ico { width: 52px; height: 52px; background: transparent; }
+.ec-bento .is-wide .ec-ico .ring-mark { width: 44px; height: 44px; }
+.ec-bento .is-wide .ec-txt b { font-family: var(--serif); font-size: 23px; font-weight: 300; letter-spacing: -.02em; }
+.ec-bento .ec-square { display: grid; grid-template-columns: 1fr; justify-items: center; align-content: center; gap: 8px; aspect-ratio: 1; min-height: 0; padding: 8px; }
+.ec-bento .ec-square .ec-ico { width: 40px; height: 40px; background: transparent; }
+.ec-bento .ec-square b { font-weight: 400; font-size: 12px; color: var(--ink-2); }
+/* Compact */
 .layout-compact .ec-list { gap: 8px; }
 .layout-compact .ec-link { min-height: 58px; padding: 8px 18px 8px 9px; grid-template-columns: 40px 1fr auto; gap: 14px; }
 .layout-compact .ec-ico { width: 40px; height: 40px; }
-.layout-compact .ec-link:first-child .ec-ico .ring-mark { width: 26px; height: 26px; }
+.layout-compact.arrows-off .ec-link { grid-template-columns: 40px 1fr; }
+
+/* ── Work: a row of project cards that scrolls sideways (after links.oliur.com) ── */
+.ec-work { margin-top: 30px; }
+.ec-label { font-size: 13px; font-weight: 400; color: var(--whisper); margin-bottom: 12px; }
+.is-centre .ec-label { text-align: center; }
+.ec-rail { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; margin: 0 -16px; padding: 0 16px 6px; scroll-padding: 0 16px; }
+.ec-rail::-webkit-scrollbar { display: none; }
+.ec-rail li { flex: none; width: 74%; scroll-snap-align: start; }
+.ec-shot { display: grid; gap: 10px; }
+.ec-shot-img { position: relative; display: block; aspect-ratio: 4 / 3; border-radius: 22px; corner-shape: squircle; overflow: hidden;
+  background: radial-gradient(120% 90% at 50% 100%, color-mix(in srgb, var(--tone) 55%, var(--bg)), color-mix(in srgb, var(--tone) 14%, var(--bg)));
+  box-shadow: 0 0 0 1px var(--card-edge), var(--shadow-rest); transition: box-shadow .6s var(--ease); }
+@supports (corner-shape: squircle) { .ec-shot-img { border-radius: 34px; } }
+.ec-shot-img img { position: absolute; inset: 0; width: 100%; height: 100%; object-position: 50% 0; transition: scale 1s var(--ease); }
+.ec-shot-img.is-contain img { inset: 10% 8% 0; width: 84%; height: 90%; object-position: 50% 100%; }
+.ec-shot:hover .ec-shot-img { box-shadow: 0 0 0 1px var(--card-edge), var(--shadow-hover); }
+.ec-shot:hover img { scale: 1.03; }
+.ec-shot-txt { display: grid; gap: 1px; padding: 0 4px; }
+.ec-shot-txt b { font-weight: 400; font-size: 15px; }
+.ec-shot-txt span { font-size: 13px; color: var(--whisper); }
+
+.ec-foot { display: flex; align-items: center; gap: 10px; margin-top: 30px; font-size: 13px; color: var(--whisper); animation: rise 1s var(--ease) .6s both; }
+.is-centre .ec-foot { justify-content: center; }
 
 /* The coin: the findable easter egg. A 10-pixel coin that turns on its edge every few seconds. */
 .coin { position: relative; width: 20px; height: 20px; flex: none; touch-action: manipulation; }
@@ -330,8 +362,6 @@ body[data-style="receipt"] { background: radial-gradient(120% 80% at 50% 0%, #ec
 .rc-bar i { width: var(--w); margin-right: var(--g); background: #151515; }
 .rc-thanks { display: block; margin: 0 auto; font: inherit; text-transform: uppercase; color: #555; }
 .rc-thanks:hover { color: #151515; text-decoration: underline; }
-.rc-save { display: block; width: max-content; margin: 4px auto 16px; padding: 8px 14px; border: 1.5px solid #151515; border-radius: 4px; font-size: 12px; font-weight: 700; letter-spacing: .06em; transition: background-color .15s, color .15s; }
-.rc-save:hover { background: #151515; color: #fff; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; }

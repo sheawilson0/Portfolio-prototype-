@@ -10,19 +10,6 @@
       ]
     },
     {
-      "source": "/links/shea-wilson.vcf",
-      "headers": [
-        {
-          "key": "Content-Type",
-          "value": "text/x-vcard; charset=utf-8"
-        },
-        {
-          "key": "Content-Disposition",
-          "value": "inline; filename=\"Shea Wilson.vcf\""
-        }
-      ]
-    },
-    {
       "source": "/ar/assets/models/(.*)",
       "headers": [
         {
