@@ -3,19 +3,15 @@
    during the day, the ring leans cooler in winter and warmer in summer, and the favicon matches the page.
    The toggle clicks through Sky, Light and Dark. The sun only comes out with the time bar (tap the full stop).
 
-   Runs in <head>, before first paint, so there's no flash of the wrong theme.
-   On sheawilson.uk and vercel.app it does nothing without ?lab or ?sky, so visitors see today's site.
+   Runs in <head>, before first paint, so there's no flash of the wrong theme. Its styles are assets/css/sky.css.
+   The /sky/ board is linked from the time bar everywhere except sheawilson.uk and vercel.app (add ?lab there).
    URL overrides: ?t=HH:MM freezes the clock, ?d=YYYY-MM-DD the date, ?bar opens the time bar,
    ?embed is a frame on the /sky/ board (add &sun to show the sun). */
 (() => {
   const root = document.documentElement;
   const params = new URLSearchParams(location.search);
   const liveHost = /(^|\.)sheawilson\.uk$|\.vercel\.app$/.test(location.hostname);
-  if (liveHost && !params.has('lab') && !params.has('sky')) return;
   const embed = params.has('embed');
-  const css = document.createElement('link');
-  css.rel = 'stylesheet'; css.href = new URL('../css/sky.css', document.currentScript.src).href;
-  document.head.append(css);
 
   /* ───────── The looks ─────────
      Each is the sky at its fullest: page colour, ring colours (--p1…--p6 and the two pale fills), how bright
@@ -60,18 +56,37 @@
     'Asia/Kolkata': [19.08, 72.88], 'Asia/Shanghai': [31.23, 121.47], 'Australia/Sydney': [-33.87, 151.21], 'Australia/Melbourne': [-37.81, 144.96],
     'Pacific/Auckland': [-36.85, 174.76], 'Africa/Johannesburg': [-26.2, 28.05],
   };
-  const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
-  const [LAT, LON] = PLACES[tz] || [45, -new Date().getTimezoneOffset() / 4];
+  // Asking the browser for its time zone name costs about 7 ms the first time, too much before first paint.
+  // So the first paint uses the place saved last visit, or a guess from the UTC offset, and the name is looked
+  // up once the page is idle (a repaint follows only if the place turns out different).
+  const idle = window.requestIdleCallback || ((f) => setTimeout(f, 200));
+  const std = Math.max(new Date(2026, 0, 1).getTimezoneOffset(), new Date(2026, 6, 1).getTimezoneOffset());
+  let LAT = 50, LON = -std / 4;
+  try { const c = JSON.parse(localStorage.getItem('sky-place') || 'null'); if (c && c.std === std) { LAT = c.lat; LON = c.lon; } } catch (e) {}
+  idle(() => {
+    const [lat, lon] = PLACES[Intl.DateTimeFormat().resolvedOptions().timeZone] || [LAT === 50 ? 45 : LAT, -std / 4];
+    try { localStorage.setItem('sky-place', JSON.stringify({ std, lat, lon })); } catch (e) {}
+    if (lat === LAT && lon === LON) return;
+    LAT = lat; LON = lon;
+    SUNS.clear(); ANCHORS.clear(); SEASON_BY_DATE.clear();
+    paint(true);
+  });
 
+  // The clock is the visitor's own, so the browser's local time is enough (no Intl formatting, which is slow).
+  const pad = (v) => String(v).padStart(2, '0');
   const wall = (ms) => {
-    const parts = Object.fromEntries(new Intl.DateTimeFormat('en-GB', { timeZone: tz, hourCycle: 'h23', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })
-      .formatToParts(ms).map((p) => [p.type, p.value]));
-    return { min: +parts.hour * 60 + +parts.minute, ymd: `${parts.year}-${parts.month}-${parts.day}` };
+    const d = new Date(ms);
+    return { min: d.getHours() * 60 + d.getMinutes(), ymd: `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}` };
   };
 
-  // Sunrise and sunset from the sunrise equation, as local minutes.
+  // Sunrise and sunset from the sunrise equation, as local minutes. Worked out once per date.
   const rad = Math.PI / 180;
+  const SUNS = new Map();
   function sun(ymd) {
+    if (!SUNS.has(ymd)) SUNS.set(ymd, sunFor(ymd));
+    return SUNS.get(ymd);
+  }
+  function sunFor(ymd) {
     const [y, m, d] = ymd.split('-').map(Number);
     const n = Math.ceil(Date.UTC(y, m - 1, d, 12) / 864e5 + 2440587.5 - 2451545 + .0008);
     const J = n - LON / 360;
@@ -94,7 +109,12 @@
      A colour that drifts round the year (ice at midwinter, blossom in spring, gold at midsummer, ember in
      autumn) and leans into half the ring, so the site in December isn't the site in June. */
   const SEASONS = [['Winter', '#5fb4ff'], ['Spring', '#ff8fc7'], ['Summer', '#ffb22c'], ['Autumn', '#ff6a1a']];
+  const SEASON_BY_DATE = new Map();
   function season(ymd) {
+    if (!SEASON_BY_DATE.has(ymd)) SEASON_BY_DATE.set(ymd, seasonFor(ymd));
+    return SEASON_BY_DATE.get(ymd);
+  }
+  function seasonFor(ymd) {
     const [y, m, d] = ymd.split('-').map(Number);
     const doy = (Date.UTC(y, m - 1, d) - Date.UTC(y, 0, 0)) / 864e5;
     let q = wrap((doy + 11) / 365.25 * 1440) / 360; // 0 at midwinter, 1 at the spring equinox…
@@ -119,9 +139,11 @@
     return { min: frozen ? hm(frozen) : w.min, ymd, ...sun(ymd) };
   }
 
+  const ANCHORS = new Map();
   function lookAt(min, ymd) {
     const { rise: R, set: S, tw } = sun(ymd);
-    const list = anchors(R, S, tw);
+    if (!ANCHORS.has(ymd)) ANCHORS.set(ymd, anchors(R, S, tw));
+    const list = ANCHORS.get(ymd);
     let i = list.findIndex((a) => a[1] > min);
     if (i === -1) i = 0;
     const [bk, bm] = list[i], [ak, am] = list[(i - 1 + list.length) % list.length];
@@ -145,7 +167,7 @@
   // The next time the page crosses between light and dark, in minutes from now.
   function nextCross(n) {
     const start = lookAt(n.min, n.ymd).theme;
-    for (let step = 2; step <= 1440; step += 2) if (lookAt(wrap(n.min + step), n.ymd).theme !== start) return step;
+    for (let step = 5; step <= 1440; step += 5) if (lookAt(wrap(n.min + step), n.ymd).theme !== start) return step;
     return 1440;
   }
 
@@ -161,19 +183,27 @@
   const VARS = ['--p1', '--p2', '--p3', '--p4', '--p5', '--p6', '--pale-a', '--pale-b', '--bg', '--sky-glow', '--wash', '--wash-a', '--sun-c', '--sun-a', '--sun-x', '--sun-y', '--moon-x'];
   let last = null;
 
-  function paint() {
+  // Only the values that changed are written, and a paint in the same minute with nothing new does nothing,
+  // so the 10-second tick costs next to nothing between changes.
+  const written = new Map();
+  const set = (k, v) => { if (written.get(k) !== v) { written.set(k, v); root.style.setProperty(k, v); } };
+  const unset = () => { VARS.forEach((v) => root.style.removeProperty(v)); written.clear(); };
+  let paintKey = '';
+  function paint(force) {
     const n = now();
-    const L = lookAt(n.min, n.ymd);
     const m = effective();
+    const key = `${n.min}|${n.ymd}|${m}|${barOpen}`;
+    if (key === paintKey && !force) return;
+    paintKey = key;
+    const L = lookAt(n.min, n.ymd);
     const theme = m === 'sky' ? L.theme : m;
     root.dataset.mode = m;
     if (m !== 'sky') {
       // A fixed theme is the site as it's drawn today.
-      VARS.forEach((v) => root.style.removeProperty(v));
+      unset();
       root.dataset.sky = 'fixed';
     } else {
-      root.dataset.sky = L.key;
-      const set = (k, v) => root.style.setProperty(k, v);
+      if (root.dataset.sky !== L.key) root.dataset.sky = L.key;
       L.p.forEach((c, i) => set(`--p${i + 1}`, c));
       set('--pale-a', L.pa); set('--pale-b', L.pb); set('--bg', L.bg); set('--sky-glow', L.glow.toFixed(3));
       set('--wash', L.wash); set('--wash-a', L.wa.toFixed(3)); set('--sun-c', L.sun); set('--sun-a', L.sa.toFixed(3));
@@ -184,9 +214,9 @@
       const dark = Math.max(0, Math.min(1, (.62 - lum(L.bg)) / .6));
       set('--moon-x', `${(-115 * (1 - dark)).toFixed(1)}%`);
     }
-    if (theme === 'dark') root.dataset.theme = 'dark'; else delete root.dataset.theme;
-    const meta = document.querySelector('meta[name="theme-color"]');
-    if (meta) meta.setAttribute('content', m === 'sky' ? L.bg : theme === 'dark' ? '#05070b' : '#ffffff');
+    if (theme === 'dark') { if (root.dataset.theme !== 'dark') root.dataset.theme = 'dark'; } else delete root.dataset.theme;
+    const meta = document.querySelector('meta[name="theme-color"]'), metaC = m === 'sky' ? L.bg : theme === 'dark' ? '#05070b' : '#ffffff';
+    if (meta && meta.content !== metaC) meta.setAttribute('content', metaC);
     last = { n, L, theme, mode: m };
     favicon();
     decorate();
@@ -226,9 +256,10 @@
       if (!hint) { hint = document.createElement('span'); hint.className = 'tt-hint'; hint.setAttribute('aria-hidden', 'true'); toggle.append(hint); }
       const next = nextMode();
       const label = next === 'sky' ? 'Follow the sun' : next === 'dark' ? 'Lights off' : 'Lights on';
-      toggle.setAttribute('aria-pressed', String(last.theme === 'dark'));
-      toggle.setAttribute('aria-label', next === 'sky' ? 'Follow the time of day' : `Switch to ${next} mode`);
-      hint.innerHTML = `<b>${label}</b>${hintLine}`;
+      const pressed = String(last.theme === 'dark'), aria = next === 'sky' ? 'Follow the time of day' : `Switch to ${next} mode`, html = `<b>${label}</b>${hintLine}`;
+      if (toggle.getAttribute('aria-pressed') !== pressed) toggle.setAttribute('aria-pressed', pressed);
+      if (toggle.getAttribute('aria-label') !== aria) toggle.setAttribute('aria-label', aria);
+      if (hint.innerHTML !== html) hint.innerHTML = html;
     }
   }
   const nextMode = () => {
@@ -289,15 +320,16 @@
     } catch (e) {}
   }
 
-  // Back to the sky: the page runs through a whole day in under two seconds and lands on now. The toggle's
+  // Back to the sky: the page runs through a whole day in a few seconds and lands on now. The toggle's
   // moon crosses its disc as night comes and goes, and the ring spins once.
-  const SWEEP = 1900;
+  const SWEEP = 3400;
   let sweepRaf = 0;
   function sweep() {
     const start = now().min, t0 = performance.now();
     root.classList.add('sky-sweep');
     const step = (t) => {
-      const k = Math.min(1, (t - t0) / SWEEP), e = k < .5 ? 4 * k * k * k : 1 - (-2 * k + 2) ** 3 / 2;
+      // Sine easing: it leaves and arrives gently rather than snapping through the middle.
+      const k = Math.min(1, (t - t0) / SWEEP), e = (1 - Math.cos(Math.PI * k)) / 2;
       frozen = k < 1 ? toHM(Math.floor(wrap(start + 1440 * e))) : null;
       paint();
       if (k < 1) sweepRaf = requestAnimationFrame(step); else endSweep();
@@ -308,7 +340,7 @@
     if (!root.classList.contains('sky-sweep')) return;
     cancelAnimationFrame(sweepRaf); frozen = null;
     root.classList.remove('sky-sweep');
-    paint(); refreshHint();
+    paint(true); refreshHint();
   }
 
   function setMode(next, e) {
@@ -317,7 +349,7 @@
     mode = next;
     try { next === 'sky' ? localStorage.removeItem('sky-mode') : localStorage.setItem('sky-mode', next); } catch (err) {}
     switchSound(next);
-    const apply = () => { paint(); refreshHint(); };
+    const apply = () => { paint(true); refreshHint(); };
     if (next === 'sky' && !matchMedia('(prefers-reduced-motion: reduce)').matches) { sweep(); return; }
     const after = next === 'sky' ? lookAt(last.n.min, last.n.ymd).theme : next;
     const toggle = document.querySelector('.theme-toggle');
@@ -335,8 +367,10 @@
 
   /* ───────── Favicon ───────── */
   // The eclipse, drawn in the page's colours: a white disc by day, dark after sunset, ring in the sky's colours.
-  let favKey = '', favAt = 0, favTimer = 0, favLink = null;
+  let favKey = '', favAt = 0, favTimer = 0, favLink = null, favReady = false;
+  idle(() => { favReady = true; favicon(); });
   function favicon() {
+    if (!favReady || !last) return;
     const L = last.L, fixed = last.mode !== 'sky';
     const key = fixed ? `fixed-${last.theme}` : `${L.bg}${L.p.join('')}`;
     if (key === favKey) return;
@@ -402,7 +436,7 @@
     barOpen = true;
     root.classList.add('sun-on');
     bar.classList.add('is-open');
-    paint();
+    paint(true);
     // Opening it plays the day straight away; touching the slider or pause stops it.
     play();
   }
@@ -411,7 +445,7 @@
     stopPlay(); barOpen = false; frozen = null; frozenDate = null;
     root.classList.remove('sun-on');
     bar.classList.remove('is-open');
-    paint();
+    paint(true);
   }
   const PLAY = '<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 1.8v8.4L10 6z" fill="currentColor"/></svg>';
   const PAUSE = '<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 2h2v8H3zM7 2h2v8H7z" fill="currentColor"/></svg>';
@@ -436,7 +470,7 @@
     if (b.classList.contains('sb-now')) { stopPlay(); frozen = null; frozenDate = null; }
     // A season sets the date to its solstice or equinox; pressing it again goes back to today.
     else if (b.dataset.d) { const d = `${new Date().getFullYear()}-${b.dataset.d}`; frozenDate = frozenDate === d ? null : d; }
-    paint();
+    paint(true);
   }
   function syncBar() {
     if (!bar || !last) return;
@@ -469,14 +503,14 @@
     if ('t' in m) frozen = m.t;
     if ('d' in m) frozenDate = m.d;
     if (m.sun != null) root.classList.toggle('sun-on', !!m.sun);
-    paint();
+    paint(true);
   });
 
   /* ───────── Go ───────── */
   if (embed && params.has('sun')) root.classList.add('sun-on');
   paint();
   document.addEventListener('DOMContentLoaded', () => {
-    paint();
+    paint(true); // the same minute, but now the page's pieces exist
     if (params.has('bar')) openBar();
     const toggle = document.querySelector('.theme-toggle');
     if (!toggle) return;
@@ -485,4 +519,6 @@
   });
   setInterval(() => { if (!frozen) paint(); }, 10000);
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && !frozen) paint(); });
+  // Nothing to repaint in a hidden tab.
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') stopPlay(); });
 })();

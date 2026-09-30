@@ -47,6 +47,7 @@
   const eclipse = hero && hero.querySelector('.eclipse');
   const disc = hero && hero.querySelector('.disc');
   const corona = hero && hero.querySelector('.corona');
+  let sunGlow = null; // added by sky.js once the page has loaded
   const hs = { px: 0, py: 0, p: 0, target: 0, inView: true };
   const geo = { ty: -900, scale: 1, sceneTop: 0, sceneLen: 1 };
   if (hero) new IntersectionObserver((en) => { hs.inView = en[0].isIntersecting; if (hs.inView) wake(); }).observe(hero);
@@ -111,8 +112,8 @@
     disc.style.scale = sc.toFixed(4);
     corona.style.translate = `${(px * 6 * drift).toFixed(2)}px ${(y + py * 4 * drift).toFixed(2)}px`;
     corona.style.scale = sc.toFixed(4);
-    // The sun from the sky lab (sky.js) rides with the ring.
-    const sunGlow = eclipse.querySelector('.sun');
+    // The sun from the sky (sky.js) rides with the ring.
+    sunGlow = sunGlow || eclipse.querySelector('.sun');
     if (sunGlow) { sunGlow.style.translate = corona.style.translate; sunGlow.style.scale = corona.style.scale; }
     // The words come towards you and fade, as if you were moving through them into the page.
     copy.style.transform = `translate3d(0, ${(-24 * e).toFixed(1)}px, 0) scale(${(1 + .22 * e).toFixed(4)})`;
