@@ -1,11 +1,14 @@
 /* sheawilson.uk/links
-   One list of links, five ways to show it. The lab bar switches between them; on the live site it only
-   appears with ?lab, so visitors see whichever style is set as DEFAULT_STYLE. */
+   One list of links. Visitors land on DEFAULT_STYLE; the others are easter eggs:
+     Eclipse → tap the coin in the footer, tap the name three times, or type the Konami code → Arcade
+     Arcade → Insert coin → Receipt → "Thank you. Come again." → back to DEFAULT_STYLE
+   To change the front door, change DEFAULT_STYLE ('eclipse' or 'arcade'). Any style can also be linked
+   directly with ?style=arcade. The lab bar only appears with ?lab on the live site. */
 (() => {
   const root = document.documentElement;
   const app = document.getElementById('app');
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const DEFAULT_STYLE = 'eclipse';
+  const DEFAULT_STYLE = 'eclipse'; // or 'arcade'
 
   /* ───────── Links ─────────
      hidden: kept here, never shown (YouTube waits until there's something on it).
@@ -79,7 +82,9 @@
     const cosW = (Math.sin(-.833 * rad) - Math.sin(lat * rad) * Math.sin(dec)) / (Math.cos(lat * rad) * Math.cos(dec));
     const h = Math.acos(Math.max(-1, Math.min(1, cosW))) / rad / 360;
     const at = (jd) => wall((jd - 2440587.5) * 864e5).min;
-    const rise = at(transit - h), set = at(transit + h);
+    // The portfolio's sky fades through twilight and turns dark about 20 minutes after sunset (and light
+    // about 20 minutes before sunrise), so the two pages agree when someone taps through.
+    const rise = at(transit - h) - 20, set = at(transit + h) + 20;
     return rise <= set ? w.min >= rise && w.min < set : w.min >= rise || w.min < set;
   }
   const deviceDark = matchMedia('(prefers-color-scheme: dark)');
@@ -102,27 +107,37 @@
   }
 
   /* ───────── Save my contact ─────────
-     Safari and Chrome open a .vcf as a contact card ("Create New Contact" on iPhone). The browsers inside
-     Instagram, X, LinkedIn and TikTok can't, and that's where most taps will come from, so they get a note instead. */
-  const IN_APP = /Instagram|FBAN|FBAV|LinkedInApp|Twitter|TikTok|musical_ly|Snapchat|Threads|BytedanceWebview/i.test(navigator.userAgent);
-  const APP_NAME = (navigator.userAgent.match(/Instagram|LinkedIn|Twitter|TikTok|Snapchat|Threads|FBAN|FBAV/i) || [''])[0].replace(/FBA[NV]/i, 'Facebook').replace(/Twitter/i, 'X').replace(/LinkedIn/i, 'LinkedIn');
+     On iPhone only Safari hands a .vcf straight to Contacts ("Create New Contact"). Chrome, Firefox, other
+     browsers and the browsers inside Instagram, X, LinkedIn and TikTok download it as a file instead,
+     and the social apps are where most taps come from, so those get a short note first.
+     Vercel serves the card as text/x-vcard, inline, which is what Safari treats as a contact. */
+  const UA = navigator.userAgent;
+  const IOS = /iPhone|iPad|iPod/.test(UA) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const APP = (UA.match(/Instagram|LinkedInApp|Twitter|TikTok|musical_ly|BytedanceWebview|Snapchat|Threads|Barcelona|FBAN|FBAV/i) || [''])[0];
+  const APP_NAME = { instagram: 'Instagram', linkedinapp: 'LinkedIn', twitter: 'X', tiktok: 'TikTok', musical_ly: 'TikTok', bytedancewebview: 'TikTok', snapchat: 'Snapchat', threads: 'Threads', barcelona: 'Threads', fban: 'Facebook', fbav: 'Facebook' }[APP.toLowerCase()] || '';
+  const OTHER_IOS = IOS && !APP && (/CriOS|FxiOS|EdgiOS|OPiOS|DuckDuckGo|GSA\//.test(UA) || !/Safari\//.test(UA));
+  const BROWSER = /CriOS/.test(UA) ? 'Chrome' : /FxiOS/.test(UA) ? 'Firefox' : /EdgiOS/.test(UA) ? 'Edge' : 'This browser';
   const PERSON = '<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10" cy="8" r="3.5"/><path d="M3.5 19.5c.8-3.4 3.4-5.5 6.5-5.5s5.7 2.1 6.5 5.5M18.5 8v6M15.5 11h6"/></svg>';
   function wireSave(scope) {
     scope.querySelectorAll('[data-save]').forEach((a) => a.addEventListener('click', (e) => {
-      if (!IN_APP && !params.has('inapp')) return;
+      const why = params.get('savetest') || (APP ? 'app' : OTHER_IOS ? 'browser' : '');
+      if (!why) return;
       e.preventDefault();
-      openSheet();
+      openSheet(why);
     }));
   }
-  function openSheet() {
+  function openSheet(why) {
     document.querySelector('.sheet')?.remove();
+    const note = why === 'app'
+      ? `${APP_NAME || 'This app'}’s browser can’t add contacts. Tap <b>•••</b> at the top, choose <b>Open in browser</b>, then tap Save contact again.`
+      : `${BROWSER} on iPhone saves contact cards as a file. Open this page in <b>Safari</b> and Save contact goes straight to your contacts.`;
     const sheet = document.createElement('div');
     sheet.className = 'sheet';
     sheet.innerHTML = `<div class="sheet-card" role="dialog" aria-modal="true" aria-labelledby="sheet-title">
       <img src="${PHOTO}" alt="" width="64" height="64">
       <h2 id="sheet-title">Save Shea to your contacts</h2>
-      <p>${APP_NAME || 'This app'}’s browser can’t add contacts. Tap <b>•••</b> and choose <b>Open in browser</b>, then tap Save contact again.</p>
-      <div class="sheet-actions"><button type="button" class="sheet-copy">Copy page link</button><a href="${CONTACT}" class="sheet-try">Try anyway</a></div>
+      <p>${note}</p>
+      <div class="sheet-actions"><button type="button" class="sheet-copy">Copy page link</button><a href="${CONTACT}" class="sheet-try">Download the card</a></div>
       <button type="button" class="sheet-close">Close</button></div>`;
     document.body.append(sheet);
     const close = () => { sheet.classList.remove('is-open'); setTimeout(() => sheet.remove(), 300); };
@@ -134,8 +149,16 @@
   }
 
   /* ───────── Easter eggs ─────────
-     Tap the name three times (or type the Konami code) for the arcade. In the arcade, Insert coin prints a
-     receipt. The receipt's "Come again" goes back. On the live site none of this changes the saved style. */
+     The coin in the footer is the one people can find: it spins every few seconds and drops you into the
+     arcade with a coin sound. Tapping the name three times and the Konami code do the same. The page turns
+     off double-tap zoom (pinch still works), so three taps on a phone count as taps rather than a zoom. */
+  function wireCoin(scope) {
+    scope.querySelector('.coin')?.addEventListener('click', (e) => {
+      e.currentTarget.classList.add('is-spent');
+      wakeAudio(); setTimeout(() => beep(SFX.coin), 20);
+      setTimeout(() => go('arcade'), 420);
+    });
+  }
   function wireName(scope) {
     const name = scope.querySelector('[data-egg]');
     if (!name) return;
@@ -169,12 +192,11 @@
       <div class="ec-sky" aria-hidden="true"><div class="ec-eclipse"><div class="corona"></div><div class="disc"></div></div></div>
       <main class="ec is-${state.align}${state.photo === 'none' ? ' no-photo' : ''}">
         <header class="ec-head">
-          ${state.photo === 'none' ? '' : `<span class="ec-photo${state.photo === 'ring' ? ' has-ring' : ''}"><img src="${PHOTO}" alt="Shea Wilson" width="240" height="240"></span>`}
+          ${state.photo === 'none' ? '' : `<span class="ec-photo"><img src="${PHOTO}" alt="Shea Wilson" width="240" height="240"></span>`}
           <div class="ec-id">
             <h1 data-egg>Shea Wilson</h1>
             <p class="ec-role"><span>Design engineer.</span> <span>Always making <em>something.</em></span></p>
           </div>
-          <a class="ec-save" href="${CONTACT}" data-save>${PERSON}<span>Save contact</span></a>
         </header>
         <ul class="ec-list">
           ${links.map((l, i) => `<li style="--i:${i}"><a class="ec-link${l.featured ? ' is-featured' : ''}" ${attrs(l)} data-palette="${l.palette}" style="--tone:${l.tone || '#ed1652'}">
@@ -183,9 +205,10 @@
               ${l.featured ? `<span class="ec-recent">${RECENT.map(([c, n]) => `<span><i style="--c:${c}"></i>${n}</span>`).join('')}</span>` : ''}</span>
             ${ARROW}</a></li>`).join('')}
         </ul>
-        <footer class="ec-foot">© ${new Date().getFullYear()} Shea Wilson</footer>
+        <a class="ec-save" href="${CONTACT}" data-save>${PERSON}<span>Save contact</span></a>
+        <footer class="ec-foot"><span>© ${new Date().getFullYear()} Shea Wilson</span><button class="coin" type="button" title="Insert coin" aria-label="Insert coin"><i></i></button></footer>
       </main>`,
-    mount(el) { wirePalette(el, el.querySelector('.ec-sky')); wireSave(el); wireName(el); },
+    mount(el) { wirePalette(el, el.querySelector('.ec-sky')); wireSave(el); wireName(el); wireCoin(el); },
   };
 
   /* ═════════ 2. Arcade: a start menu ═════════ */
@@ -350,65 +373,7 @@
     },
   };
 
-  /* ═════════ 3. Departures: a split-flap board ═════════ */
-  const DRUM = ' ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.:-/@→';
-  const flaps = (text, width, cls = '') => `<span class="flaps ${cls}" data-w="${width}" aria-label="${esc(text)}">${'<span class="f" aria-hidden="true"> </span>'.repeat(width)}</span>`;
-  // Each tile steps forward round the drum to its letter, like the real thing, so tiles land at different times.
-  function setFlaps(el, text, delay = 0) {
-    const w = Number(el.dataset.w), target = text.toUpperCase().padEnd(w).slice(0, w);
-    el.setAttribute('aria-label', text);
-    [...el.children].forEach((tile, i) => {
-      clearTimeout(tile._t);
-      const to = DRUM.indexOf(target[i]) < 0 ? 0 : DRUM.indexOf(target[i]);
-      if (reduced) { tile.textContent = DRUM[to]; return; }
-      const step = () => {
-        const at = DRUM.indexOf(tile.textContent);
-        if (at === to) return;
-        tile.textContent = DRUM[(at + 1) % DRUM.length];
-        tile.classList.remove('go'); void tile.offsetWidth; tile.classList.add('go');
-        tile._t = setTimeout(step, 34);
-      };
-      tile._t = setTimeout(step, delay + i * 28);
-    });
-  }
-  const departures = {
-    name: 'Departures', meta: '#0a0a0a',
-    render: (links) => `
-      <main class="dp">
-        <header class="dp-head">
-          <div><p class="dp-kicker" data-egg>Shea Wilson · Design engineer</p><h1 class="dp-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 19h19M3 13.2l2.2-.6 2.3 2 4.4-1.2L8 7.3l2.3-.6 6.4 5.1 4-1.1a1.6 1.6 0 1 1 .8 3.1L5.8 18z" fill="currentColor"/></svg>Departures</h1></div>
-          ${flaps('00:00', 5, 'dp-clock')}
-        </header>
-        <div class="dp-board">
-          <div class="dp-cols" aria-hidden="true"><span>Gate</span><span>Destination</span><span>Status</span></div>
-          ${links.map((l, i) => `<a class="dp-row" ${attrs(l)} data-status="${esc(l.status)}">
-            ${flaps(pad2(i + 1), 2, 'dp-gate')}
-            <span class="dp-dest">${flaps(l.short, 9)}<span class="dp-via">${esc(l.sub)}</span></span>
-            ${flaps(l.status, 8, `dp-status${l.featured ? ' is-boarding' : ''}`)}</a>`).join('')}
-        </div>
-        <footer class="dp-foot"><span>Always making something.</span><a href="${CONTACT}" data-save>Save my contact</a></footer>
-      </main>`,
-    mount(el) {
-      wireSave(el); wireName(el);
-      const clock = el.querySelector('.dp-clock');
-      const tick = (d) => { const n = new Date(); setFlaps(clock, `${pad2(n.getHours())}:${pad2(n.getMinutes())}`, d); };
-      tick(200);
-      const timer = setInterval(() => tick(0), 15000);
-      el.querySelectorAll('.dp-row').forEach((row, r) => {
-        const [gate, dest, status] = row.querySelectorAll('.flaps');
-        setFlaps(gate, gate.getAttribute('aria-label'), 150 + r * 90);
-        setFlaps(dest, dest.getAttribute('aria-label'), 250 + r * 90);
-        setFlaps(status, row.dataset.status, 400 + r * 90);
-        const go = () => setFlaps(status, 'Go now');
-        const back = () => setFlaps(status, row.dataset.status);
-        row.addEventListener('pointerenter', go); row.addEventListener('focus', go);
-        row.addEventListener('pointerleave', back); row.addEventListener('blur', back);
-      });
-      return () => { clearInterval(timer); el.querySelectorAll('.f').forEach((t) => clearTimeout(t._t)); };
-    },
-  };
-
-  /* ═════════ 4. Receipt: printed on arrival ═════════ */
+  /* ═════════ 3. Receipt: printed on arrival ═════════ */
   function barcode(seed) {
     let h = 2166136261, bars = '';
     for (let n = 0; n < 46; n++) {
@@ -450,23 +415,7 @@
     },
   };
 
-  /* ═════════ 5. Specimen: the links as a type sheet ═════════ */
-  const specimen = {
-    name: 'Specimen', themed: true,
-    render: (links) => `
-      <div class="sp-glow" aria-hidden="true"></div>
-      <main class="sp">
-        <header class="sp-head"><span class="sp-name" data-egg>Shea Wilson</span><span class="sp-role">Design engineer</span></header>
-        <ol class="sp-list">
-          ${links.map((l, i) => `<li style="--i:${i}"><a class="sp-row" ${attrs(l)} data-palette="${l.palette}">
-            <span class="sp-n">${pad2(i + 1)}</span><span class="sp-word">${esc(l.short)}</span><span class="sp-sub">${esc(l.sub)} ${ARROW}</span></a></li>`).join('')}
-        </ol>
-        <footer class="sp-foot"><p>Always making <em>something.</em></p><a href="${CONTACT}" data-save>Save my contact</a></footer>
-      </main>`,
-    mount(el) { wirePalette(el, el.querySelector('.sp-glow')); wireSave(el); wireName(el); },
-  };
-
-  const STYLES = { eclipse, arcade, departures, receipt, specimen };
+  const STYLES = { eclipse, arcade, receipt };
 
   /* ───────── State and the lab bar ───────── */
   const params = new URLSearchParams(location.search);
@@ -478,12 +427,12 @@
   // Options: [value, label]. DEFAULTS are my picks (the green dots in the lab) and what visitors get.
   const OPTIONS = {
     style: Object.keys(STYLES).map((k) => [k, STYLES[k].name]),
-    photo: [['photo', 'Photo'], ['ring', 'Photo + ring'], ['none', 'No photo']],
+    photo: [['photo', 'Photo'], ['none', 'No photo']],
     align: [['left', 'Left'], ['centre', 'Centre']],
     theme: [['sun', 'Sun'], ['device', 'Device'], ['light', 'Light'], ['dark', 'Dark']],
     extras: [['1', 'On'], ['0', 'Off']],
   };
-  const DEFAULTS = { style: DEFAULT_STYLE, photo: 'photo', align: 'left', theme: 'sun', extras: '1' };
+  const DEFAULTS = { style: DEFAULT_STYLE, photo: 'photo', align: 'centre', theme: 'sun', extras: '1' };
   const LABELS = { style: 'Style', photo: 'Photo', align: 'Align', theme: 'Theme', extras: 'Email + 3D' };
   const valid = (k, v) => OPTIONS[k].some(([o]) => o === v);
   let savedLab = {};
@@ -518,10 +467,10 @@
   }
   // Easter eggs move between styles without touching what the lab has saved.
   function go(style) {
-    if (showLab) { set({ style }); return; }
+    const top = () => { draw(); scrollTo(0, 0); };
+    if (showLab) { set({ style }); scrollTo(0, 0); return; }
     state.style = style;
-    transition(draw);
-    scrollTo(0, 0);
+    transition(top);
   }
 
   // The sun moves on without a reload; the device setting can change under us too.
@@ -537,6 +486,7 @@
     lab.querySelectorAll('[data-only]').forEach((row) => { row.hidden = row.dataset.only !== state.style; });
   }
   if (showLab) {
+    root.classList.add('has-lab');
     lab = document.createElement('div');
     lab.className = 'lab';
     lab.setAttribute('role', 'toolbar');
