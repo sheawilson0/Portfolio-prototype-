@@ -10,6 +10,15 @@
       ]
     },
     {
+      "source": "/links/shea-wilson.vcf",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "text/vcard; charset=utf-8"
+        }
+      ]
+    },
+    {
       "source": "/ar/assets/models/(.*)",
       "headers": [
         {
