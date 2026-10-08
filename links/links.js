@@ -24,7 +24,7 @@
     { id: 'email', label: 'Email me', short: 'Email', sub: 'design@sheawilson.uk', href: 'mailto:design@sheawilson.uk', icon: 'mail', palette: 'email', tone: '#ff6a1a', status: 'Open', extra: true },
     { id: 'world', label: 'Walk through my work in 3D', tile: '3D walkthrough', short: 'In 3D', sub: 'sheawilson.uk/ar', href: 'https://sheawilson.uk/ar/world.html', icon: 'cube', palette: 'world', tone: '#8a3cff', status: 'Open', extra: true },
   ];
-  const PHOTO = '/links/shea.jpg';
+  const PHOTO = '/links/shea.png';
 
   const ICONS = {
     x: { fill: 'M14.234 10.162 22.977 0h-2.072l-7.591 8.824L7.251 0H.258l9.168 13.343L.258 24H2.33l8.016-9.318L16.749 24h6.993zm-2.837 3.299-.929-1.329L3.076 1.56h3.182l5.965 8.532.929 1.329 7.754 11.09h-3.182z' },
