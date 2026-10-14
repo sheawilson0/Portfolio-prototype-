@@ -14,7 +14,7 @@
   --bg: #ffffff;
   --ink: #0a0a0a;
   --ink-2: rgba(10, 10, 10, .64);
-  --whisper: rgba(10, 10, 10, .46);
+  --whisper: rgba(10, 10, 10, .58);
   --hair: rgba(10, 10, 10, .08);
   --glass: rgba(255, 255, 255, .6);
   --glass-strong: rgba(255, 255, 255, .8);
@@ -36,7 +36,7 @@
   --bg: #05070b;
   --ink: #f2f0eb;
   --ink-2: rgba(242, 240, 235, .68);
-  --whisper: rgba(242, 240, 235, .44);
+  --whisper: rgba(242, 240, 235, .52);
   --hair: rgba(242, 240, 235, .09);
   --glass: rgba(18, 21, 28, .55);
   --glass-strong: rgba(24, 27, 36, .78);
