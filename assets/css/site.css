@@ -304,6 +304,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 /* Below the fold: let the browser skip layout and paint until they get close */
 .about, .contact { content-visibility: auto; contain-intrinsic-size: auto 900px; }
 .about { max-width: 1380px; margin: 0 auto; padding: 100px var(--gutter) 30px; display: grid; grid-template-columns: 1fr 1fr; gap: 40px 60px; }
+.about-photo { display: block; width: 144px; height: 144px; margin-bottom: 28px; border-radius: 50%; object-fit: cover; }
 .about h2 { font-family: var(--serif); font-weight: 300; font-size: clamp(40px, 4.4vw, 66px); line-height: 1.05; letter-spacing: var(--track-heading); margin-top: 14px; text-wrap: balance; }
 /* Where I work and study: each organisation's mark over the role, in the ink colour, marks sitting on one
    line and roles on the next. Hovering either brings up the organisation's own colours. */
