@@ -22,7 +22,7 @@ export const SPECTRUM = ['#ed1652', '#ff6a1a', '#ffb22c', '#43d9ff', '#8a3cff', 
 // Copy is the homepage's own, word for word
 export const PROJECTS = [
   {
-    id: 'snapshot', name: 'Smoking Snapshot', label: 'Smoking Ends Here · Champs and NHS', status: '975 uses',
+    id: 'snapshot', name: 'Smoking Snapshot', label: 'Smoking Ends Here · Champs and NHS', status: '1,000+ uses',
     tone: '#ed1652', colors: ['#3a17e0', '#ed1652', '#ff6a1a'], href: asset('snapshot.html'),
     line: 'A one-minute calculator that shows people what “only socially” adds up to over a year. People found it through paid social and used it on their phones or on iPads at events.',
   },
@@ -47,7 +47,7 @@ export const PROJECTS = [
 const DETAILS = {
   snapshot: {
     media: ['assets/media/snapshot/phone-open.webp', 'assets/media/snapshot/phone-results.webp', 'assets/media/snapshot/field-ipad.webp'],
-    stats: [['975', 'snapshots completed'], ['41,904', 'clicks from paid social'], ['50%', 'said they’d rethink how much they smoke']],
+    stats: [['1,000+', 'snapshots completed'], ['41,904', 'clicks from paid social'], ['52%', 'said they’d rethink how much they smoke']],
     story: ['What I did', 'The prototype, the user journey and the question flow, the build, the live dashboard and the final report. Aleks designed the look and Kelly wrote the copy.'],
     facts: [['Client', 'Smoking Ends Here, for Champs and NHS Cheshire and Merseyside'], ['Role', 'Prototype, UX, build and reporting'], ['Timeline', 'May to September 2026'], ['Built with', 'HTML, CSS and JavaScript, Supabase, Vercel, Claude Code and Codex']],
     live: 'https://snapshot.smokingendshere.com/',

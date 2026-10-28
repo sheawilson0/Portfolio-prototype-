@@ -149,7 +149,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .hero { position: sticky; top: 0; height: 100svh; min-height: 620px; overflow: clip;
   transition: --p1 1.4s var(--ease), --p2 1.4s var(--ease), --p3 1.4s var(--ease), --p4 1.4s var(--ease), --p5 1.4s var(--ease), --p6 1.4s var(--ease); }
 .hero[data-palette="snapshot"] { --p1: #ed1652; --p2: #ff6a1a; --p3: #c52bd6; --p4: #2f67ff; --p5: #3a17e0; --p6: #7a2cff; }
-.hero[data-palette="heart"] { --p1: #ed1652; --p2: #ff4d6d; --p3: #7de8ff; --p4: #43d9ff; --p5: #08717d; --p6: #1fb3c9; }
+.hero[data-palette="quit28"] { --p1: #06fb06; --p2: #7dff6b; --p3: #00a7fa; --p4: #5cc8ff; --p5: #f31a7b; --p6: #ff6aa8; }
 .hero[data-palette="jumpstart"] { --p1: #0b5c45; --p2: #4fae86; --p3: #b8f0d2; --p4: #4fae86; --p5: #0b5c45; --p6: #8fd4b4; }
 .hero[data-palette="brain"] { --p1: #8a3cff; --p2: #c77dff; --p3: #e2b8ff; --p4: #5b2bff; --p5: #3a17e0; --p6: #b44bff; }
 
@@ -265,20 +265,12 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .card-btn.is-soon { cursor: default; }
 .card-btn.is-soon i { width: 7px; height: 7px; border-radius: 50%; flex: none; background: var(--tone); }
 
-/* Heart Health: the hand lifts the iPad toward you on hover */
-.t-heart { grid-column: span 7; }
-.t-heart .card { min-height: 620px; }
-/* The live mockup: the site's own recording plays on the iPad screen, warped to the screen's corners, with
-   the hand and bezel layered in front. It's drawn at the photo's own size and scaled to fit the card. */
-.t-heart .heart-live { position: absolute; width: 58%; right: 2%; bottom: -12%; aspect-ratio: 1300 / 1459; container-type: inline-size;
-  transform-origin: 85% 95%; transition: transform 1.2s var(--ease); }
-.heart-stage { position: absolute; left: 0; top: 0; width: 1300px; height: 1459px; transform-origin: 0 0; transform: scale(tan(atan2(100cqw, 1300px))); }
-.heart-stage > * { position: absolute; left: 0; top: 0; max-width: none; }
-.heart-base, .heart-front { width: 1300px; height: 1459px; }
-.heart-base { filter: drop-shadow(0 110px 130px rgba(0, 40, 60, .28)); }
-.heart-screen { width: 1074px; height: 798px; object-fit: fill; transform-origin: 0 0;
-  transform: matrix3d(.8004473027, .4951110373, 0, -2.213186288e-06, -.5043599205, .8130808222, 0, -3.831731488e-06, 0, 0, 1, 0, 420.6205963, 16.46801333, 0, 1); }
-.item.is-hot.t-heart .device { transform: translate3d(-3%, -9%, 0) rotate(-7deg); }
+/* Quit28: the hand lifts the phone toward you on hover */
+.t-quit { grid-column: span 7; }
+.t-quit .card { min-height: 620px; }
+.t-quit .device { position: absolute; width: 74%; right: -20%; bottom: -14%; max-width: none; height: auto;
+  filter: drop-shadow(0 60px 70px rgba(0, 60, 20, .22)); transform-origin: 30% 80%; transition: transform 1.2s var(--ease); }
+.item.is-hot.t-quit .device { transform: translate3d(-3%, -7%, 0) rotate(-6deg); }
 
 /* Brain Dump: the app's own screens */
 .t-brain { grid-column: span 5; }
@@ -405,7 +397,7 @@ footer a:hover { color: var(--ink); }
   .t-jump .card-top { grid-column: 1; grid-row: 1; padding: 36px 44px 0; }
   .t-jump .card-copy { grid-column: 1; grid-row: 2; padding: 22px 44px 10px; }
   .t-jump .media { grid-row: 3; }
-  .t-heart, .t-brain { grid-column: span 12; }
+  .t-quit, .t-brain { grid-column: span 12; }
   .t-small { grid-column: span 6; }
   .about { grid-template-columns: 1fr; }
 }
@@ -423,8 +415,8 @@ footer a:hover { color: var(--ink); }
   .card-copy { padding: 14px 26px 0; }
   .stats { grid-template-columns: 1fr 1fr; gap: 26px; }
   .t-small { grid-column: span 12; }
-  .t-heart .card { min-height: 560px; }
-  .t-heart .heart-live { width: 88%; right: -10%; bottom: -10%; }
+  .t-quit .card { min-height: 560px; }
+  .t-quit .device { width: 112%; right: -38%; bottom: -12%; }
   .t-jump .media { min-height: 320px; }
   .tool-group ul { flex-wrap: wrap; gap: 10px 20px; }
   .contact { padding: 120px var(--gutter) 110px; }
