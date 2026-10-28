@@ -1,0 +1,29 @@
+/* Quit28 case study. Loaded after site.css, case.css and snapshot.css: it reuses the Snapshot layout
+   (the pinned phone, the chapter rail, the film) and only swaps Snapshot's pink and purple for Quit28's blue. */
+
+/* The film leads the page, so it sits close under the hero, on Quit28's black */
+.q28-case .sn-film { margin-top: 0; }
+.q28-case .film-frame { background: #0a0a0a; box-shadow: 0 30px 80px -30px rgba(0, 60, 110, .4); }
+.q28-case .film-big { box-shadow: 0 14px 40px rgba(0, 0, 0, .35); }
+.q28-case .film-big::before { border-left-color: #0a0a0a; }
+.q28-case .film-bar button[aria-pressed="true"]::before { background: var(--tone); border-color: var(--tone); }
+.q28-case :is(.film-bar button, .film-big, .film-scrub input):focus-visible { outline-color: var(--tone); }
+.q28-case .film-scrub input::-webkit-slider-runnable-track { background: linear-gradient(90deg, var(--tone) var(--p, 0%), var(--hair, rgba(10, 10, 10, .12)) var(--p, 0%)); }
+.q28-case .film-scrub input::-moz-range-progress { background: var(--tone); }
+.q28-case .film-scrub input::-webkit-slider-thumb { background: var(--tone); }
+.q28-case .film-scrub input::-moz-range-thumb { background: var(--tone); }
+
+.q28-case .cs-intro { margin-top: clamp(100px, 12vw, 160px); }
+
+/* The pinned phone stands on blue with a touch of the product's green */
+.q28-case .sn-phone-wrap::before { background: radial-gradient(closest-side, color-mix(in srgb, var(--tone) 30%, transparent), color-mix(in srgb, #06fb06 10%, transparent) 55%, transparent); }
+.q28-case .sn-phone { box-shadow: 0 0 0 1px rgba(255, 255, 255, .08) inset, 0 40px 80px rgba(0, 50, 90, .26), 0 12px 24px rgba(10, 10, 10, .12); }
+[data-theme="dark"] .q28-case .sn-phone { box-shadow: 0 0 0 1px rgba(255, 255, 255, .12) inset, 0 0 0 1px rgba(255, 255, 255, .06), 0 40px 90px rgba(0, 0, 0, .6); }
+
+/* The first-week bars are scaled to the welcome page's 173 */
+.q28-case .sn-bar i { width: max(4px, calc(var(--v) / 173 * 100%)); }
+.q28-case .sn-pair + .sn-note { margin-top: 14px; }
+
+@media (max-width: 900px) {
+  .q28-case .sn-step-shot { box-shadow: 0 0 0 7px #0b0b0d, 0 30px 60px rgba(0, 50, 90, .22); }
+}

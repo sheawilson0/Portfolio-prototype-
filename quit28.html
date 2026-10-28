@@ -1,0 +1,365 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quit28, by Shea Wilson</title>
+<meta name="description" content="How I took Quit28, a 28-day quit plan for the Smoking Ends Here campaign, from moodboards to launch, with the film and the first week’s results.">
+<meta name="theme-color" content="#ffffff">
+<link rel="canonical" href="https://sheawilson.vercel.app/quit28.html">
+<link rel="icon" href="favicon.ico" sizes="48x48">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Shea Wilson">
+<meta property="og:locale" content="en_GB">
+<meta property="og:url" content="https://sheawilson.vercel.app/quit28.html">
+<meta property="og:title" content="Quit28, by Shea Wilson">
+<meta property="og:description" content="How I took Quit28, a 28-day quit plan for the Smoking Ends Here campaign, from moodboards to launch, with the film and the first week’s results.">
+<meta property="og:image" content="https://sheawilson.vercel.app/assets/share/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Shea Wilson, design engineer. Always making something.">
+<meta name="twitter:card" content="summary_large_image">
+<script>
+  document.documentElement.classList.add('js');
+  try { if (localStorage.getItem('theme') === 'dark') document.documentElement.dataset.theme = 'dark'; } catch (e) {}
+</script>
+<script src="assets/js/sky.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=Spectral:ital,wght@0,200;0,300;1,300;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/site.css">
+<link rel="stylesheet" href="assets/css/sky.css">
+<link rel="stylesheet" href="assets/css/case.css">
+<link rel="stylesheet" href="assets/css/snapshot.css">
+<link rel="stylesheet" href="assets/css/quit28.css">
+</head>
+<body class="case sn-case q28-case" style="--tone:#00a7fa">
+
+<div class="tip" aria-hidden="true"><i></i><span class="tip-text"></span><svg class="tip-arrow" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5l5-5M4.5 3.5h4v4"/></svg></div>
+
+<header class="nav">
+  <div class="nav-inner">
+    <span class="nav-pill" aria-hidden="true"></span>
+    <a class="logo" href="index.html" aria-label="Shea Wilson, home">S<span class="fold"><span>hea&nbsp;</span></span>W<span class="fold"><span>ilson</span></span></a>
+    <nav class="links" aria-label="Main">
+      <a href="index.html#work">Work</a>
+      <a href="index.html#about">About</a>
+      <a href="index.html#contact">Contact</a>
+      <button class="theme-toggle" type="button" aria-label="Switch to dark mode" aria-pressed="false">
+        <span class="tt"><span class="tt-ring"></span><span class="tt-disc"><span class="tt-moon"></span></span></span>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <header class="cs-hero" id="top">
+    <h1 class="reveal">Quit28</h1>
+    <div class="sn-hero-copy reveal" style="--d:.06s">
+      <p class="lede">A 28-day quit plan that runs in the browser. Pick a first day, log each smoke-free day, and open one small tip or tool a day. I took it from the first moodboards to launch for Smoking Ends Here, then made the film and the live reporting.</p>
+      <div class="sn-actions">
+        <a class="sn-pill is-primary" href="https://quit28.smokingendshere.com/" target="_blank" rel="noopener">Open live site<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.5l5-5M4.5 3.5h4v4"/></svg></a>
+        <a class="sn-pill" href="#story">Read the story<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2.5v7M2.5 6L6 9.5 9.5 6"/></svg></a>
+      </div>
+    </div>
+    <dl class="facts reveal" style="--d:.12s">
+      <div><dt>Role</dt><dd>Concepts, UX and visual design, build, film and reporting</dd></div>
+      <div><dt>Client</dt><dd>Smoking Ends Here, for Champs and NHS Cheshire and Merseyside</dd></div>
+      <div><dt>Team</dt><dd>James on the brief and the first journey, Charlotte on the daily tips and Connor on the logo</dd></div>
+      <div><dt>Timeline</dt><dd>August to October 2026</dd></div>
+      <div><dt>Built with</dt><dd>Next.js, Convex, Vercel, PostHog, HyperFrames, Claude Code and Codex</dd></div>
+    </dl>
+  </header>
+
+  <!-- The film: silent video with music and sound effects as separate tracks (assets/js/film-player.js) -->
+  <section class="sn-film reveal" aria-label="The film">
+    <figure class="film" data-film
+      data-wide="assets/media/quit28/film/quit28-film-wide.mp4" data-tall="assets/media/quit28/film/quit28-film-tall.mp4"
+      data-wide-poster="assets/media/quit28/film/quit28-film-wide.webp" data-tall-poster="assets/media/quit28/film/quit28-film-tall.webp"
+      data-music="assets/media/quit28/film/quit28-film-music.m4a" data-sfx="assets/media/quit28/film/quit28-film-sfx.m4a">
+      <div class="film-frame">
+        <video playsinline muted loop preload="metadata" aria-label="A 28-second film of Quit28: the calendar fills in day by day, a tap on Craving now? starts the timer, and day 28 turns pink"></video>
+        <button class="film-big" type="button" aria-label="Play the film"></button>
+      </div>
+      <div class="film-scrub"><input type="range" min="0" max="1000" value="0" step="1" aria-label="Position in the film"><span class="film-time">0:00 / 0:28</span></div>
+      <figcaption class="film-bar">
+        <button type="button" data-toggle="music" aria-pressed="false">Music</button>
+        <button type="button" data-toggle="sfx" aria-pressed="false">Sound effects</button>
+        <button type="button" data-play aria-label="Play">
+          <svg class="i-play" viewBox="0 0 14 14" fill="currentColor" aria-hidden="true"><path d="M3 1.5v11l9-5.5z"/></svg>
+          <svg class="i-pause" viewBox="0 0 14 14" fill="currentColor" aria-hidden="true"><path d="M3 1.5h3v11H3zM8 1.5h3v11H8z"/></svg>
+        </button>
+      </figcaption>
+    </figure>
+  </section>
+
+  <section class="cs-intro reveal">
+    <p class="label">The idea</p>
+    <p>Quitting forever is a lot to ask. Quit28 asks for one day, then the next one, and keeps count for you.</p>
+  </section>
+
+  <section class="sn-answers" aria-label="In short">
+    <div class="point reveal">
+      <h3>What it is</h3>
+      <p>A website that works like an app. Choose your first day, tick off each smoke-free day on a calendar, and get one small thing to try each day. There’s a craving timer, a reason to keep in view, and links to local support. No sign-up, and your progress stays on your phone.</p>
+    </div>
+    <div class="point reveal" style="--d:.06s">
+      <h3>What I did</h3>
+      <p>The moodboards and concepts, the polish and the merge into one journey, the design guide, the build and the launch, the film and the reporting. James wrote the brief and built the first calendar journey. Charlotte finalised the daily tips with the client, and Connor drew the logo.</p>
+    </div>
+    <div class="point reveal" style="--d:.12s">
+      <h3>How it’s going</h3>
+      <p>It launched on 19 October. In the first week, 40 quit dates were saved and 8 logged a smoke-free first day. It’s early, so the story so far is about getting people to start.</p>
+    </div>
+  </section>
+
+  <!-- How it works: the phone stays put and changes screen as each step comes into view (assets/js/snapshot.js) -->
+  <section class="sn-flow" aria-labelledby="flow-title">
+    <div class="sn-flow-head reveal">
+      <h2 id="flow-title">One day at a time, four screens</h2>
+      <p>On a phone, where most people use it.</p>
+    </div>
+    <div class="sn-flow-body">
+      <ol class="sn-steps">
+        <li class="sn-step is-on" data-step="0">
+          <p class="sn-step-n">1</p>
+          <h3>Pick your first day</h3>
+          <p>The welcome shows the whole product: the 28-day calendar, day 1’s tip and three steps. One button starts it.</p>
+          <img class="sn-step-shot" src="assets/media/quit28/phone-welcome.webp" alt="" width="720" height="1566" loading="lazy" decoding="async">
+        </li>
+        <li class="sn-step" data-step="1">
+          <p class="sn-step-n">2</p>
+          <h3>Log the day</h3>
+          <p>One tap logs a smoke-free day. The button turns green, a tick draws in and a chime plays. Every save gets the same small moment.</p>
+          <img class="sn-step-shot" src="assets/media/quit28/phone-day-1-logged.webp" alt="" width="720" height="1566" loading="lazy" decoding="async">
+        </li>
+        <li class="sn-step" data-step="2">
+          <p class="sn-step-n">3</p>
+          <h3>One small thing a day</h3>
+          <p>Each day opens one tip or tool. Day 7 asks for one thing you’re proud of.</p>
+          <img class="sn-step-shot" src="assets/media/quit28/phone-day-7.webp" alt="" width="720" height="1566" loading="lazy" decoding="async">
+        </li>
+        <li class="sn-step" data-step="3">
+          <p class="sn-step-n">4</p>
+          <h3>Help when a craving hits</h3>
+          <p>“Craving now?” sits in the header on every screen. It opens a three-minute timer with a breathing circle and a soft sound.</p>
+          <img class="sn-step-shot" src="assets/media/quit28/phone-craving-timer.webp" alt="" width="720" height="1566" loading="lazy" decoding="async">
+        </li>
+      </ol>
+      <div class="sn-phone-wrap" aria-hidden="true">
+        <div class="sn-phone" data-on="0">
+          <img src="assets/media/quit28/phone-welcome.webp" alt="" width="720" height="1566" decoding="async">
+          <img src="assets/media/quit28/phone-day-1-logged.webp" alt="" width="720" height="1566" loading="lazy" decoding="async">
+          <img src="assets/media/quit28/phone-day-7.webp" alt="" width="720" height="1566" loading="lazy" decoding="async">
+          <img src="assets/media/quit28/phone-craving-timer.webp" alt="" width="720" height="1566" loading="lazy" decoding="async">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="sn-story" id="story">
+    <nav class="sn-rail" aria-label="Chapters">
+      <p class="label">This case study</p>
+      <ol>
+        <li><a href="#brief">The brief <span>27 Aug</span></a></li>
+        <li><a href="#concepts">The concepts <span>Sep</span></a></li>
+        <li><a href="#journey">One journey <span>Sep</span></a></li>
+        <li><a href="#colour">Colour and the guide <span>Sep–Oct</span></a></li>
+        <li><a href="#launch">Launch <span>Oct</span></a></li>
+        <li><a href="#results">The first week</a></li>
+        <li><a href="#learned">What I learned</a></li>
+      </ol>
+    </nav>
+
+    <div class="sn-chapters">
+
+      <section class="sn-ch" id="brief" aria-labelledby="brief-title">
+        <div class="sn-head reveal">
+          <p class="sn-when">27 August</p>
+          <h2 id="brief-title">Twenty-eight texts at eight in the morning</h2>
+        </div>
+        <div class="sn-prose reveal">
+          <p>James’s first brief was a coach in your pocket, without an app. Sign up with your name and number, then get a message every morning for 28 days. It was for everyone who smokes, hopeful and a little cheeky in tone, with a look of its own, apart from Snapshot. The target was 100 real quit attempts.</p>
+          <p>Everything hung off the campaign’s line: “Quit for 28 days. You’re five times more likely to quit for good.” I started with moodboards. Three directions, five more, a round on colour and type, then a shortlist. Oat and teal came out on top.</p>
+        </div>
+        <div class="sn-pair">
+          <figure class="sn-fig reveal"><div class="shot"><img src="assets/media/quit28/moodboard-directions.webp" alt="The first moodboard: three directions for 28 Days, each shown as a text message and a daily page" width="1800" height="1125" loading="lazy" decoding="async"></div><figcaption>Round one, three directions.</figcaption></figure>
+          <figure class="sn-fig reveal" style="--d:.06s"><div class="shot"><img src="assets/media/quit28/moodboard-shortlist.webp" alt="The moodboard shortlist: Oat and Teal, with day 7 screens on phones" width="1800" height="1125" loading="lazy" decoding="async"></div><figcaption>The shortlist, after a round on colour and type.</figcaption></figure>
+        </div>
+      </section>
+
+      <section class="sn-ch" id="concepts" aria-labelledby="concepts-title">
+        <div class="sn-head reveal">
+          <p class="sn-when">11 September</p>
+          <h2 id="concepts-title">From texts to one page of tools</h2>
+        </div>
+        <div class="sn-prose reveal">
+          <p>Two weeks in, the brief changed. Texts were out as the centre of it. James wanted a single web page with a friendly library of tools: a 28-day planner, a craving timer and a place for your reason.</p>
+          <p>I built three concepts in the real code the same day, so we could click through them rather than look at pictures. A shelf of tools sorted by moment. A kit that rearranged itself for the day you were on. A path where the calendar was the way around.</p>
+        </div>
+        <div class="sn-pair">
+          <figure class="sn-fig reveal"><div class="shot"><img src="assets/media/quit28/concept-shelf.webp" alt="Concept A, the Shelf: Your quit toolkit, with tools grouped under Right now and This week" width="1280" height="1000" loading="lazy" decoding="async"></div><figcaption>Concept A, the Shelf.</figcaption></figure>
+          <figure class="sn-fig reveal" style="--d:.06s"><div class="shot"><img src="assets/media/quit28/concept-path.webp" alt="Concept C, the Path: 28 days, every one has something for you, with the calendar as the navigation" width="1280" height="1000" loading="lazy" decoding="async"></div><figcaption>Concept C, the Path.</figcaption></figure>
+        </div>
+        <div class="sn-prose reveal">
+          <p>The toolkit won, and went live the same evening with the craving timer, a printable plan made from your own reason and dates, and sounds for the breathing.</p>
+        </div>
+        <figure class="sn-fig reveal">
+          <div class="shot"><img src="assets/media/quit28/toolkit-september.webp" alt="The September toolkit: A little help when you need it, with My family as the reason and a grid of tools" width="1440" height="1150" loading="lazy" decoding="async"></div>
+          <figcaption>The toolkit as it went live, 11 September.</figcaption>
+        </figure>
+      </section>
+
+      <section class="sn-ch" id="journey" aria-labelledby="journey-title">
+        <div class="sn-head reveal">
+          <p class="sn-when">16 to 28 September</p>
+          <h2 id="journey-title">Two versions, then one</h2>
+        </div>
+        <div class="sn-prose reveal">
+          <p>Next, James built a calendar-first journey on top of it, tested it with the client and handed it to me on 21 September. I polished it the same day. The date picker floats over the page now. The day card holds one size in every state, so logging a day never moves anything. Underlined links became buttons, and a lot of copy came out.</p>
+          <p>Then both versions kept growing for a week. His had the client’s changes and new daily tips. Mine had the polish, a home screen app and the reporting. On 28 September I merged them: his flow and copy, my polish underneath. James picked the campaign’s colours and Manrope for it.</p>
+        </div>
+        <figure class="sn-fig reveal">
+          <div class="shot"><img src="assets/media/quit28/macbook.webp" alt="The Quit28 welcome page on a laptop: Start your 28 day quit journey today, with the 28-day calendar pinned beside it" width="1800" height="1115" loading="lazy" decoding="async"></div>
+          <figcaption>The welcome after the merge. It shows the product rather than describing it.</figcaption>
+        </figure>
+      </section>
+
+      <section class="sn-ch" id="colour" aria-labelledby="colour-title">
+        <div class="sn-head reveal">
+          <p class="sn-when">24 September to 2 October</p>
+          <h2 id="colour-title">Every colour gets one job</h2>
+        </div>
+        <div class="sn-prose reveal">
+          <p>Most people won’t see Quit28 on a good screen. So I tested the palettes the way they’d really look: on a budget laptop, washed out in sunlight, under night mode, for colour blindness and in greyscale. The teal got deeper so white text on it held up.</p>
+          <p>Then the campaign’s neons came in. They’re loud, so I gave each one a job. Green is done. Blue is help. Pink is where you’re heading. Black and white do everything else, on a calm grey page, so the bright colours stay small.</p>
+        </div>
+        <figure class="sn-fig reveal">
+          <div class="shot"><img src="assets/media/quit28/design-colour.webp" alt="The colour page of the Quit28 design guide: green for Done, blue for Help, pink for Where you’re heading" width="1800" height="1125" loading="lazy" decoding="async"></div>
+          <figcaption>The colour page of the design guide.</figcaption>
+        </figure>
+        <div class="sn-prose reveal">
+          <p>On 2 October I wrote it all down as a design guide, for James and Alex, who design in Codex, and for the client. It covers how Quit28 looks, moves, sounds and speaks, and it’s built from the live product’s own parts. One button sets it up as a skill, so anyone’s AI tools follow the same rules.</p>
+        </div>
+        <figure class="sn-fig reveal">
+          <div class="shot"><img src="assets/media/quit28/design-guide.webp" alt="The Quit28 design guide: How Quit28 looks, moves, sounds and speaks, with the app icon and a logged day" width="1800" height="1125" loading="lazy" decoding="async"></div>
+          <figcaption>The guide lives on the product’s own site.</figcaption>
+        </figure>
+      </section>
+
+      <section class="sn-ch" id="launch" aria-labelledby="launch-title">
+        <div class="sn-head reveal">
+          <p class="sn-when">12 to 19 October</p>
+          <h2 id="launch-title">A new name in launch week</h2>
+        </div>
+        <div class="sn-prose reveal">
+          <p>It went live quietly on 12 October as QuitCoach. Three days later it became Quit28, with Connor’s logo and a new address. The old address stayed up without a redirect, so testers kept their progress.</p>
+          <p>In the early hours of launch day, six AI testers went through the live site. Nothing blocked launch, and I fixed what they found. I also made the film at the top of this page, in three shapes for social, and campaign traffic started on 19 October.</p>
+        </div>
+        <figure class="sn-fig reveal">
+          <div class="shot"><img src="assets/media/quit28/two-hands.webp" alt="Quit28 on a phone held in two hands, showing Day 1, You showed up for yourself" width="1800" height="1350" loading="lazy" decoding="async"></div>
+        </figure>
+        <div class="sn-list reveal">
+          <p class="label">Checked for launch day</p>
+          <ul>
+            <li>A logged day could be lost when the phone’s browser storage was full.</li>
+            <li>Keyboard focus could hide behind the cookie card.</li>
+            <li>No analytics run until someone accepts cookies, and nothing personal is sent, including the reason they type.</li>
+            <li>Every ad link names its ad, so the report can say which one brought people in.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="sn-ch" id="results" aria-labelledby="results-title">
+        <div class="sn-head reveal">
+          <p class="sn-when">19 to 26 October</p>
+          <h2 id="results-title">The first week</h2>
+        </div>
+        <div class="sn-prose reveal">
+          <p>Quit28 counts what people do, not who they are. Every figure is an anonymous count per phone or browser, not per person. A logged day is someone’s own word, so none of this measures a quit. The team reads it live in JumpStart, the reporting product I’m building.</p>
+        </div>
+
+        <div class="sn-block reveal">
+          <h3>From the welcome to day 1</h3>
+          <ul class="sn-bars" aria-label="The first week, step by step">
+            <li style="--v:173"><span class="sn-bar-name">Saw the welcome page</span><span class="sn-bar"><i></i></span><span class="sn-bar-num">173</span></li>
+            <li style="--v:55"><span class="sn-bar-name">Clicked Start</span><span class="sn-bar"><i></i></span><span class="sn-bar-num">55</span></li>
+            <li style="--v:40"><span class="sn-bar-name">Saved a start date</span><span class="sn-bar"><i></i></span><span class="sn-bar-num">40</span></li>
+            <li style="--v:8"><span class="sn-bar-name">Logged day 1 smoke-free</span><span class="sn-bar"><i></i></span><span class="sn-bar-num">8</span></li>
+          </ul>
+          <div class="sn-prose">
+            <p>Most people who pressed Start went on to save a date, 40 of 55. The big drop is earlier: two in three people who saw the welcome never pressed Start. That’s the next thing to work on.</p>
+          </div>
+        </div>
+
+        <div class="sn-block reveal">
+          <h3>After the start</h3>
+          <div class="sn-who">
+            <div class="stat"><span class="num" data-count="17">17</span><span class="what">smoke-free days logged</span></div>
+            <div class="stat"><span class="num" data-count="29">29</span><span class="what">opened “Keep your why close”, the most-used tool</span></div>
+            <div class="stat"><span class="num" data-count="5">5</span><span class="what">clicked through to a local stop smoking service or the NHS finder</span></div>
+          </div>
+          <div class="sn-prose">
+            <p>The first starters were one week in, so the later days hadn’t happened yet. I’ll add them here as they fill in.</p>
+          </div>
+        </div>
+
+        <div class="sn-pair">
+          <figure class="sn-fig reveal"><div class="shot"><img src="assets/media/quit28/report-funnel.webp" alt="Report slide: 40 quit dates saved in Quit28’s first week, and start dates saved each day" width="1600" height="900" loading="lazy" decoding="async"></div></figure>
+          <figure class="sn-fig reveal" style="--d:.06s"><div class="shot"><img src="assets/media/quit28/report-days.webp" alt="Report slide: 17 smoke-free days logged so far, the tools people opened and clicks to local support" width="1600" height="900" loading="lazy" decoding="async"></div></figure>
+        </div>
+        <p class="sn-note reveal">The two report slides I made for the team, 26 October.</p>
+      </section>
+
+      <section class="sn-ch" id="learned" aria-labelledby="learned-title">
+        <div class="sn-head reveal">
+          <h2 id="learned-title">What I’d tell myself in August</h2>
+        </div>
+        <div class="sn-learned">
+          <div class="point reveal"><h3>Build the concepts for real</h3><p>Three working concepts in a day made the choice easy, and the winner was live that evening.</p></div>
+          <div class="point reveal" style="--d:.05s"><h3>Merge sooner</h3><p>Two versions growing apart for a week meant one big merge. Next time we work on one.</p></div>
+          <div class="point reveal"><h3>Give colour a job</h3><p>Loud colours stopped being a problem once each one meant something.</p></div>
+          <div class="point reveal" style="--d:.05s"><h3>Watch the first tap</h3><p>The welcome loses more people than any day after it. The first screen is where the next round of work goes.</p></div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <section class="cs-cta">
+    <h2 class="reveal">One day <em>at a time.</em></h2>
+    <div class="cta reveal" style="--d:.08s">
+      <a class="email" href="https://quit28.smokingendshere.com/" target="_blank" rel="noopener"><span>Try Quit28</span><svg class="email-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 11.5l7-7M6 4.5h5.5V10"/></svg></a>
+      <a class="copy" href="mailto:design@sheawilson.uk?subject=Quit28">Ask me about it</a>
+    </div>
+  </section>
+
+  <section class="cs-next" aria-label="Next project">
+    <p class="label">Next project</p>
+    <article class="item t-small t-next reveal" data-cursor="View case study" style="--tone:#4fae86; --a:#4fae86; --b:#8fd4b4; --c:#0b5c45">
+      <div class="bleed" aria-hidden="true">
+        <span class="blob" style="--c:#4fae86; width:56%; left:40%; top:12%; rotate:-12deg"></span>
+        <span class="blob" style="--c:#8fd4b4; width:36%; left:62%; top:44%; rotate:18deg; --ar:1.7"></span>
+        <span class="blob" style="--c:#0b5c45; width:30%; left:30%; top:52%; rotate:-20deg; --ar:1.3"></span>
+      </div>
+      <a class="card" href="jumpstart.html">
+        <div class="card-top"><span class="label">Agency reporting product</span><span class="label">In pilot</span></div>
+        <div class="card-copy"><h2>JumpStart</h2><p class="line">Paid media reporting that explains itself. Clients get a plain-English read of what changed, why it matters and what happens next.</p></div>
+        <div class="media"><img class="img-light" src="assets/media/home/jumpstart-client.webp" alt="JumpStart client report: every pound spent brought back £2.86" width="1600" height="1000" loading="lazy" decoding="async"><img class="img-dark" src="assets/media/home/jumpstart-client-dark.webp" alt="" width="1600" height="1000" loading="lazy" decoding="async"></div>
+      </a>
+    </article>
+  </section>
+</main>
+
+<footer>
+  <span>© 2026 Shea Wilson</span>
+  <nav aria-label="Footer"><a href="https://www.linkedin.com/in/sheawilson0/" target="_blank" rel="noopener">LinkedIn</a><a href="#top">Back to top</a></nav>
+</footer>
+
+<script src="assets/js/site.js" defer></script>
+<script src="assets/js/case.js" defer></script>
+<script src="assets/js/snapshot.js" defer></script>
+<script src="assets/js/film-player.js" defer></script>
+</body>
+</html>
