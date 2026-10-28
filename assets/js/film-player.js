@@ -1,5 +1,6 @@
 // Film player: a silent video with music and sound effects as separate tracks, played through
-// Web Audio so each can be switched on or off with a fade, never a seek. A scrubber shows where you are and lets you drag.
+// Web Audio and kept in sync with the picture. Sound is always on; the film plays silently in view
+// until a tap lets the browser start it. A scrubber shows where you are and lets you drag.
 // No dependencies.
 //
 // <figure class="film" data-film data-wide="wide.mp4" data-tall="tall.mp4" data-wide-poster="…" data-tall-poster="…"
@@ -8,8 +9,6 @@
 //     <button class="film-big" type="button" aria-label="Play the film"></button></div>
 //   <div class="film-scrub"><input type="range" min="0" max="1000" value="0" aria-label="Position in the film"><span class="film-time">0:00</span></div>
 //   <div class="film-bar">
-//     <button type="button" data-toggle="music" aria-pressed="false">Music</button>
-//     <button type="button" data-toggle="sfx" aria-pressed="false">Sound effects</button>
 //     <button type="button" data-play aria-label="Play">…</button>
 //   </div>
 // </figure>
@@ -38,8 +37,8 @@
     const tracks = {};
     for (const key of ['music', 'sfx']) {
       const gain = ctx ? ctx.createGain() : null;
-      if (gain) { gain.gain.value = 0; gain.connect(ctx.destination); }
-      tracks[key] = { key, on: false, url: '', buffer: null, gain, button: root.querySelector(`[data-toggle="${key}"]`) };
+      if (gain) gain.connect(ctx.destination);
+      tracks[key] = { key, url: '', buffer: null, gain };
     }
     let anchor = null; // the context time and film time the sounds started from
 
@@ -79,13 +78,11 @@
       } catch (e) {}
     };
 
-    const fade = t => { if (t.gain) t.gain.gain.setTargetAtTime(t.on ? 1 : 0, ctx.currentTime, 0.02); };
-
     const setState = () => {
       const playing = !video.paused;
       root.classList.toggle('is-playing', playing);
+      root.classList.toggle('needs-tap', !!ctx && ctx.state !== 'running');
       if (playBtn) playBtn.setAttribute('aria-label', playing ? 'Pause' : 'Play');
-      for (const t of Object.values(tracks)) if (t.button) t.button.setAttribute('aria-pressed', String(t.on));
     };
 
     const showTime = () => {
@@ -117,7 +114,9 @@
     const play = () => video.play().catch(() => {});
     const unlock = () => { if (ctx && ctx.state !== 'running') ctx.resume().then(() => { if (!video.paused) start(); }).catch(() => {}); };
     const toggle = () => { unlock(); root.dataset.userPaused = video.paused ? '' : '1'; video.paused ? play() : video.pause(); };
-    video.addEventListener('click', toggle);
+    // the first tap on a film playing silently brings the sound in rather than pausing it
+    video.addEventListener('click', () => { if (ctx && ctx.state !== 'running' && !video.paused) unlock(); else toggle(); });
+    if (ctx) ctx.addEventListener('statechange', setState);
     if (big) big.addEventListener('click', () => { unlock(); play(); });
     if (playBtn) playBtn.addEventListener('click', toggle);
 
@@ -126,17 +125,6 @@
       scrub.addEventListener('input', () => { const d = video.duration || 0; video.currentTime = (+scrub.value / 1000) * d; scrub.style.setProperty('--p', `${+scrub.value / 10}%`); if (time) time.textContent = `${fmt(video.currentTime)} / ${fmt(d)}`; });
       const end = () => { if (!dragging) return; dragging = false; if (wasPlaying) play(); };
       scrub.addEventListener('pointerup', end); scrub.addEventListener('change', end); scrub.addEventListener('pointercancel', end);
-    }
-
-    for (const t of Object.values(tracks)) {
-      if (!t.button) continue;
-      t.button.addEventListener('click', () => {
-        t.on = !t.on;
-        unlock(); fade(t);
-        if (t.on && video.paused) play();
-        else if (t.on && !anchor) start();
-        setState(); kick();
-      });
     }
 
     const setSources = ({ video: v, poster, music, sfx }) => {

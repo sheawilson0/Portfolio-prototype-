@@ -256,14 +256,15 @@
   background: rgba(255, 255, 255, .92); box-shadow: 0 14px 40px rgba(20, 0, 70, .35); transition: opacity .4s, transform .4s; }
 .film-big::before { content: ""; position: absolute; left: 34px; top: 27px; border-style: solid; border-width: 15px 0 15px 24px; border-color: transparent transparent transparent #1a0680; }
 .film.is-playing .film-big { opacity: 0; transform: scale(.8); pointer-events: none; }
+/* playing silently until the browser lets sound start: one tap on the film brings it in */
+.film-frame::after { content: "Tap for sound"; position: absolute; right: 14px; bottom: 14px; padding: 7px 13px; border-radius: 999px; pointer-events: none;
+  font-size: 13px; color: #fff; background: rgba(0, 0, 0, .5); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); opacity: 0; transition: opacity .4s; }
+.film.is-playing.needs-tap .film-frame::after { opacity: 1; }
 .film-bar { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; align-items: center; }
 .film-bar button { display: inline-flex; align-items: center; gap: 9px; height: 42px; padding: 0 18px; border-radius: 999px; cursor: pointer;
   font: inherit; font-size: 15px; color: var(--ink-2, rgba(10, 10, 10, .64)); background: var(--glass-strong, rgba(255, 255, 255, .78));
   border: 1px solid var(--glass-line, rgba(10, 10, 10, .07)); transition: color .3s, background .3s, border-color .3s; }
 .film-bar button:hover { color: var(--ink, #0a0a0a); }
-.film-bar button[aria-pressed]::before { content: ""; width: 8px; height: 8px; border-radius: 50%; border: 1.5px solid currentColor; transition: background .3s; }
-.film-bar button[aria-pressed="true"] { color: var(--bg, #fff); background: var(--ink, #0a0a0a); border-color: transparent; }
-.film-bar button[aria-pressed="true"]::before { background: #ed1652; border-color: #ed1652; }
 .film-bar [data-play] { width: 42px; padding: 0; justify-content: center; margin-left: auto; }
 .film-bar [data-play] svg { width: 14px; height: 14px; }
 .film-bar [data-play] .i-pause { display: none; }
