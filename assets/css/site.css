@@ -186,10 +186,11 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 
 /* The light behind the glass: soft ellipses over a shared wash. Only transforms change on hover. */
 .bleed { position: absolute; inset: -5%; z-index: -1; pointer-events: none; opacity: var(--bleed-rest); mix-blend-mode: var(--bleed-blend); transition: opacity 1s var(--ease); }
-.bleed::before { content: ""; position: absolute; inset: 12%; border-radius: 40%; filter: blur(50px); opacity: .55;
+/* Cache the blur, rather than reserving a separate layer for every unblurred blob. */
+.bleed::before { content: ""; position: absolute; inset: 12%; border-radius: 40%; filter: blur(50px); opacity: .55; will-change: transform;
   background: conic-gradient(from var(--wash-from, 200deg), var(--a, transparent), var(--b, transparent), var(--c, transparent), var(--a, transparent)); }
 .item.is-hot .bleed { opacity: var(--bleed-hover); }
-.blob { position: absolute; border-radius: 50%; aspect-ratio: var(--ar, 1.5); will-change: transform;
+.blob { position: absolute; border-radius: 50%; aspect-ratio: var(--ar, 1.5);
   background: radial-gradient(closest-side, color-mix(in srgb, var(--c) 78%, transparent) 0%, color-mix(in srgb, var(--c) 54%, transparent) 26%,
     color-mix(in srgb, var(--c) 30%, transparent) 48%, color-mix(in srgb, var(--c) 12%, transparent) 70%, color-mix(in srgb, var(--c) 3%, transparent) 88%, transparent 100%); }
 

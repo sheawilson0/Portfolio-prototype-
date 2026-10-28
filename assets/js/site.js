@@ -183,12 +183,12 @@
     el, card: el.querySelector('.card'), media: el.querySelector('.media'),
     blobs: [...el.querySelectorAll('.blob, .blob-img')],
     layers: [...el.querySelectorAll('[data-depth]')].map((l) => ({ el: l, d: +l.dataset.depth })),
-    tx: 0, ty: 0, x: 0, y: 0, hot: false,
+    tx: 0, ty: 0, x: 0, y: 0,
   }));
   items.forEach((it) => {
     if (!fine || reduced) return;
-    it.el.addEventListener('pointerenter', () => { it.hot = true; it.el.classList.add('is-hot'); wake(); });
-    it.el.addEventListener('pointerleave', () => { it.hot = false; it.el.classList.remove('is-hot'); it.tx = 0; it.ty = 0; wake(); });
+    it.el.addEventListener('pointerenter', () => { it.el.classList.add('is-hot'); wake(); });
+    it.el.addEventListener('pointerleave', () => { it.el.classList.remove('is-hot'); it.tx = 0; it.ty = 0; wake(); });
     it.el.addEventListener('pointermove', (e) => {
       const r = it.el.getBoundingClientRect();
       it.tx = clamp((e.clientX - r.left) / r.width - .5, -.5, .5);
@@ -202,7 +202,7 @@
     let moving = false;
     items.forEach((it) => {
       const nx = lerp(it.x, it.tx, .08), ny = lerp(it.y, it.ty, .08);
-      if (Math.abs(nx - it.x) + Math.abs(ny - it.y) < .0004 && !it.hot) { it.x = it.tx; it.y = it.ty; return; }
+      if (Math.abs(nx - it.x) + Math.abs(ny - it.y) < .0004) { it.x = it.tx; it.y = it.ty; return; }
       it.x = nx; it.y = ny; moving = true;
       if (it.media) it.media.style.transform = `perspective(1300px) rotateX(${(-it.y * 6).toFixed(2)}deg) rotateY(${(it.x * 8).toFixed(2)}deg)`;
       // Layers slide by their depth: back layers against the pointer, front layers with it.
