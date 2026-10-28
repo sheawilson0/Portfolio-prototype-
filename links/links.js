@@ -55,14 +55,14 @@
   const WORK = [
     { name: 'Smoking Snapshot', note: '1,000+ uses', href: 'https://sheawilson.uk/snapshot.html', tone: '#ed1652',
       art: `<span class="mk mk-snap"><span class="mk-screen s1"><img src="${W}snapshot-results.webp" alt="" loading="lazy"></span><img class="mk-phone" src="${W}snapshot-phone.webp" alt="" loading="lazy"></span>` },
+    { name: 'Quit28', note: 'Live now', href: 'https://sheawilson.uk/quit28.html', tone: '#00a7fa',
+      art: `<span class="mk mk-one"><img src="${W}quit28.webp" alt="" loading="lazy"></span>` },
     { name: 'JumpStart', note: 'In pilot', href: 'https://sheawilson.uk/jumpstart.html', tone: '#4fae86',
       art: `<span class="mk mk-jump">${jumpScreen('j1', 'jumpstart-agency')}${jumpScreen('j2', 'jumpstart-report')}${jumpScreen('j3', 'jumpstart-export')}</span>` },
-    { name: 'Quit28', note: 'Live now', href: 'https://quit28.smokingendshere.com/', tone: '#06d606',
-      art: `<span class="mk mk-one"><img src="${W}quit28.webp" alt="" loading="lazy"></span>` },
     { name: 'Brain Dump', note: 'In beta', href: 'https://sheawilson.uk/braindump.html', tone: '#8a3cff',
       art: `<span class="mk mk-one mk-tall"><img src="${W}brain.webp" alt="" loading="lazy"></span>` },
   ];
-  const RECENT = [['#ed1652', 'Smoking Snapshot'], ['#4fae86', 'JumpStart'], ['#06d606', 'Quit28'], ['#8a3cff', 'Brain Dump']];
+  const RECENT = [['#ed1652', 'Smoking Snapshot'], ['#00a7fa', 'Quit28'], ['#4fae86', 'JumpStart'], ['#8a3cff', 'Brain Dump']];
 
   /* ───────── Theme: follows the visitor's system setting ─────────
      No toggle. The lab can switch to Sun (light by day, dark after dusk, same sunrise maths as assets/js/sky.js). */

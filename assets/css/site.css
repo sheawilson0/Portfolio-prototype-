@@ -149,7 +149,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .hero { position: sticky; top: 0; height: 100svh; min-height: 620px; overflow: clip;
   transition: --p1 1.4s var(--ease), --p2 1.4s var(--ease), --p3 1.4s var(--ease), --p4 1.4s var(--ease), --p5 1.4s var(--ease), --p6 1.4s var(--ease); }
 .hero[data-palette="snapshot"] { --p1: #ed1652; --p2: #ff6a1a; --p3: #c52bd6; --p4: #2f67ff; --p5: #3a17e0; --p6: #7a2cff; }
-.hero[data-palette="quit28"] { --p1: #06fb06; --p2: #7dff6b; --p3: #00a7fa; --p4: #5cc8ff; --p5: #f31a7b; --p6: #ff6aa8; }
+.hero[data-palette="quit28"] { --p1: #00a7fa; --p2: #5cc8ff; --p3: #06fb06; --p4: #0a7fe0; --p5: #00a7fa; --p6: #8fdcff; }
 .hero[data-palette="jumpstart"] { --p1: #0b5c45; --p2: #4fae86; --p3: #b8f0d2; --p4: #4fae86; --p5: #0b5c45; --p6: #8fd4b4; }
 .hero[data-palette="brain"] { --p1: #8a3cff; --p2: #c77dff; --p3: #e2b8ff; --p4: #5b2bff; --p5: #3a17e0; --p6: #b44bff; }
 
@@ -213,15 +213,15 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .card .line { margin-top: 10px; font-size: 16px; line-height: 1.5; color: var(--ink-2); max-width: 36ch; }
 .media { position: relative; z-index: 1; flex: 1; will-change: transform; transform-style: preserve-3d; }
 
-/* Snapshot */
-.t-snapshot { grid-column: span 12; }
-.t-snapshot .card { display: grid; grid-template-columns: 1.05fr 1fr; grid-template-rows: auto 1fr; min-height: 720px; }
-.t-snapshot .card-top { grid-column: 1 / -1; padding: 36px 44px 0; }
+/* Snapshot, and Quit28 laid out the same way */
+:is(.t-snapshot, .t-quit) { grid-column: span 12; }
+:is(.t-snapshot, .t-quit) .card { display: grid; grid-template-columns: 1.05fr 1fr; grid-template-rows: auto 1fr; min-height: 720px; }
+:is(.t-snapshot, .t-quit) .card-top { grid-column: 1 / -1; padding: 36px 44px 0; }
 .t-jump .card { grid-template-rows: auto 1fr; }
 .t-jump .card-top { grid-column: 2; grid-row: 1; padding: 36px 48px 0 10px; }
-.t-snapshot .card-copy { padding: 26px 44px 46px; display: flex; flex-direction: column; }
-.t-snapshot h2, .t-jump h2 { font-size: clamp(42px, 4.6vw, 68px); letter-spacing: var(--track-heading); }
-.t-snapshot .line, .t-jump .line { font-size: 18px; max-width: 32ch; }
+:is(.t-snapshot, .t-quit) .card-copy { padding: 26px 44px 46px; display: flex; flex-direction: column; }
+:is(.t-snapshot, .t-quit, .t-jump) h2 { font-size: clamp(42px, 4.6vw, 68px); letter-spacing: var(--track-heading); }
+:is(.t-snapshot, .t-quit, .t-jump) .line { font-size: 18px; max-width: 32ch; }
 .t-snapshot .media { position: relative; display: grid; place-items: center; padding-bottom: 30px; }
 .t-snapshot .device { position: relative; z-index: 2; margin-left: 22%; height: min(600px, 62vw); width: auto; filter: drop-shadow(0 40px 60px rgba(20, 0, 80, .3)); }
 .stats { margin-top: auto; display: grid; grid-template-columns: repeat(3, auto); justify-content: start; gap: 18px 46px; padding-top: 44px; }
@@ -254,7 +254,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .card-link { position: absolute; inset: 0; z-index: 3; border-radius: inherit; }
 .card-link:focus-visible { outline: 2px solid var(--tone); outline-offset: -8px; }
 /* The copy sits over the link but lets clicks fall through to it, except on the buttons */
-:is(.t-snapshot, .t-jump) .card-copy { z-index: 4; pointer-events: none; }
+:is(.t-snapshot, .t-quit, .t-jump) .card-copy { z-index: 4; pointer-events: none; }
 .card-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 26px; pointer-events: auto; }
 .card-btn { display: inline-flex; align-items: center; gap: 9px; height: 44px; padding: 0 19px; border-radius: 999px; font-size: 15px; font-weight: 400; white-space: nowrap;
   color: var(--ink-2); background: var(--glass-strong); border: 1px solid var(--glass-line); transition: box-shadow .5s var(--ease); }
@@ -265,15 +265,19 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .card-btn.is-soon { cursor: default; }
 .card-btn.is-soon i { width: 7px; height: 7px; border-radius: 50%; flex: none; background: var(--tone); }
 
-/* Quit28: the hand lifts the phone toward you on hover */
-.t-quit { grid-column: span 7; }
-.t-quit .card { min-height: 620px; }
-.t-quit .device { position: absolute; width: 74%; right: -20%; bottom: -14%; max-width: none; height: auto;
-  filter: drop-shadow(0 60px 70px rgba(0, 60, 20, .22)); transform-origin: 30% 80%; transition: transform 1.2s var(--ease); }
-.item.is-hot.t-quit .device { transform: translate3d(-3%, -7%, 0) rotate(-6deg); }
+/* Quit28: the hand-held phone in front, the calendar and the breathing circle floating behind it.
+   The card's own copy stays on the left, so the hand runs off the bottom right. */
+.t-quit .media { position: relative; }
+.t-quit .media img { position: absolute; max-width: none; height: auto; transition: transform 1.2s var(--ease); }
+.t-quit .q-calendar { width: 66%; left: -2%; top: 6%; transform: rotate(-7deg); filter: drop-shadow(0 26px 40px rgba(0, 60, 110, .16)); }
+.t-quit .q-breathe { width: 34%; left: 62%; top: 2%; }
+.t-quit .device { z-index: 2; width: 92%; left: 18%; bottom: -12%; filter: drop-shadow(0 50px 60px rgba(0, 50, 90, .24)); transform-origin: 30% 80%; }
+.item.is-hot.t-quit .q-calendar { transform: rotate(-9deg) translate3d(-4%, -3%, 0); }
+.item.is-hot.t-quit .q-breathe { transform: scale(1.06); }
+.item.is-hot.t-quit .device { transform: translate3d(-2%, -5%, 0) rotate(-4deg); }
 
-/* Brain Dump: the app's own screens */
-.t-brain { grid-column: span 5; }
+/* Brain Dump: the app's own screens. It and the three photo tiles make two rows of two */
+.t-brain { grid-column: span 6; }
 .t-brain .card { min-height: 620px; }
 .t-brain .media { display: grid; place-items: end center; padding-top: 30px; }
 .shots { position: relative; width: min(250px, 60%); aspect-ratio: 520 / 1077; margin-bottom: -70px; filter: drop-shadow(0 36px 50px rgba(50, 0, 110, .3)); }
@@ -286,7 +290,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .steps i.is-on { width: 30px; background: #8a3cff; }
 
 /* Photo tiles */
-.t-small { grid-column: span 4; }
+.t-small { grid-column: span 6; }
 .t-small .card { min-height: 500px; }
 .t-small .media { margin: 26px 22px 22px; border-radius: var(--radius-sm); overflow: hidden; }
 .t-small .media img { width: 100%; height: 100%; object-fit: cover; transform: scale(1.02); transition: transform 1.2s var(--ease); }
@@ -390,15 +394,14 @@ footer a:hover { color: var(--ink); }
   .toolkit > .label { flex-basis: 100%; }
 }
 @media (max-width: 1040px) {
-  .t-snapshot .card, .t-jump .card { grid-template-columns: 1fr; min-height: 0; }
+  :is(.t-snapshot, .t-quit) .card, .t-jump .card { grid-template-columns: 1fr; min-height: 0; }
   .t-snapshot .media { min-height: 560px; }
   .t-snapshot .device { height: 520px; }
   .t-jump .media { grid-column: 1; grid-row: 3; min-height: 440px; }
   .t-jump .card-top { grid-column: 1; grid-row: 1; padding: 36px 44px 0; }
   .t-jump .card-copy { grid-column: 1; grid-row: 2; padding: 22px 44px 10px; }
   .t-jump .media { grid-row: 3; }
-  .t-quit, .t-brain { grid-column: span 12; }
-  .t-small { grid-column: span 6; }
+  .t-quit .media { min-height: 560px; }
   .about { grid-template-columns: 1fr; }
 }
 @media (max-width: 700px) {
@@ -408,15 +411,14 @@ footer a:hover { color: var(--ink); }
   .eclipse { left: -40vw; width: 180vw; top: 70%; }
   .hero-copy { top: 38%; }
   .hero .intro { font-size: 16px; }
-  .t-snapshot .card-top, .t-jump .card-top { padding: 28px 28px 0; }
-  .t-snapshot .card-copy { padding: 20px 28px 30px; }
+  :is(.t-snapshot, .t-quit) .card-top, .t-jump .card-top { padding: 28px 28px 0; }
+  :is(.t-snapshot, .t-quit) .card-copy { padding: 20px 28px 30px; }
   .t-jump .card-copy { padding: 20px 28px 10px; }
   .card-top { padding: 26px 26px 0; }
   .card-copy { padding: 14px 26px 0; }
   .stats { grid-template-columns: 1fr 1fr; gap: 26px; }
-  .t-small { grid-column: span 12; }
-  .t-quit .card { min-height: 560px; }
-  .t-quit .device { width: 112%; right: -38%; bottom: -12%; }
+  .t-small, .t-brain { grid-column: span 12; }
+  .t-quit .media { min-height: 420px; }
   .t-jump .media { min-height: 320px; }
   .tool-group ul { flex-wrap: wrap; gap: 10px 20px; }
   .contact { padding: 120px var(--gutter) 110px; }

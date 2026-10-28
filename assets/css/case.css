@@ -103,6 +103,9 @@
 .t-next .media.is-phones { display: flex; justify-content: center; align-items: flex-start; gap: 4%; padding-top: 34px; border-radius: 0; overflow: visible; margin-bottom: 0; }
 .t-next .media.is-phones img { width: auto; height: 118%; max-width: 44%; object-fit: contain; filter: drop-shadow(0 30px 44px rgba(50, 0, 110, .26)); }
 .t-next .media.is-phones img + img { margin-top: 44px; }
+/* Quit28's hand-held phone runs off the bottom of the card */
+.t-next .media.is-hand { margin: 0; border-radius: 0; overflow: visible; min-height: 300px; }
+.t-next .media.is-hand img { position: absolute; width: min(80%, 480px); height: auto; left: 18%; bottom: -12%; object-fit: contain; filter: drop-shadow(0 40px 50px rgba(0, 50, 90, .22)); }
 
 .case footer { margin-top: 110px; }
 
