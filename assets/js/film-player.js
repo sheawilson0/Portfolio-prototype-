@@ -1,17 +1,15 @@
-// Film player: a silent video with music and sound effects as separate tracks, played through
-// Web Audio so each can be switched on or off with a fade, never a seek. A scrubber shows where you are and lets you drag.
+// Film player: a silent video with its music as a separate track, played through Web Audio so it can
+// fade in and out, never a seek. Controls like any video: play, a scrubber, the time and a sound button.
+// The music is on: browsers only allow sound after a tap, so it starts with the first tap or key press
+// anywhere on the page, and the sound button shows muted until then. A data-sfx track still works.
 // No dependencies.
 //
 // <figure class="film" data-film data-wide="wide.mp4" data-tall="tall.mp4" data-wide-poster="…" data-tall-poster="…"
 //   data-music="music.m4a" data-sfx="sfx.m4a">
 //   <div class="film-frame"><video playsinline muted loop preload="metadata"></video>
 //     <button class="film-big" type="button" aria-label="Play the film"></button></div>
-//   <div class="film-scrub"><input type="range" min="0" max="1000" value="0" aria-label="Position in the film"><span class="film-time">0:00</span></div>
-//   <div class="film-bar">
-//     <button type="button" data-toggle="music" aria-pressed="false">Music</button>
-//     <button type="button" data-toggle="sfx" aria-pressed="false">Sound effects</button>
-//     <button type="button" data-play aria-label="Play">…</button>
-//   </div>
+//   <div class="film-scrub"><button data-play>…</button><input type="range" min="0" max="1000" value="0" aria-label="Position in the film">
+//     <span class="film-time">0:00</span><button data-mute>…</button></div>
 // </figure>
 //
 // root.film.setSources({ video, poster, music, sfx }) swaps any of them and keeps the position.
@@ -39,7 +37,8 @@
     for (const key of ['music', 'sfx']) {
       const gain = ctx ? ctx.createGain() : null;
       if (gain) { gain.gain.value = 0; gain.connect(ctx.destination); }
-      tracks[key] = { key, on: false, url: '', buffer: null, gain, button: root.querySelector(`[data-toggle="${key}"]`) };
+      tracks[key] = { key, on: key === 'music', url: '', buffer: null, gain };
+      if (gain && key === 'music') gain.gain.value = 1;
     }
     let anchor = null; // the context time and film time the sounds started from
 
@@ -81,11 +80,14 @@
 
     const fade = t => { if (t.gain) t.gain.gain.setTargetAtTime(t.on ? 1 : 0, ctx.currentTime, 0.02); };
 
+    const muteBtn = root.querySelector('[data-mute]');
     const setState = () => {
       const playing = !video.paused;
+      const muted = !ctx || ctx.state !== 'running' || !tracks.music.on;
       root.classList.toggle('is-playing', playing);
+      root.classList.toggle('is-muted', muted);
       if (playBtn) playBtn.setAttribute('aria-label', playing ? 'Pause' : 'Play');
-      for (const t of Object.values(tracks)) if (t.button) t.button.setAttribute('aria-pressed', String(t.on));
+      if (muteBtn) { muteBtn.setAttribute('aria-pressed', String(muted)); muteBtn.setAttribute('aria-label', muted ? 'Turn sound on' : 'Mute'); }
     };
 
     const showTime = () => {
@@ -128,16 +130,19 @@
       scrub.addEventListener('pointerup', end); scrub.addEventListener('change', end); scrub.addEventListener('pointercancel', end);
     }
 
-    for (const t of Object.values(tracks)) {
-      if (!t.button) continue;
-      t.button.addEventListener('click', () => {
-        t.on = !t.on;
-        unlock(); fade(t);
-        if (t.on && video.paused) play();
-        else if (t.on && !anchor) start();
-        setState(); kick();
-      });
-    }
+    // The first tap or key press anywhere lets the music start; the sound button mutes and unmutes.
+    if (ctx) ctx.addEventListener('statechange', setState);
+    const wake = () => { unlock(); removeEventListener('pointerdown', wake, true); removeEventListener('keydown', wake, true); };
+    addEventListener('pointerdown', wake, true);
+    addEventListener('keydown', wake, true);
+    if (muteBtn) muteBtn.addEventListener('click', () => {
+      const t = tracks.music;
+      if (ctx && ctx.state !== 'running') t.on = true; else t.on = !t.on;
+      unlock(); fade(t);
+      if (t.on && video.paused) play();
+      else if (t.on && !anchor) start();
+      setState(); kick();
+    });
 
     const setSources = ({ video: v, poster, music, sfx }) => {
       load(tracks.music, music); load(tracks.sfx, sfx);
