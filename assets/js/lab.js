@@ -8,11 +8,11 @@
     ['copy', 'Card words (cards)', [['cap', 'Just a caption', 1], ['lean', 'Lean, card sizes'], ['full', 'Full']]],
     ['gap', 'Space between', [['roomy', 'More', 1], ['tight', 'As before']]],
     ['phones', 'Two phones (mosaic)', [['snap', 'Flip Snapshot', 1], ['quit', 'Flip Quit28'], ['side', 'Side by side']]],
-    ['skylook', 'Page sky', [['site', 'Site', 1], ['street', 'Shipped street']]],
-    ['ship', 'Shipped colour', [['red', 'Red', 1], ['yellow', 'Yellow']]],
+    ['skylook', 'Page sky', [['street', 'Shipped street', 1], ['site', 'Site']]],
+    ['ship', 'Shipped colour', [['yellow', 'Yellow', 1], ['red', 'Red']]],
     ['q28', 'Quit28 card', [['hand-cal', 'Hand, calendar', 1], ['hand', 'Hand, calendar, circle'], ['hand-circle', 'Hand, circle'], ['live', 'iPhone']]],
   ];
-  const KEY = 'home-lab-5'; // home-lab-5: picks changed 12 Nov, start everyone on them
+  const KEY = 'home-lab-6'; // home-lab-6: picks changed 12 Nov, start everyone on them
   const get = (k) => { try { return JSON.parse(localStorage.getItem(KEY) || '{}')[k]; } catch (e) { return null; } };
   const set = (k, v) => { try { const o = JSON.parse(localStorage.getItem(KEY) || '{}'); o[k] = v; localStorage.setItem(KEY, JSON.stringify(o)); } catch (e) {} };
   const apply = (k, v) => { document.body.dataset[k] = v; };

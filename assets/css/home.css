@@ -65,11 +65,14 @@ body[data-q28^="hand"] .work .q28-phone { display: none; }
 body[data-q28^="hand"] .work .q28-hand { display: block; }
 body[data-q28^="hand"] .work :is(.q28-cal, .q28-float) { right: auto; transform-origin: 0 0; }
 body[data-q28^="hand"] .work .q28-pin { right: auto; left: 22px; rotate: -12deg; }
-body[data-q28="hand"] .work .q28-cal { left: 2px; top: 44px; rotate: -5deg; }
-body[data-q28="hand"] .work .q28-float { left: -34px; top: 262px; }
+/* The phone in the hand runs from x 220 to 500 on the 520 stage, its screen from y 34 down. Everything else sits in
+   the column to its left, centred in it: the calendar level with the top of the screen, the circle under it. */
+body[data-q28="hand"] .work :is(.q28-cal, .q28-float) { scale: calc(var(--s) * .84); }
+body[data-q28="hand"] .work .q28-cal { left: 14px; top: 64px; rotate: -3deg; }
+body[data-q28="hand"] .work .q28-float { left: 6px; top: 228px; }
 body[data-q28="hand-cal"] .work .q28-float, body[data-q28="hand-circle"] .work .q28-cal { display: none; }
-body[data-q28="hand-cal"] .work .q28-cal { left: 34px; top: 150px; rotate: -8deg; }
-body[data-q28="hand-circle"] .work .q28-float { left: -8px; top: 120px; }
+body[data-q28="hand-cal"] .work .q28-cal { left: 22px; top: 162px; rotate: -5deg; }
+body[data-q28="hand-circle"] .work .q28-float { left: 10px; top: 146px; }
 
 /* ───────── Work as a mosaic (after raylight.app) ─────────
    Colour tiles, the product big, a name and a few words underneath. The tile never moves. On hover its
@@ -139,7 +142,7 @@ body[data-gap="tight"] .tile { gap: 14px; }
 .m-brain-back { width: 196px; left: 14px; top: 96px; rotate: -8deg; opacity: .9; filter: drop-shadow(0 24px 30px rgba(30, 0, 80, .35)); }
 /* Cipher and Amp: one photo, a touch bigger than the tile so moving it never shows an edge. */
 .m-photo .tile-art img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; scale: 1.08; translate: calc(var(--px, 0) * -16px) calc(var(--py, 0) * -12px); }
-/* Shipped: red (lab: yellow). Yellow mixed with black goes olive, so it shades and dims towards a warm brown. */
+/* Shipped: yellow (lab: red), set on <body>. Yellow mixed with black goes olive, so it shades and dims towards a warm brown. */
 .m-ship { --bg1: #ff3d2e; --bg2: #ff8a65; --shade: #7a0d00; }
 body[data-ship="yellow"] .m-ship { --bg1: #ffc21f; --bg2: #ff8a1f; --shade: #c2410c; }
 .m-ship .tile-art::before { background: #3a1200; }
