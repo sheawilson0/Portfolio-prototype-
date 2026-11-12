@@ -10,7 +10,7 @@
     ['phones', 'Two phones (mosaic)', [['snap', 'Flip Snapshot', 1], ['quit', 'Flip Quit28'], ['side', 'Side by side']]],
     ['skylook', 'Page sky', [['site', 'Site', 1], ['street', 'Shipped street']]],
     ['ship', 'Shipped colour', [['red', 'Red', 1], ['yellow', 'Yellow']]],
-    ['q28', 'Quit28 card', [['hand', 'Hand, calendar, circle', 1], ['hand-cal', 'Hand, calendar'], ['hand-circle', 'Hand, circle'], ['live', 'iPhone']]],
+    ['q28', 'Quit28 card', [['hand-cal', 'Hand, calendar', 1], ['hand', 'Hand, calendar, circle'], ['hand-circle', 'Hand, circle'], ['live', 'iPhone']]],
   ];
   const KEY = 'home-lab-5'; // home-lab-5: picks changed 12 Nov, start everyone on them
   const get = (k) => { try { return JSON.parse(localStorage.getItem(KEY) || '{}')[k]; } catch (e) { return null; } };
