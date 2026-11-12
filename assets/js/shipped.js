@@ -30,6 +30,7 @@
       case 'cutout': return `<span class="obj obj-cutout">${img}</span>`;
       case 'phone': return `<span class="obj obj-phone"><span>${img}</span></span>`;
       case 'screen': return `<span class="obj obj-screen"><i></i><span>${img}</span></span>`;
+      case 'line': return `<span class="obj obj-line"><span>${img}</span></span>`;
       case 'sprite': return `<span class="obj obj-sprite" style="--sheet:url('${esc(s.img)}')" role="img" aria-label="${esc(s.p)}"></span>`;
       default: return `<span class="obj obj-tile"><b>${esc(s.p.charAt(0))}</b></span>`;
     }
@@ -65,6 +66,25 @@
         if (m === 'far') { if (awake) play('bye', () => play('sleep')); awake = false; return; }
         if (!awake) { awake = true; play('wake', () => play('greet', m === 'open' ? work : idle)); }
         else if (m === 'open') work();
+      },
+      stop() { clearTimeout(timer); },
+    };
+  }
+
+  /* Meridian's mascot, live (assets/js/meridian-line.js): asleep away from the middle, awake and watching the
+     pointer at it, and open it runs through working, done and needs you. */
+  function face(host) {
+    if (typeof Line === 'undefined') return null;
+    host.textContent = '';
+    Line.mount(host, { eyeset: 'pen', mood: 'sleep', follow: true, label: 'Meridian' });
+    let timer = 0, mood = 'far', job = 0;
+    const JOBS = ['work', 'done', 'need', 'idle'];
+    const cycle = () => { Line.set(host, { mood: JOBS[job++ % JOBS.length] }); timer = setTimeout(cycle, 2800); };
+    return {
+      set(m) {
+        if (m === mood) return;
+        mood = m; clearTimeout(timer);
+        if (m === 'open') cycle(); else Line.set(host, { mood: m === 'near' ? 'idle' : 'sleep' });
       },
       stop() { clearTimeout(timer); },
     };
@@ -264,7 +284,7 @@
       }).join('');
       items.forEach((el) => el.sprite?.stop());
       items = [...track.children];
-      items.forEach((el) => { const o = el.querySelector('.obj-sprite'); if (o) el.sprite = sprite(o); });
+      items.forEach((el) => { const o = el.querySelector('.obj-sprite'), f = el.querySelector('.obj-line > span'); el.sprite = o ? sprite(o) : f ? face(f) : null; });
       // One tick per ship; the first of each month stands taller and carries its name.
       let month = '', lastLabel = -9;
       ticks.innerHTML = list.map((s, i) => {
