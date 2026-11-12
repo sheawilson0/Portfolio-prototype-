@@ -1,7 +1,7 @@
 /* sheawilson.uk/links
    One list of links. Visitors land on DEFAULT_STYLE; the others are easter eggs:
      Eclipse → tap the coin in the footer, tap the name three times, or type the Konami code → Arcade
-     Arcade → Insert coin → Receipt → "Thank you. Come again." → back to DEFAULT_STYLE
+     Arcade → Game over → back to DEFAULT_STYLE
    To change the front door, change DEFAULT_STYLE ('eclipse' or 'arcade'). Any style can also be linked
    directly with ?style=arcade. The lab bar only appears with ?lab on the live site. */
 (() => {
@@ -269,7 +269,7 @@
             <span class="ar-label">${esc(l.short)}</span><span class="ar-handle">${esc(l.sub)}</span></a></li>`).join('')}
         </ul>
         <p class="ar-hint"><span class="ar-blink">Press start</span><span class="ar-keys">↑ ↓ move · enter select</span></p>
-        <footer class="ar-foot"><button class="ar-coin" type="button">Insert coin</button><button class="ar-sound" type="button"></button></footer>
+        <footer class="ar-foot"><button class="ar-coin" type="button">Game over</button><button class="ar-sound" type="button"></button></footer>
       </main>`,
     mount(el) {
       const items = [...el.querySelectorAll('.ar-item')];
@@ -282,7 +282,7 @@
         store('links-arcade-sound', arcadeSound() ? 'off' : 'on'); syncSound(); wakeAudio();
         setTimeout(() => beep(SFX.on), 30);
       });
-      el.querySelector('.ar-coin').addEventListener('click', () => { wakeAudio(); setTimeout(() => beep(SFX.coin), 30); setTimeout(() => go('receipt'), 380); });
+      el.querySelector('.ar-coin').addEventListener('click', () => { wakeAudio(); setTimeout(() => beep(SFX.coin), 30); setTimeout(() => go(DEFAULT_STYLE === 'arcade' ? 'eclipse' : DEFAULT_STYLE), 380); });
       const select = (i, focus) => {
         i = (i + items.length) % items.length;
         if (i !== sel) beep(SFX.move);
@@ -365,48 +365,7 @@
     },
   };
 
-  /* ═════════ 3. Receipt: printed on arrival ═════════ */
-  function barcode(seed) {
-    let h = 2166136261, bars = '';
-    for (let n = 0; n < 46; n++) {
-      h ^= seed.charCodeAt(n % seed.length) + n; h = Math.imul(h, 16777619) >>> 0;
-      bars += `<i style="--w:${1 + (h % 3)}px;--g:${1 + ((h >> 3) % 3)}px"></i>`;
-    }
-    return bars;
-  }
-  const receipt = {
-    name: 'Receipt', meta: '#dcdcdf',
-    render: (links) => {
-      const n = new Date();
-      const date = `${pad2(n.getDate())}/${pad2(n.getMonth() + 1)}/${n.getFullYear()}`;
-      const time = `${pad2(n.getHours())}:${pad2(n.getMinutes())}`;
-      return `
-      <main class="rc">
-        <div class="rc-printer" aria-hidden="true"></div>
-        <div class="rc-clip"><div class="rc-paper">
-          <header class="rc-head"><h1 data-egg>Shea Wilson</h1><p>Design engineer</p><p>sheawilson.uk</p></header>
-          <p class="rc-meta"><span>${date}</span><span>${time}</span></p>
-          <p class="rc-meta"><span>Visitor</span><span>#${String(1000 + (Math.random() * 9000 | 0))}</span></p>
-          <p class="rc-cols" aria-hidden="true"><span>Qty</span><span>Item</span><span>Where</span></p>
-          <ul class="rc-items">
-            ${links.map((l) => `<li><a class="rc-item" ${attrs(l)}><span>1</span><span class="rc-name">${esc(l.short)}</span><span class="rc-sub">${esc(l.sub)}</span></a></li>`).join('')}
-          </ul>
-          <p class="rc-total"><span>Items</span><span>${links.length}</span></p>
-          <p class="rc-total is-big"><span>Total</span><span>£0.00</span></p>
-          <p class="rc-total"><span>Paid with</span><span>Curiosity</span></p>
-          <p class="rc-line">* Always making something *</p>
-          <a class="rc-bar" href="https://sheawilson.uk" target="_blank" rel="noopener" aria-label="Portfolio">${barcode('SHEAWILSON')}</a>
-          <button class="rc-thanks" type="button">Thank you. Come again.</button>
-        </div></div>
-      </main>`;
-    },
-    mount(el) {
-      wireName(el);
-      el.querySelector('.rc-thanks').addEventListener('click', () => go(DEFAULT_STYLE === 'receipt' ? 'eclipse' : DEFAULT_STYLE));
-    },
-  };
-
-  const STYLES = { eclipse, arcade, receipt };
+  const STYLES = { eclipse, arcade };
 
   /* ───────── State and the lab bar ───────── */
   const params = new URLSearchParams(location.search);

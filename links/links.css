@@ -1,5 +1,5 @@
 /* sheawilson.uk/links
-   Eclipse is the portfolio's look and follows the sun; Arcade has a day and a night; Receipt has one look. */
+   Eclipse is the portfolio's look and follows the sun; Arcade has a day and a night. */
 
 @property --p1 { syntax: '<color>'; inherits: true; initial-value: #ed1652; }
 @property --p2 { syntax: '<color>'; inherits: true; initial-value: #ff6a1a; }
@@ -308,41 +308,6 @@ body[data-style="arcade"]::after { content: ""; position: fixed; left: 0; top: 0
 :root:not([data-theme="dark"]) .ar-item { box-shadow: 0 -4px 0 0 var(--ar-edge), 0 4px 0 0 var(--ar-edge), -4px 0 0 0 var(--ar-edge), 4px 0 0 0 var(--ar-edge), 8px 8px 0 0 rgba(27, 47, 122, .35); }
 :root:not([data-theme="dark"]) .ar-item.is-sel { color: #1b2f7a; box-shadow: 0 -4px 0 0 #1b2f7a, 0 4px 0 0 #1b2f7a, -4px 0 0 0 #1b2f7a, 4px 0 0 0 #1b2f7a, 8px 8px 0 0 #ed1652; }
 :root:not([data-theme="dark"]) .ar-item.is-sel .ar-cur { color: #1b2f7a; }
-
-/* ═════════ 3. Receipt ═════════ */
-body[data-style="receipt"] { background: radial-gradient(120% 80% at 50% 0%, #ececee, #cfcfd3); color: #151515; font-family: 'Space Mono', ui-monospace, monospace; }
-.rc { display: flex; flex-direction: column; align-items: center; padding: clamp(28px, 6svh, 70px) 16px 40px; }
-.rc-printer { position: relative; z-index: 2; width: min(420px, 96vw); height: 30px; border-radius: 14px; background: linear-gradient(#34343a, #1d1d21);
-  box-shadow: 0 10px 24px rgba(0, 0, 0, .25), inset 0 1px 0 rgba(255, 255, 255, .12); }
-.rc-printer::after { content: ""; position: absolute; left: 24px; right: 24px; bottom: 8px; height: 5px; border-radius: 3px; background: #0b0b0d; }
-.rc-clip { width: min(368px, 90vw); margin-top: -13px; overflow: hidden; padding: 0 12px 30px; }
-.rc-paper { position: relative; padding: 38px 24px 46px; font-size: 13px; line-height: 1.6; text-transform: uppercase; background: #fff;
-  filter: drop-shadow(0 14px 18px rgba(0, 0, 0, .14));
-  -webkit-mask: linear-gradient(#000 0 0) top / 100% calc(100% - 9px) no-repeat, conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) bottom / 14px 9px repeat-x;
-          mask: linear-gradient(#000 0 0) top / 100% calc(100% - 9px) no-repeat, conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) bottom / 14px 9px repeat-x;
-  animation: print 2.4s steps(26) .2s both; }
-@keyframes print { from { transform: translateY(-100%); } }
-.rc-head { text-align: center; padding-bottom: 16px; }
-.rc-head h1 { font-size: 24px; line-height: 1.2; letter-spacing: .08em; }
-.rc-head p { color: #555; }
-.rc-meta, .rc-cols, .rc-total { display: flex; justify-content: space-between; gap: 12px; }
-.rc-meta { color: #444; }
-.rc-meta:first-of-type, .rc-cols, .rc-total:first-of-type, .rc-line { border-top: 1.5px dashed #bdbdbd; padding-top: 10px; margin-top: 10px; }
-.rc-cols { color: #888; font-size: 11px; letter-spacing: .08em; }
-.rc-cols span:nth-child(2) { flex: 1; }
-.rc-items { margin: 4px -8px 10px; }
-.rc-item { display: grid; grid-template-columns: 2ch auto 1fr; align-items: baseline; gap: 1.4ch; padding: 5px 8px; border-radius: 3px; transition: background-color .15s, color .15s; }
-.rc-name { font-weight: 700; }
-.rc-sub { text-align: right; text-transform: none; color: #666; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.rc-item:hover, .rc-item:focus-visible { background: #151515; color: #fff; outline: none; }
-.rc-item:hover .rc-sub, .rc-item:focus-visible .rc-sub { color: #cfcfcf; }
-.rc-item:hover .rc-sub::after { content: " →"; }
-.rc-total.is-big { font-size: 20px; font-weight: 700; margin: 6px 0; }
-.rc-line { margin-top: 16px; padding-top: 16px; text-align: center; letter-spacing: .04em; }
-.rc-bar { display: flex; justify-content: center; align-items: stretch; height: 56px; margin: 18px auto 6px; }
-.rc-bar i { width: var(--w); margin-right: var(--g); background: #151515; }
-.rc-thanks { display: block; margin: 0 auto; font: inherit; text-transform: uppercase; color: #555; }
-.rc-thanks:hover { color: #151515; text-decoration: underline; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; }
