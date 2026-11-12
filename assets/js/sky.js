@@ -140,8 +140,10 @@
   }
 
   const ANCHORS = new Map();
+  const DAYLIGHT = root.hasAttribute('data-daylight');
   function lookAt(min, ymd) {
     const { rise: R, set: S, tw } = sun(ymd);
+    if (DAYLIGHT) min = Math.round((R + S) / 2); // a page marked data-daylight (/shipped/) stays at midday
     if (!ANCHORS.has(ymd)) ANCHORS.set(ymd, anchors(R, S, tw));
     const list = ANCHORS.get(ymd);
     let i = list.findIndex((a) => a[1] > min);

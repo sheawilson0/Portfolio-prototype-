@@ -5,6 +5,8 @@
   if (live && !new URLSearchParams(location.search).has('lab')) return;
   const street = document.body.classList.contains('is-street');
   const ROWS = street ? [
+    ['card', 'Card', [['stand', 'Stand'], ['quiet', 'Quiet', 1], ['tile', 'Tile']]],
+    ['small', 'Small updates', [['hide', 'Hidden', 1], ['small', 'Smaller']]],
   ] : [
     ['work', 'Work', [['mosaic', 'Mosaic', 1], ['cards', 'Cards']]],
     ['hover', 'Hover', [['glow', 'Glow + drift', 1], ['lift', 'Glow + drift + lift']]],
@@ -33,7 +35,7 @@
   bar.innerHTML = `<div class="lab-head"><b>Lab</b><button type="button" data-shut>Hide</button></div>` + ROWS.map(([k, label, opts]) =>
     `<div class="lab-row"><p>${label}</p><div class="lab-opts">${opts.map(([v, name, pick]) =>
       `<button type="button" data-k="${k}" data-v="${v}" class="${pick ? 'is-pick' : ''}" aria-pressed="${document.body.dataset[k] === v}">${name}</button>`).join('')}</div></div>`).join('');
-  if (street) Object.assign(bar.style, { left: 'auto', right: '16px', bottom: 'auto', top: '84px' });
+  if (street) Object.assign(bar.style, innerWidth > 700 ? { left: 'auto', right: '16px', bottom: 'auto', top: '84px' } : { bottom: '130px' });
   document.body.append(bar);
   bar.addEventListener('click', (e) => {
     if (e.target.closest('[data-shut]')) { bar.classList.toggle('is-shut'); e.target.textContent = bar.classList.contains('is-shut') ? 'Show' : 'Hide'; return; }

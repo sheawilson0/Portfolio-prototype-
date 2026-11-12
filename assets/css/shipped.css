@@ -27,43 +27,48 @@
 .obj-blur { position: absolute; inset: -30%; background: inherit; filter: blur(14px); }
 
 /* ───────── The street ───────── */
-.is-street { height: 100svh; overflow: hidden; }
+/* The page stays in daylight (data-daylight on <html>, see sky.js) with a pale sky over it, like Peng's.
+   One highlight colour, the warm orange from the ring, marks where you are; pink stays for hearts. */
+.is-street { height: 100svh; overflow: hidden; --hi: #f26419; }
+:root:not([data-theme="dark"]) .is-street { background: linear-gradient(180deg, color-mix(in srgb, var(--pale-b) 70%, var(--bg)) 0%, color-mix(in srgb, var(--pale-b) 22%, var(--bg)) 55%, var(--bg) 100%); }
+[data-theme="dark"] .is-street { --hi: #ff8a4a; }
+.is-street ::selection { background: color-mix(in srgb, var(--hi) 24%, transparent); }
 .street { position: relative; height: 100svh; display: grid; grid-template-rows: auto 1fr auto; }
-.st-head { padding: 104px var(--gutter) 0; max-width: 1380px; width: 100%; margin: 0 auto; }
-.st-head h1 { font-family: var(--serif); font-weight: 300; font-size: clamp(40px, 4.4vw, 60px); line-height: 1; letter-spacing: var(--track-display); }
-.st-head h1 em { font-style: italic; }
-.st-head p { margin-top: 10px; font-size: 15px; color: var(--ink-2); }
+/* The title: small and centred over the street, so the page reads from the middle out. */
+.st-head { padding: 100px var(--gutter) 0; text-align: center; }
+.st-head h1 { font-family: var(--serif); font-weight: 300; font-style: italic; font-size: 30px; line-height: 1; letter-spacing: var(--track-display); }
+.st-head p { margin-top: 8px; font-size: 14px; color: var(--whisper); }
 
 .st-track { list-style: none; display: flex; align-items: center; gap: 8px; padding: 0 var(--gutter); overflow-x: auto; overflow-y: hidden; scrollbar-width: none;
   cursor: grab; overscroll-behavior-x: contain; scroll-snap-type: x proximity; }
 .st-track::-webkit-scrollbar { display: none; }
 .st-track.is-dragging { cursor: grabbing; scroll-snap-type: none; user-select: none; }
-.st-item { position: relative; flex: none; width: 240px; height: 420px; display: flex; flex-direction: column; justify-content: flex-start; align-items: center; text-align: center; scroll-snap-align: center; transition: opacity .35s var(--ease); }
-.st-hit { position: absolute; inset: 0; z-index: 2; border-radius: 20px; cursor: inherit; }
-.st-hit:focus-visible { outline: 2px solid var(--ink); outline-offset: 4px; }
-.st-item time { font-size: 15px; font-weight: 400; color: var(--whisper); }
-/* Every object stands on the same ground line. */
-.st-stand { height: 220px; width: 100%; display: flex; align-items: flex-end; justify-content: center; margin: 18px 0 22px; }
+.st-track.is-wheeling { scroll-snap-type: none; }
+.st-item { --near: 1; position: relative; flex: none; width: 240px; height: 420px; display: flex; flex-direction: column; justify-content: flex-start; align-items: center; text-align: center; scroll-snap-align: center; transition: opacity .35s var(--ease); }
+.st-hit { position: absolute; inset: 0; z-index: 2; border-radius: 20px; cursor: inherit; -webkit-tap-highlight-color: transparent; }
+.st-hit:focus-visible { outline: 2px solid var(--hi); outline-offset: 4px; }
+.st-item time { font-size: 15px; font-weight: 400; color: var(--whisper); transition: color .3s var(--ease); }
+.st-item.is-open time { color: var(--hi); }
+/* Every object stands on the same ground line. Near the middle, things stand a touch taller and clearer, like a dock. */
+.st-stand { position: relative; height: 220px; width: 100%; display: flex; align-items: flex-end; justify-content: center; margin: 18px 0 22px;
+  transform: scale(calc(.9 + var(--near) * .1)); transform-origin: 50% 100%; opacity: calc(.6 + var(--near) * .4); transition: transform .25s var(--ease), opacity .25s var(--ease); }
 .st-stand .obj { transition: transform .5s var(--ease); }
-/* Near the middle, things stand a touch taller and clearer, like a dock. */
-.st-item { --near: 1; }
-.st-stand { transform: scale(calc(.9 + var(--near) * .1)); transform-origin: 50% 100%; opacity: calc(.55 + var(--near) * .45); transition: transform .25s var(--ease), opacity .25s var(--ease); }
-/* Small updates: shrunk to a short stand, or hidden (lab). */
+@media (hover: hover) { .st-item:hover .obj { transform: translateY(-6px); } }
+.st-words { display: flex; flex-direction: column; align-items: center; width: 220px; }
+.st-item h2 { max-width: 220px; font-size: 16px; font-weight: 400; line-height: 1.3; text-wrap: balance; }
+.st-p { margin-top: 4px; font-size: 14px; color: var(--whisper); }
+/* Small updates (shown only when the lab asks): a short stand. */
 body[data-small="small"] .st-item.is-minor { width: 150px; }
-body[data-small="small"] .st-item.is-minor .st-stand { height: 220px; }
 body[data-small="small"] .st-item.is-minor .obj { scale: .6; transform-origin: 50% 100%; }
 body[data-small="small"] .st-item.is-minor h2 { font-size: 13px; color: var(--ink-2); max-width: 130px; }
 body[data-small="small"] .st-item.is-minor .st-p { display: none; }
-/* Newest in the middle: room to the right so the last one can sit in the centre. */
+/* Newest in the middle: room either side so the first and last can sit in the centre. */
 body[data-newest="middle"] .st-track { padding: 0 calc(50vw - 120px); }
-@media (hover: hover) { .st-item:hover .obj { transform: translateY(-6px); } }
-.st-item h2 { max-width: 220px; font-size: 16px; font-weight: 400; line-height: 1.3; text-wrap: balance; }
-.st-p { margin-top: 4px; font-size: 14px; color: var(--whisper); }
 
-/* Tapped: the others step back and the details unfold under it. */
-.st-track.has-open .st-item:not(.is-open) { opacity: .35; }
+/* Tapped: the others step back a little and the details unfold under it. */
+.st-track.has-open .st-item:not(.is-open) { opacity: .5; }
 .st-item.is-open .obj { transform: translateY(-8px) scale(1.04); }
-.st-more { display: grid; grid-template-rows: 0fr; width: 220px; transition: grid-template-rows .45s var(--ease); }
+.st-more { display: grid; grid-template-rows: 0fr; width: 100%; transition: grid-template-rows .45s var(--ease); }
 .st-more > * { min-height: 0; overflow: hidden; }
 .st-item.is-open .st-more { grid-template-rows: 1fr; }
 .st-more p { padding-top: 12px; font-size: 14px; line-height: 1.5; color: var(--ink-2); }
@@ -79,6 +84,29 @@ body[data-newest="middle"] .st-track { padding: 0 calc(50vw - 120px); }
 .st-heart.is-pop svg { animation: pop .45s var(--ease); }
 @keyframes pop { 40% { transform: scale(1.3); } }
 
+/* ───────── Card directions (lab) ─────────
+   Stand: date, object, title and project, as above.
+   Quiet: just the date and the object; the words come up for whichever is in the middle.
+   Tile:  each thing sits on its own soft tile with the date inside, words left-aligned underneath. */
+body[data-card="quiet"] .st-words > :is(h2, .st-p) { opacity: 0; translate: 0 4px; transition: opacity .3s var(--ease), translate .3s var(--ease); }
+body[data-card="quiet"] .st-item:is(.is-focus, .is-open) .st-words > :is(h2, .st-p) { opacity: 1; translate: 0 0; }
+body[data-card="quiet"] .st-item.is-focus time { color: var(--ink-2); }
+body[data-card="quiet"] .st-item.is-open time { color: var(--hi); }
+
+body[data-card="tile"] .st-track { gap: 18px; }
+body[data-card="tile"] .st-item { width: 264px; align-items: stretch; text-align: left; }
+body[data-card="tile"][data-newest="middle"] .st-track { padding: 0 calc(50vw - 132px); }
+body[data-card="tile"] .st-stand { order: 1; height: 264px; margin: 0; align-items: center; transform: none; border-radius: 30px; corner-shape: squircle;
+  background: color-mix(in srgb, var(--bg) 72%, transparent); box-shadow: inset 0 0 0 1px var(--hair), 0 1px 2px rgba(10, 10, 10, .04); }
+@supports not (corner-shape: squircle) { body[data-card="tile"] .st-stand { border-radius: 24px; } }
+body[data-card="tile"] .st-stand .obj { scale: .86; }
+body[data-card="tile"] .st-item time { position: absolute; z-index: 1; top: 16px; left: 20px; font-size: 13px; }
+body[data-card="tile"] .st-words { order: 2; align-items: flex-start; width: 100%; padding: 14px 6px 0; }
+body[data-card="tile"] .st-acts { justify-content: flex-start; }
+body[data-card="tile"] .st-item.is-open .st-stand { box-shadow: inset 0 0 0 1.5px var(--hi), 0 10px 30px color-mix(in srgb, var(--hi) 16%, transparent); }
+body[data-card="tile"] .st-item.is-open .obj { transform: scale(1.03); }
+body[data-card="tile"][data-small="small"] .st-item.is-minor { width: 180px; }
+
 /* ───────── The scrubber ───────── */
 .st-bar { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 20px; padding: 0 var(--gutter) 30px; }
 .st-filters { justify-self: start; display: inline-flex; gap: 2px; padding: 3px; border-radius: 999px; background: color-mix(in srgb, var(--ink) 6%, transparent); }
@@ -87,15 +115,19 @@ body[data-newest="middle"] .st-track { padding: 0 calc(50vw - 120px); }
 .st-filters button[aria-pressed="true"] { color: var(--ink); background: var(--bg); box-shadow: 0 1px 2px rgba(10, 10, 10, .1); }
 .st-ticks { display: flex; align-items: flex-end; gap: 5px; height: 34px; padding-top: 14px; cursor: ew-resize; touch-action: none; }
 .st-tick { --base: 8px; position: relative; width: 2px; height: calc(var(--base) + var(--lift, 0) * 12px); border-radius: 1px;
-  background: color-mix(in srgb, var(--ink) calc(20% + var(--lift, 0) * 30%), transparent); transition: height .35s cubic-bezier(.3, 1.6, .5, 1), background-color .2s var(--ease); }
+  background: color-mix(in srgb, var(--ink) calc(18% + var(--lift, 0) * 26%), transparent); transition: height .35s cubic-bezier(.3, 1.6, .5, 1), background-color .2s var(--ease); }
 .st-tick.is-month { --base: 13px; }
-.st-tick.is-on { background: var(--ink); }
+.st-tick.is-on { background: var(--hi); }
 .st-tick span { position: absolute; bottom: 100%; left: 50%; translate: -50% -4px; font-size: 11px; font-style: normal; color: var(--whisper); white-space: nowrap; }
 .st-keys { justify-self: end; font-size: 12px; color: var(--whisper); }
 
 @media (max-width: 700px) {
-  .st-head { padding-top: 92px; }
+  .st-head { padding-top: 88px; }
   .st-item { width: 200px; }
+  body[data-newest="middle"] .st-track { padding: 0 calc(50vw - 100px); }
+  body[data-card="tile"] .st-item { width: 230px; }
+  body[data-card="tile"][data-newest="middle"] .st-track { padding: 0 calc(50vw - 115px); }
+  body[data-card="tile"] .st-stand { height: 230px; }
   .st-bar { grid-template-columns: 1fr; justify-items: center; gap: 14px; padding-bottom: 22px; }
   .st-filters { justify-self: center; order: 2; }
   .st-keys { display: none; }
