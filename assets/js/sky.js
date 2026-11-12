@@ -218,7 +218,7 @@
     }
     if (theme === 'dark') { if (root.dataset.theme !== 'dark') root.dataset.theme = 'dark'; } else delete root.dataset.theme;
     const meta = document.querySelector('meta[name="theme-color"]'), metaC = m === 'sky' ? L.bg : theme === 'dark' ? '#05070b' : '#ffffff';
-    if (meta && meta.content !== metaC) meta.setAttribute('content', metaC);
+    if (meta && meta.content !== metaC && !DAYLIGHT) meta.setAttribute('content', metaC); // a daylight page paints its own
     last = { n, L, theme, mode: m };
     favicon();
     decorate();

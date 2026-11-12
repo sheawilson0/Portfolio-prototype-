@@ -29,7 +29,7 @@
 <link rel="stylesheet" href="/assets/css/sky.css">
 <link rel="stylesheet" href="/assets/css/shipped.css">
 </head>
-<body class="calm is-street" data-newest="middle" data-small="hide">
+<body class="calm is-street" data-small="hide">
 
 <header class="nav">
   <div class="nav-inner">
@@ -47,19 +47,20 @@
 </header>
 
 <main class="street" id="top" data-street>
-  <header class="st-head">
-    <h1>Shipped</h1>
-    <p><span data-street-count>22</span> things I’ve made, newest in the middle</p>
-  </header>
+  <h1 class="st-h1">Shipped</h1>
   <ol class="st-track" aria-label="Everything I’ve shipped, oldest first"></ol>
   <div class="st-bar">
-    <div class="st-filters" data-filters role="group" aria-label="Show">
-      <button type="button" data-kind="all" aria-pressed="true">All</button>
-      <button type="button" data-kind="personal" aria-pressed="false">Personal</button>
-      <button type="button" data-kind="work" aria-pressed="false">Work</button>
+    <div class="st-tools">
+      <div class="st-menu" role="menu" aria-label="Show"></div>
+      <button class="st-pill is-l" type="button" data-filter-btn aria-haspopup="menu" aria-expanded="false" aria-label="Filter"><span data-filter-label>All</span><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4.5 6.5 8 10l3.5-3.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button class="st-pill is-r" type="button" data-search-btn aria-label="Search"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="7.2" cy="7.2" r="4.4"/><path d="M10.5 10.5l3 3" stroke-linecap="round"/></svg></button>
     </div>
     <div class="st-ticks" aria-hidden="true"></div>
-    <span class="st-keys">← → to move</span>
+  </div>
+  <div class="st-search" role="dialog" aria-label="Search">
+    <div class="st-search-panel">
+      <label class="st-q"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="7.2" cy="7.2" r="4.4"/><path d="M10.5 10.5l3 3" stroke-linecap="round"/></svg><input type="search" placeholder="Search" aria-label="Search everything I’ve shipped" autocomplete="off" spellcheck="false"><span data-found></span></label>
+      <ul class="st-results"></ul>
+    </div>
   </div>
 </main>
 
