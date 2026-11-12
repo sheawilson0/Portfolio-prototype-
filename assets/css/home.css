@@ -172,3 +172,18 @@ body[data-contact="quiet"] .email { padding: 0; background: none; color: var(--i
 body[data-contact="quiet"] .email::before, body[data-contact="quiet"] .email-icon { display: none; }
 body[data-contact="quiet"] .copy { height: 34px; padding: 0 12px; font-size: 13px; }
 body[data-contact="quiet"] .cta { margin-top: 26px; gap: 14px; }
+
+/* Round 5 fixes.
+   The mosaic's art rule (.tile-art img) must not grab the Quit28 phone's screen. */
+.tile-art .q28-screen img { position: static; max-width: 100%; width: 100%; height: 100%; transform: none !important; }
+.q28-set .q28-phone { left: 37%; top: 8%; width: 34%; }
+.q28-set .q28-cal { left: 2%; top: 22%; width: 38%; }
+.q28-set .q28-breath { right: 2%; top: 36%; width: 32%; }
+.q28-breath { aspect-ratio: .8; }
+.q28-circle { top: 60%; width: 80%; }
+/* Photos are scaled up a little so the drift never shows their edges. */
+.m-photo .tile-art img { scale: 1.08; }
+/* At night the bright tiles are dimmed, so they sit in the dark page instead of glaring. */
+.tile-art::before { content: ""; position: absolute; inset: 0; background: #05070b; opacity: 0; pointer-events: none; transition: opacity .6s var(--ease); }
+[data-theme="dark"] .tile-art::before { opacity: .3; }
+[data-theme="dark"] .tile-art { box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .05); }
