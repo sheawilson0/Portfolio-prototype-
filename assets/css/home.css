@@ -21,50 +21,53 @@
 .last::before { content: ""; display: inline-block; width: 6px; height: 6px; margin: 0 7px 2px 1px; border-radius: 50%; background: #2fd67b; box-shadow: 0 0 0 3px color-mix(in srgb, #2fd67b 22%, transparent); }
 
 /* ───────── Quit28, live (q28-card.js) ─────────
-   Built like the app: Manrope, the green #06fb06 logged days, the pink day 28, the blue breathing circle. */
-.q28-set, .q-live { --q-blue: #00a7fa; --q-green: #06fb06; --q-pink: #f41f7f; --q-ink: #111; --q-grey: #ececea; font-family: 'Manrope', var(--sans); color: var(--q-ink); }
+   Copied from the app at its own sizes (Quit-Coach journey.module.css, craving-timer.module.css): Manrope, the
+   green logged days, pink day 28, the blue breathing circles. A 520 × 540 stage, scaled to fit by --k; each piece
+   is drawn at the app's real pixel size and shrunk by --s, the same scale as the phone screenshot. */
+.q28-set, .q-live { --q-blue: #00a7fa; --q-green: #06fb06; --q-pink: #f31a7b; --q-ink: #0a0a0a; --q-muted: #4a4a48; --q-tile: #f1f1ec; font-family: 'Manrope', var(--sans); color: var(--q-ink); }
 .q28-set { position: absolute; inset: 0; }
-:is(.q28-set, .q-live) > * { position: absolute; transition: transform 1.2s var(--ease); }
-.q28-phone { z-index: 2; aspect-ratio: 1206 / 2622; padding: 2.6%; border-radius: 15% / 7%; background: #0e0f12; box-shadow: 0 50px 70px rgba(0, 40, 90, .3), inset 0 0 0 1.5px rgba(255, 255, 255, .16); }
-.q28-screen { display: block; height: 100%; border-radius: 13% / 6%; overflow: hidden; }
-.q28-screen img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 0; }
-.q28-cal { z-index: 1; display: block; padding: 7% 6% 6%; border-radius: 9% / 11%; background: #fff; rotate: -3deg; box-shadow: 0 30px 50px rgba(0, 40, 90, .2); container-type: inline-size; }
-.q28-cal-head { display: flex; align-items: flex-start; gap: 4cqw; padding-left: 1cqw; }
-.q28-cal-head svg { width: 8cqw; height: 8cqw; margin-top: 2.4cqw; flex: none; }
-.q28-cal-head b { display: block; font-size: 6.8cqw; font-weight: 800; letter-spacing: -.035em; line-height: 1.15; }
-.q28-cal-head small { display: block; margin-top: .6cqw; font-size: 4.4cqw; font-weight: 600; color: #4a4a4a; }
-.q28-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1.8cqw 1.5cqw; margin-top: 5cqw; }
-.q28-grid i { aspect-ratio: 1; display: grid; place-items: center; border-radius: 20%; rotate: var(--r, 0deg); font-size: 4.2cqw; font-style: normal; font-weight: 800; background: #ecece8; transition: background-color .3s var(--ease); }
-.q28-grid i.is-logged { background: var(--q-green); }
-.q28-grid i:last-child { background: var(--q-pink); }
-.q28-grid i.is-pop { animation: q28-pop .35s cubic-bezier(.2, .9, .3, 1.3); }
-@keyframes q28-pop { 50% { scale: 1.18; } }
-/* The craving timer sits on the app's own off-white sheet, so the blue reads on any background. */
-.q28-breath { z-index: 3; display: block; aspect-ratio: .9; padding: 9% 8%; border-radius: 12%; background: #f2f2ee; container-type: inline-size; box-shadow: 0 30px 50px rgba(0, 40, 90, .22); rotate: 3deg; }
-.q28-sheet-title { display: block; font-size: 8.6cqw; font-weight: 800; letter-spacing: -.035em; }
-.q28-circle { position: absolute; left: 50%; top: 58%; width: 84%; aspect-ratio: 1; translate: -50% -50%; display: grid; place-items: center; }
-.q28-circle i { position: absolute; border-radius: 50%; }
-.q28-track { inset: 0; box-shadow: inset 0 0 0 2px rgba(0, 0, 0, .04), 0 0 0 1px rgba(0, 0, 0, .02); }
-.q28-outer { inset: 12%; background: radial-gradient(closest-side, #8fd8ff 55%, rgba(143, 216, 255, .45) 78%, transparent); filter: blur(2px); transform: scale(.82); }
-.q28-inner { inset: 25%; background: var(--q-blue); transform: scale(.82); }
-.is-running .q28-outer, .is-running .q28-inner { animation: q28-breathe 8s ease-in-out infinite; }
-@keyframes q28-breathe { 0%, 100% { transform: scale(.82); } 50% { transform: scale(1); } }
+.q28-stage { --s: .64; position: absolute; left: 50%; top: 50%; width: 520px; height: 540px; translate: -50% -50%; scale: var(--k, 1); }
+.q28-stage > * { position: absolute; display: block; transform-origin: 0 0; scale: var(--s); transition: translate .9s var(--ease); }
+/* iPhone 17 Pro: a 402 × 874 screen in a thin black bezel. */
+.q28-phone { left: 20px; top: 48px; width: 426px; height: 898px; padding: 12px; border-radius: 68px; background: #0b0c0e; box-shadow: inset 0 0 0 2px #3a3c40, 0 60px 90px rgba(0, 30, 70, .35); }
+.q28-screen { position: relative; display: block; height: 100%; border-radius: 56px; overflow: hidden; background: #f3f3ef; }
+.q28-screen::after { content: ""; position: absolute; left: 50%; top: 11px; width: 124px; height: 36px; translate: -50% 0; border-radius: 18px; background: #000; }
+.tile-art .q28-screen img, .q28-screen img { position: static; display: block; width: 100%; height: 100%; max-width: none; object-fit: cover; object-position: 50% 0; transform: none !important; }
+/* The craving sheet, cut off under the circles. */
+.q28-sheet { right: 16px; left: auto; top: 48px; width: 355px; height: 372px; padding: 24px; border-radius: 32px; background: #f3f3ef; overflow: hidden; rotate: -2deg; transform-origin: 100% 0; box-shadow: 0 2px 4px rgba(0, 0, 0, .06), 0 40px 70px rgba(0, 20, 60, .28); }
+.q28-title { display: block; padding: 6px 0 0 6px; font-size: 25px; font-weight: 800; letter-spacing: -.035em; }
+.q28-x { position: absolute; top: 18px; right: 18px; width: 44px; height: 44px; display: grid; place-items: center; border-radius: 50%; background: #fff; box-shadow: 0 4px 12px rgba(0, 0, 0, .08); }
+.q28-x svg { width: 20px; height: 20px; }
+.q28-breath { position: relative; width: 256px; aspect-ratio: 1; display: grid; place-items: center; margin: 26px auto 0; }
+.q28-breath > i { position: absolute; border-radius: 50%; scale: .82; }
+.q28-outer { inset: 0; background: color-mix(in srgb, var(--q-blue) 14%, #fff); }
+.q28-inner { inset: 32px; background: var(--q-blue); box-shadow: 0 0 44px 4px color-mix(in srgb, var(--q-blue) 55%, transparent); }
+.is-running .q28-breath > i { animation: q28-breathe 8s cubic-bezier(.37, 0, .63, 1) infinite; }
+@keyframes q28-breathe { 50% { scale: 1; } }
+.q28-hug { position: absolute; inset: -6px; width: calc(100% + 12px); height: calc(100% + 12px); rotate: -90deg; overflow: visible; fill: none; stroke-width: 3; stroke: color-mix(in srgb, var(--q-blue) 16%, transparent); }
+.q28-fill { stroke: var(--q-blue); stroke-linecap: round; transition: stroke-dashoffset 1s linear; }
 .q28-words { position: relative; display: grid; justify-items: center; }
-.q28-words b { font-size: 12cqw; font-weight: 800; letter-spacing: -.035em; white-space: nowrap; }
-.q28-words small { font-size: 7.5cqw; font-weight: 600; font-variant-numeric: tabular-nums; color: rgba(17, 17, 17, .75); }
-
-/* In the mosaic tile: phone in the middle, calendar behind on the left, breathing circle on the right. */
-.q28-set .q28-phone { left: 32%; top: 8%; width: 36%; }
-.q28-set .q28-cal { left: 3%; top: 24%; width: 40%; }
-.q28-set .q28-breath { right: 3%; top: 40%; width: 33%; }
-/* In the old card: the same three, laid out for its wider media column. */
+.q28-words b { font-size: 24px; font-weight: 800; letter-spacing: -.035em; line-height: 1.15; white-space: nowrap; }
+.q28-words small { font-size: 15px; font-weight: 700; font-variant-numeric: tabular-nums; color: rgba(10, 10, 10, .75); }
+/* "Your 28 days", with its pin. */
+.q28-cal { right: 22px; left: auto; top: 312px; width: 342px; padding: 22px 22px 18px; border-radius: 20px; background: #fff; rotate: 2.5deg; transform-origin: 100% 0; box-shadow: 0 2px 4px rgba(0, 0, 0, .05), 0 40px 70px rgba(0, 20, 60, .26); }
+.q28-pin { position: absolute; top: -14px; right: 26px; font-size: 30px; line-height: 1; rotate: 12deg; filter: drop-shadow(0 3px 2px rgba(0, 0, 0, .18)); }
+.q28-head { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+.q28-head svg { width: 25px; height: 25px; flex: none; }
+.q28-head b { display: block; font-size: 18px; font-weight: 800; letter-spacing: -.03em; }
+.q28-head small { display: block; margin-top: 2px; font-size: 13px; font-weight: 600; color: var(--q-muted); }
+.q28-days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
+.q28-days i { aspect-ratio: 1; display: grid; place-items: center; border-radius: 9px; background: var(--q-tile); font-size: 13px; font-style: normal; font-weight: 700; font-variant-numeric: tabular-nums; transition: background-color .3s var(--ease); }
+.q28-days i:first-child, .q28-days i.is-logged { background: var(--q-green); color: #000; }
+.q28-days i:last-child { background: var(--q-pink); color: #000; }
+.q28-days i.is-pop { animation: q28-pop .35s cubic-bezier(.2, .9, .3, 1.3); }
+@keyframes q28-pop { 50% { scale: 1.18; } }
+@media (prefers-reduced-motion: reduce) { .q28-breath > i { animation: none !important; } }
+/* In the old card (lab: Work → Cards). */
 .t-quit .media.q-now { display: block; }
 .t-quit .media.q-live { display: none; }
 body[data-q28="live"] .t-quit .media.q-now { display: none; }
 body[data-q28="live"] .t-quit .media.q-live { display: block; }
-.q-live .q28-phone { left: 44%; top: 4%; width: 34%; }
-.q-live .q28-cal { left: 2%; top: 14%; width: 46%; }
-.q-live .q28-breath { left: 22%; top: 50%; width: 26%; }
 
 /* ───────── Work as a mosaic (after raylight.app) ─────────
    Colour tiles, the product big, a name and a few words underneath. The tile never moves; on hover its
@@ -142,9 +145,7 @@ body[data-brain="hide"] .t-shipped { grid-column: span 12; }
   .home .eclipse { left: -45vw; width: 190vw; top: 72%; }
   .t-shipped { grid-column: span 12; }
   .t-shipped .shelf .obj:nth-child(n+4) { display: none; }
-  .q28-set .q28-phone { left: 30%; width: 40%; }
 }
-@media (prefers-reduced-motion: reduce) { .q28-circle i { animation: none !important; } }
 
 /* Pictures: Close brings the products right up, cropped by the tile (lab). */
 body[data-zoom="close"] .m-snap-res { width: 66%; left: -6%; top: 22%; }
@@ -153,9 +154,6 @@ body[data-zoom="close"] .m-jump-a { width: 70%; left: 6%; top: 12%; }
 body[data-zoom="close"] .m-jump-b { width: 56%; left: auto; right: -4%; top: 30%; }
 body[data-zoom="close"] .m-jump-c { display: none; }
 body[data-zoom="close"] .m-brain-phone { width: 64%; left: 18%; top: 12%; }
-body[data-zoom="close"] .q28-set .q28-phone { left: 28%; top: 7%; width: 46%; }
-body[data-zoom="close"] .q28-set .q28-cal { left: -6%; top: 34%; width: 46%; }
-body[data-zoom="close"] .q28-set .q28-breath { right: -4%; top: 48%; width: 40%; }
 
 
 /* ───────── Contact (lab: Contact) ─────────
@@ -173,17 +171,10 @@ body[data-contact="quiet"] .email::before, body[data-contact="quiet"] .email-ico
 body[data-contact="quiet"] .copy { height: 34px; padding: 0 12px; font-size: 13px; }
 body[data-contact="quiet"] .cta { margin-top: 26px; gap: 14px; }
 
-/* Round 5 fixes.
-   The mosaic's art rule (.tile-art img) must not grab the Quit28 phone's screen. */
-.tile-art .q28-screen img { position: static; max-width: 100%; width: 100%; height: 100%; transform: none !important; }
-.q28-set .q28-phone { left: 37%; top: 8%; width: 34%; }
-.q28-set .q28-cal { left: 2%; top: 22%; width: 38%; }
-.q28-set .q28-breath { right: 2%; top: 36%; width: 32%; }
-.q28-breath { aspect-ratio: .8; }
-.q28-circle { top: 60%; width: 80%; }
+/* Round 5 fixes. */
 /* Photos are scaled up a little so the drift never shows their edges. */
 .m-photo .tile-art img { scale: 1.08; }
 /* At night the bright tiles are dimmed, so they sit in the dark page instead of glaring. */
-.tile-art::before { content: ""; position: absolute; inset: 0; background: #05070b; opacity: 0; pointer-events: none; transition: opacity .6s var(--ease); }
+.tile-art::before { content: ""; position: absolute; z-index: 5; inset: 0; background: #05070b; opacity: 0; pointer-events: none; transition: opacity .6s var(--ease); }
 [data-theme="dark"] .tile-art::before { opacity: .3; }
 [data-theme="dark"] .tile-art { box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .05); }
