@@ -153,10 +153,12 @@
   }
 
   /* ── Project tip: rides above the cursor, says where a click goes ── */
+  // The calm homepage (body.calm) has no tip and no tilting cards.
+  const calm = document.body.classList.contains('calm');
   const tip = document.querySelector('.tip');
-  const tipText = tip.querySelector('.tip-text');
+  const tipText = tip && tip.querySelector('.tip-text');
   const tipPos = { x: pointer.x, y: pointer.y, on: false };
-  if (fine && !reduced) {
+  if (tip && fine && !reduced) {
     document.addEventListener('pointerover', (e) => {
       const item = e.target.closest('[data-cursor]');
       if (!item) { clearTimeout(tipPos.t); tip.classList.remove('is-on'); tipPos.on = false; return; }
@@ -186,7 +188,7 @@
     tx: 0, ty: 0, x: 0, y: 0,
   }));
   items.forEach((it) => {
-    if (!fine || reduced) return;
+    if (!fine || reduced || calm) return;
     it.el.addEventListener('pointerenter', () => { it.el.classList.add('is-hot'); wake(); });
     it.el.addEventListener('pointerleave', () => { it.el.classList.remove('is-hot'); it.tx = 0; it.ty = 0; wake(); });
     it.el.addEventListener('pointermove', (e) => {

@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shipped, by Shea Wilson</title>
+<meta name="description" content="Everything Shea Wilson has shipped, newest first: work, personal projects and experiments.">
+<meta name="theme-color" content="#ffffff">
+<link rel="canonical" href="https://sheawilson.uk/shipped/">
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Shea Wilson">
+<meta property="og:locale" content="en_GB">
+<meta property="og:url" content="https://sheawilson.uk/shipped/">
+<meta property="og:title" content="Shipped, by Shea Wilson">
+<meta property="og:description" content="Everything I’ve shipped, newest first.">
+<meta property="og:image" content="https://sheawilson.uk/assets/share/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<script>
+  document.documentElement.classList.add('js');
+  try { if (localStorage.getItem('theme') === 'dark') document.documentElement.dataset.theme = 'dark'; } catch (e) {}
+</script>
+<script src="/assets/js/sky.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=Spectral:ital,wght@0,200;0,300;1,300;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/site.css">
+<link rel="stylesheet" href="/assets/css/sky.css">
+<link rel="stylesheet" href="/assets/css/shipped.css">
+</head>
+<body class="calm">
+
+<header class="nav">
+  <div class="nav-inner">
+    <span class="nav-pill" aria-hidden="true"></span>
+    <a class="logo" href="/" aria-label="Shea Wilson, home">S<span class="fold"><span>hea&nbsp;</span></span>W<span class="fold"><span>ilson</span></span></a>
+    <nav class="links" aria-label="Main">
+      <a href="/#work">Work</a>
+      <a href="/#about">About</a>
+      <a href="/#contact">Contact</a>
+      <button class="theme-toggle" type="button" aria-label="Switch to dark mode" aria-pressed="false">
+        <span class="tt"><span class="tt-ring"></span><span class="tt-disc"><span class="tt-moon"></span></span></span>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<main class="tl" id="top">
+  <header class="tl-head">
+    <h1>Shipped<em>.</em></h1>
+    <p><span data-ship-count>29</span> things since <span data-ship-since>August</span>, newest first. Client work stays blurred until it launches.</p>
+    <div class="tl-filters" data-filters role="group" aria-label="Show">
+      <button type="button" data-kind="all" aria-pressed="true">All</button>
+      <button type="button" data-kind="personal" aria-pressed="false">Personal</button>
+      <button type="button" data-kind="work" aria-pressed="false">Work</button>
+    </div>
+  </header>
+  <div data-timeline><p class="tl-empty">Loading…</p></div>
+</main>
+
+<footer>
+  <span>© 2026 Shea Wilson</span>
+  <nav aria-label="Footer"><a href="/">Home</a><a href="https://www.linkedin.com/in/sheawilson0/" target="_blank" rel="noopener">LinkedIn</a><a href="#top">Back to top</a></nav>
+</footer>
+
+<script src="/assets/js/site.js" defer></script>
+<script src="/assets/js/shipped.js" defer></script>
+</body>
+</html>

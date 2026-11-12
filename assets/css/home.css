@@ -1,0 +1,98 @@
+/* The calm homepage. Loaded after site.css and sky.css, and only on index.html.
+   Rules: black or white plus the sky's one light, colour comes from the work itself, one quiet hover,
+   motion only when the visitor does something. The hero is the stack of things I've shipped (shipped.js). */
+
+/* ───────── Hero: the stack sits on the horizon ───────── */
+.calm .hero { position: relative; height: auto; min-height: 0; overflow: clip; padding: 108px var(--gutter) 110px; text-align: center;
+  -webkit-mask: linear-gradient(#000 calc(100% - 180px), transparent); mask: linear-gradient(#000 calc(100% - 180px), transparent); }
+.stage { position: relative; height: clamp(380px, 46svh, 470px); max-width: 1380px; margin: 0 auto; }
+/* The horizon runs under the cards' feet; the disc is the page below it. */
+.calm .eclipse { left: calc(50% - 60vw); top: 84%; width: 120vw; }
+.calm .corona { opacity: .5; animation-duration: 180s; }
+[data-theme="dark"].calm .corona, [data-theme="dark"] .calm .corona { opacity: .55; }
+.calm .hero-copy { position: relative; z-index: 6; left: auto; top: auto; translate: none; width: min(100%, 720px); margin: 0 auto; padding: 4px 0 0; }
+.calm .hero h1 { font-size: clamp(40px, 5.2vw, 76px); line-height: 1.05; }
+.calm .hero .intro { margin-top: 20px; max-width: 34em; font-size: clamp(16px, 1.2vw, 18px); }
+.last { color: var(--ink); white-space: nowrap; }
+.last a { position: relative; text-decoration: underline; text-decoration-color: color-mix(in srgb, var(--ink) 25%, transparent); text-underline-offset: 3px; transition: text-decoration-color .2s var(--ease); }
+.last a:hover { text-decoration-color: var(--ink); }
+.last::before { content: ""; display: inline-block; width: 6px; height: 6px; margin: 0 7px 2px 1px; border-radius: 50%; background: #2fd67b; box-shadow: 0 0 0 3px color-mix(in srgb, #2fd67b 22%, transparent); }
+
+/* ───────── The stack ───────── */
+.stack { position: absolute; z-index: 6; left: 50%; bottom: 14%; width: clamp(250px, 24vw, 300px); aspect-ratio: 300 / 372; translate: -50% 0; touch-action: pan-y; outline: none; }
+.ship { position: absolute; inset: 0; display: flex; flex-direction: column; text-align: left; padding: 14px; border-radius: 24px; corner-shape: squircle;
+  background: var(--bg); color: var(--ink); border: 1px solid var(--hair);
+  box-shadow: 0 1px 1px rgba(10, 10, 10, .04), 0 10px 24px rgba(10, 10, 10, .07), 0 30px 60px rgba(10, 10, 10, .06);
+  transform-origin: 50% 120%; will-change: transform; user-select: none; -webkit-user-select: none; cursor: grab;
+  transition: transform .45s var(--ease), opacity .45s var(--ease), box-shadow .3s var(--ease); }
+@supports not (corner-shape: squircle) { .ship { border-radius: 18px; } }
+[data-theme="dark"] .ship { background: #0d1016; border-color: rgba(255, 255, 255, .08); box-shadow: 0 30px 60px rgba(0, 0, 0, .55); }
+.ship.is-dragging { transition: none; cursor: grabbing; }
+.ship:not(.is-top) { pointer-events: none; }
+.stack:focus-visible .ship.is-top { box-shadow: 0 0 0 2px var(--ink), 0 30px 60px rgba(10, 10, 10, .1); }
+
+.ship-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 2px 4px 12px; font-size: 12px; font-weight: 400; color: var(--whisper); }
+.ship-top b { font-weight: 400; color: var(--ink-2); }
+.ship-media { position: relative; flex: 1; min-height: 0; border-radius: 14px; overflow: hidden; background: color-mix(in srgb, var(--ink) 4%, var(--bg)); }
+.ship-media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 20%; pointer-events: none; }
+/* No picture: the title is the picture. */
+.ship-word { position: absolute; inset: 0; display: flex; align-items: flex-end; padding: 16px 16px 14px; font-family: var(--serif); font-weight: 300; font-size: 30px; line-height: 1.02; letter-spacing: var(--track-title); text-wrap: balance; }
+.ship-text { padding: 12px 4px 2px; }
+.ship-text h3 { font-family: var(--serif); font-weight: 300; font-size: 21px; line-height: 1.12; letter-spacing: var(--track-title); }
+.ship-text h3 + p { margin-top: 5px; }
+.ship-text p { font-size: 13px; line-height: 1.45; color: var(--ink-2); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+/* Under wraps: client work that isn't public yet. Nothing secret is in the page; the blur is the teaser. */
+.ship.is-wraps .ship-media { background: conic-gradient(from 210deg at 40% 60%, #c9d2e6, #efe4dc, #d8d0ef, #e6eef0, #c9d2e6); }
+[data-theme="dark"] .ship.is-wraps .ship-media { background: conic-gradient(from 210deg at 40% 60%, #1d2333, #2a2027, #231f36, #18262a, #1d2333); }
+.ship.is-wraps .ship-media::before { content: ""; position: absolute; inset: -20%; background: inherit; filter: blur(18px) saturate(1.2); }
+.ship.is-wraps .ship-word { color: transparent; text-shadow: 0 0 14px color-mix(in srgb, var(--ink) 55%, transparent); }
+.wraps-tag { position: absolute; z-index: 1; left: 50%; top: 50%; translate: -50% -50%; display: inline-flex; align-items: center; gap: 7px; padding: 7px 12px; border-radius: 999px;
+  font-size: 12px; font-weight: 400; white-space: nowrap; color: var(--ink); background: var(--glass-strong); border: 1px solid var(--glass-line);
+  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
+.wraps-tag svg { width: 11px; height: 11px; }
+
+/* The hint under the stack */
+.stack-hint { position: absolute; left: 50%; top: calc(100% + 14px); translate: -50% 0; display: flex; align-items: center; gap: 10px; font-size: 12px; font-weight: 400; color: var(--whisper); white-space: nowrap; }
+.stack-hint button { width: 26px; height: 26px; display: grid; place-items: center; border-radius: 50%; color: var(--ink-2); transition: color .2s var(--ease), background-color .2s var(--ease); }
+.stack-hint button:hover { color: var(--ink); background: color-mix(in srgb, var(--ink) 6%, transparent); }
+.stack-hint svg { width: 12px; height: 12px; }
+.stack-hint output { min-width: 4.5ch; text-align: center; font-variant-numeric: tabular-nums; }
+
+/* ───────── Work: the cards stay, the show goes ───────── */
+.calm .work { margin-top: 0; padding-top: 10px; }
+.calm .card { background: var(--bg); border: 1px solid var(--hair); box-shadow: none; transition: border-color .3s var(--ease), translate .4s var(--ease); }
+.calm .card::after { display: none; }
+[data-theme="dark"] .calm .card, [data-theme="dark"].calm .card { background: #0a0d12; }
+@media (hover: hover) { .calm .item:hover .card { border-color: color-mix(in srgb, var(--ink) 18%, transparent); } }
+.calm .card-btn.is-primary { box-shadow: none; }
+.calm .t-snapshot .device, .calm .t-quit .device { filter: drop-shadow(0 30px 40px rgba(10, 10, 10, .14)); }
+
+/* Brain Dump shares a row with the Shipped tile */
+.shipped-tile { grid-column: span 6; display: flex; flex-direction: column; padding: 30px 34px 34px; border-radius: var(--radius); corner-shape: squircle; border: 1px solid var(--hair); background: var(--bg); min-height: 620px; transition: border-color .3s var(--ease); }
+@media (hover: hover) { .shipped-tile:hover { border-color: color-mix(in srgb, var(--ink) 18%, transparent); } }
+.st-count { margin-top: 16px; font-family: var(--serif); font-weight: 300; font-size: clamp(30px, 2.6vw, 40px); line-height: 1.1; letter-spacing: var(--track-title); }
+.st-count b { font-weight: 300; }
+.st-list { display: block; margin-top: 28px; flex: 1; }
+.st-row { display: grid; grid-template-columns: 7ch 1fr; gap: 14px; padding: 11px 0; border-top: 1px solid var(--hair); font-size: 15px; line-height: 1.35; }
+.st-row time { color: var(--whisper); font-variant-numeric: tabular-nums; }
+.st-row.is-wraps span { filter: blur(4px); }
+.st-more { display: inline-flex; align-items: center; gap: 8px; margin-top: 20px; font-size: 15px; font-weight: 400; }
+.st-more svg { width: 12px; height: 12px; transition: transform .3s var(--ease); }
+.shipped-tile:hover .st-more svg { transform: translateX(2px); }
+
+.earlier { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 22px; margin-top: 46px; font-size: 15px; font-weight: 400; color: var(--ink-2); }
+.earlier span { color: var(--whisper); }
+.earlier a { text-decoration: underline; text-decoration-color: var(--hair); text-underline-offset: 3px; transition: color .2s var(--ease), text-decoration-color .2s var(--ease); }
+.earlier a:hover { color: var(--ink); text-decoration-color: currentColor; }
+
+.calm .contact { padding-top: 130px; }
+
+@media (max-width: 700px) {
+  .calm .hero { padding-top: 92px; }
+  .stage { height: 400px; }
+  .calm .eclipse { left: -45vw; width: 190vw; top: 82%; }
+  .stack { bottom: 15%; width: 240px; }
+  .shipped-tile { grid-column: span 12; min-height: 0; padding: 26px 26px 28px; }
+}
+@media (prefers-reduced-motion: reduce) { .ship { transition: opacity .2s linear; } }
