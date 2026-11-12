@@ -30,8 +30,44 @@
       case 'cutout': return `<span class="obj obj-cutout">${img}</span>`;
       case 'phone': return `<span class="obj obj-phone"><span>${img}</span></span>`;
       case 'screen': return `<span class="obj obj-screen"><i></i><span>${img}</span></span>`;
+      case 'sprite': return `<span class="obj obj-sprite" style="--sheet:url('${esc(s.img)}')" role="img" aria-label="${esc(s.p)}"></span>`;
       default: return `<span class="obj obj-tile"><b>${esc(s.p.charAt(0))}</b></span>`;
     }
+  }
+
+  /* Pip moves with Shea's own sprite sheet: one row per mood, six 96×104 frames a row, frame times from the
+     add-in. Away from the middle it sleeps; reach it and it wakes and waves; open it and it gets to work. */
+  const MOODS = { sleep: [0, [200, 220, 240, 300, 400, 400]], wake: [1, [360, 200, 240, 200, 320]], greet: [2, [420, 260, 200, 200, 1000]],
+    idle: [3, [900, 1100, 1100, 260, 320, 1400]], think: [4, [160, 180, 260, 160, 320]], search: [5, [240, 280, 280, 280, 360, 1100]],
+    write: [6, [220, 260, 260, 320, 1100]], celebrate: [7, [260, 120, 180, 120, 160, 900]], nod: [8, [130, 130, 150, 300]],
+    thumbs: [9, [140, 140, 160, 320]], shrug: [10, [150, 150, 200, 340]], bye: [11, [150, 180, 180, 180, 300]] };
+  const WORK = ['think', 'search', 'write', 'celebrate', 'thumbs', 'shrug', 'nod'];
+  function sprite(el) {
+    let timer = 0, awake = false, mood = 'far', job = 0;
+    const frame = (r, f) => { el.style.setProperty('--r', r); el.style.setProperty('--f', f); };
+    // Play a row once, then hand over to what comes next.
+    const play = (name, next) => {
+      clearTimeout(timer);
+      const [r, times] = MOODS[name];
+      const step = (f) => { frame(r, f); timer = setTimeout(() => (f + 1 < times.length ? step(f + 1) : next && next()), times[f]); };
+      step(0);
+    };
+    const idle = () => play('idle', idle);
+    // Open, it runs through its jobs with a short breath between each.
+    const breathe = () => { if (mood !== 'open') return idle(); frame(3, 0); timer = setTimeout(work, 700); };
+    const work = () => play(WORK[job++ % WORK.length], breathe);
+    frame(0, 5);
+    if (reduced) return { set() {}, stop() {} };
+    return {
+      set(m) {
+        if (m === mood) return;
+        mood = m;
+        if (m === 'far') { if (awake) play('bye', () => play('sleep')); awake = false; return; }
+        if (!awake) { awake = true; play('wake', () => play('greet', m === 'open' ? work : idle)); }
+        else if (m === 'open') work();
+      },
+      stop() { clearTimeout(timer); },
+    };
   }
 
   /* One quiet sound: a soft tick for each ship you pass. It used to be fresh random noise every time, dropped
@@ -199,8 +235,9 @@
       const count = {}, icons = {};
       shown().forEach((s) => { count[s.p] = (count[s.p] || 0) + 1; if (s.o === 'icon' && s.img) icons[s.p] = s.img; });
       const opts = [['all', 'All', svg('all')], ['k:personal', 'Personal', svg('personal')], ['k:work', 'Work', svg('work')]];
-      Object.keys(count).filter((p) => count[p] > 1).sort((a, b) => count[b] - count[a]).forEach((p) => {
-        opts.push([`p:${p}`, p, icons[p] ? `<img src="${esc(icons[p])}" alt="">` : svg(p === 'Client work' ? 'lock' : 'web')]);
+      // Client work isn't its own entry: Work already covers it.
+      Object.keys(count).filter((p) => count[p] > 1 && p !== 'Client work').sort((a, b) => count[b] - count[a]).forEach((p) => {
+        opts.push([`p:${p}`, p, icons[p] ? `<img src="${esc(icons[p])}" alt="">` : svg('web')]);
       });
       return opts;
     }
@@ -225,7 +262,9 @@
           </div>
         </li>`;
       }).join('');
+      items.forEach((el) => el.sprite?.stop());
       items = [...track.children];
+      items.forEach((el) => { const o = el.querySelector('.obj-sprite'); if (o) el.sprite = sprite(o); });
       // One tick per ship; the first of each month stands taller and carries its name.
       let month = '', lastLabel = -9;
       ticks.innerHTML = list.map((s, i) => {
@@ -253,9 +292,12 @@
       steer = smooth && !reduced ? el : null;
       track.scrollTo({ left: mid(el) - track.clientWidth / 2, behavior: steer ? 'smooth' : 'auto' });
     };
+    const mood = (el) => el?.sprite?.set(el === opened ? 'open' : el.classList.contains('is-focus') ? 'near' : 'far');
     function open(el) {
       if (opened === el) return;
+      const was = opened;
       opened = el;
+      mood(was); mood(el);
       items.forEach((x) => { const on = x === el; x.classList.toggle('is-open', on); x.querySelector('.st-hit').setAttribute('aria-expanded', String(on)); });
       track.classList.toggle('has-open', !!el);
       history.replaceState(null, '', el ? `#${el.id}` : location.pathname + location.search);
@@ -287,6 +329,7 @@
         if (current !== -1) tick(Math.abs(best - current), marks[best]?.classList.contains('is-month'));
         marks[current]?.classList.remove('is-on'); items[current]?.classList.remove('is-focus');
         marks[best]?.classList.add('is-on'); items[best]?.classList.add('is-focus');
+        mood(items[current]); mood(items[best]);
         current = best;
       }
       // With a card open, scrolling moves the opening along.
@@ -394,6 +437,7 @@
     const search = root.querySelector('.st-search'), input = search.querySelector('input'), results = search.querySelector('.st-results'), found = search.querySelector('[data-found]');
     let hits = [], hit = 0;
     const thumb = (s) => s.wraps ? `<span class="st-thumb is-wraps">${svg('lock')}</span>`
+      : s.o === 'sprite' ? `<span class="st-thumb">${object(s)}</span>`
       : s.img ? `<span class="st-thumb"><img src="${esc(s.img)}" alt="" loading="lazy"></span>` : `<span class="st-thumb"><b>${esc(s.p.charAt(0))}</b></span>`;
     function find() {
       const q = input.value.trim().toLowerCase();
