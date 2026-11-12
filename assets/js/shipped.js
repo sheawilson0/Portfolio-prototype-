@@ -71,12 +71,10 @@
     }
     document.querySelectorAll('[data-ship-count]').forEach((n) => { n.textContent = ships.length; });
     // The Shipped card's shelf: the latest few with pictures, no picture twice, oldest on the left.
-    const shelf = document.querySelector('[data-shelf]');
-    if (shelf) {
-      const seen = new Set(), pick = [];
-      for (const s of ships) { if (s.wraps || !s.img || seen.has(s.img)) continue; seen.add(s.img); pick.push(s); if (pick.length === 5) break; }
-      shelf.innerHTML = pick.reverse().map(object).join('');
-    }
+    const seen = new Set(), pick = [];
+    for (const s of ships) { if (s.wraps || !s.img || seen.has(s.img)) continue; seen.add(s.img); pick.push(s); if (pick.length === 5) break; }
+    const shelfHtml = pick.reverse().map(object).join('');
+    document.querySelectorAll('[data-shelf]').forEach((shelf) => { shelf.innerHTML = shelfHtml; });
   }
 
   /* ───────── /shipped/ ───────── */

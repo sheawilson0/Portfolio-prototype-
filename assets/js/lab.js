@@ -8,7 +8,8 @@
     ['newest', 'Newest', [['right', 'Right edge'], ['middle', 'In the middle', 1]]],
     ['small', 'Small updates', [['same', 'Same size'], ['small', 'Smaller', 1], ['hide', 'Hidden']]],
   ] : [
-    ['hero', 'Hero', [['object', 'Last shipped', 1], ['words', 'Words only']]],
+    ['hero', 'Hero', [['words', 'Just the line', 1], ['object', 'With the object']]],
+    ['work', 'Work', [['mosaic', 'Mosaic', 1], ['cards', 'Cards']]],
     ['q28', 'Quit28 card', [['now', 'As now'], ['live', 'Live', 1], ['live-hover', 'Live on hover']]],
     ['copy', 'Card words', [['full', 'Full'], ['lean', 'Lean', 1]]],
     ['brain', 'Brain Dump', [['show', 'Show', 1], ['hide', 'Hide']]],

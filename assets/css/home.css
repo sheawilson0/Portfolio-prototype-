@@ -120,3 +120,48 @@ body[data-concepts="line"] .t-small { display: none; }
   .shelf { gap: 8px; }
   .shelf .obj:nth-child(n+4) { display: none; }
 }
+
+/* ───────── Work as a mosaic (after raylight.app) ─────────
+   Big tiles of colour, the product huge and cropped, two words underneath. One hover: the art drifts
+   with the pointer and the tile lifts. */
+body[data-work="mosaic"] .work { display: none; }
+body[data-work="cards"] .mosaic { display: none; }
+.mosaic { position: relative; z-index: 6; max-width: 1380px; margin: -150px auto 0; padding: 0 var(--gutter) 110px; display: grid; grid-template-columns: repeat(12, 1fr); gap: 34px 14px; }
+.tile { display: flex; flex-direction: column; gap: 14px; }
+.tile-art { position: relative; display: block; overflow: hidden; border-radius: 22px; corner-shape: squircle; height: 560px;
+  background: radial-gradient(120% 100% at 80% 100%, var(--bg2, #e9e9ec), transparent 60%), var(--bg1, #f2f2f4);
+  transition: translate .5s var(--ease), box-shadow .5s var(--ease); }
+.tile-art img { position: absolute; max-width: none; transition: transform 1s var(--ease); }
+.tile-cap { display: flex; align-items: baseline; gap: 10px; padding: 0 4px; font-size: 15px; color: var(--whisper); }
+.tile-cap b { font-weight: 400; color: var(--ink); }
+@media (hover: hover) {
+  .tile:hover .tile-art { translate: 0 -4px; box-shadow: 0 30px 60px color-mix(in srgb, var(--bg1, #000) 30%, transparent); }
+  .tile:hover .tile-art img { transform: translate3d(var(--mx, 0), var(--my, 0), 0) scale(1.03); }
+}
+.m-snap { grid-column: span 7; }
+.m-quit { grid-column: span 5; }
+.m-jump { grid-column: span 8; }
+.m-brain { grid-column: span 4; }
+.m-photo, .m-ship { grid-column: span 4; }
+.m-jump .tile-art, .m-brain .tile-art { height: 500px; }
+.m-photo .tile-art, .m-ship .tile-art { height: 400px; }
+/* The art, placed big and cropped. */
+.m-snap-res { width: 66%; left: -6%; top: 22%; rotate: -6deg; border-radius: 14px; box-shadow: 0 30px 60px rgba(20, 0, 80, .35); }
+.m-snap-phone { width: 42%; right: 6%; top: 8%; filter: drop-shadow(0 40px 50px rgba(20, 0, 80, .4)); }
+.m-quit-hand { width: 118%; left: 2%; bottom: -14%; filter: drop-shadow(0 40px 50px rgba(0, 50, 100, .3)); }
+.m-jump-a { width: 70%; left: 6%; top: 12%; rotate: -3deg; border-radius: 12px; box-shadow: 0 30px 60px rgba(0, 30, 20, .4); }
+.m-jump-b { width: 56%; right: -4%; top: 30%; rotate: 2deg; border-radius: 12px; box-shadow: 0 30px 60px rgba(0, 30, 20, .45); }
+.m-brain-phone { width: 62%; left: 19%; top: 12%; border-radius: 34px; box-shadow: 0 40px 60px rgba(30, 0, 80, .5), 0 0 0 7px #0b0b10; }
+.m-photo .tile-art img { inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.m-ship .tile-art { display: flex; align-items: center; justify-content: center; background: color-mix(in srgb, var(--ink) 4%, var(--bg)); }
+.m-ship .shelf { border: 0; padding: 0; gap: 12px; }
+@media (max-width: 900px) {
+  .mosaic { gap: 26px 12px; }
+  .m-snap, .m-quit, .m-jump, .m-brain, .m-photo, .m-ship { grid-column: span 12; }
+  .tile-art, .m-jump .tile-art, .m-brain .tile-art { height: min(110vw, 460px); }
+  .m-photo .tile-art, .m-ship .tile-art { height: min(80vw, 340px); }
+}
+.m-ship .tile-art .obj img { position: static; width: 100%; height: 100%; transform: none; }
+.m-ship .shelf .obj-icon, .m-ship .shelf .obj-tile { width: 92px; height: 92px; border-radius: 22px; }
+.m-ship .shelf { justify-content: center; width: auto; }
+.m-ship .shelf .obj:nth-child(-n+2) { display: none; }

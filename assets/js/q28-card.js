@@ -46,3 +46,13 @@
   new MutationObserver(sync).observe(document.body, { attributes: true, attributeFilter: ['data-q28'] });
   paint();
 })();
+
+/* Mosaic tiles: the art drifts a little with the pointer. */
+(() => {
+  if (!matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+  document.querySelectorAll('.tile').forEach((t) => t.addEventListener('pointermove', (e) => {
+    const r = t.getBoundingClientRect();
+    t.style.setProperty('--mx', `${((e.clientX - r.left) / r.width - .5) * 16}px`);
+    t.style.setProperty('--my', `${((e.clientY - r.top) / r.height - .5) * 12}px`);
+  }));
+})();
