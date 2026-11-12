@@ -22,12 +22,12 @@
 
 /* ───────── Quit28, live (q28-card.js) ─────────
    Copied from the app at its own sizes (Quit-Coach journey.module.css, craving-timer.module.css): Manrope, the
-   green logged days, pink day 28, the blue breathing circles. A 520 × 540 stage, scaled to fit by --k; each piece
+   green logged days, pink day 28, the blue breathing circles. On a 520 × 540 stage (fitted to 520 × 500); each piece
    is drawn at the app's real pixel size and shrunk by --s, the same scale as the phone screenshot. */
 .q28-set, .q-live { --q-blue: #00a7fa; --q-green: #06fb06; --q-pink: #f31a7b; --q-ink: #0a0a0a; --q-muted: #4a4a48; --q-tile: #f1f1ec; font-family: 'Manrope', var(--sans); color: var(--q-ink); }
 .q28-set { position: absolute; inset: 0; }
-.q28-stage { --s: .64; position: absolute; left: 50%; top: 50%; width: 520px; height: 540px; translate: -50% -50%; scale: var(--k, 1); }
-.q28-stage > * { position: absolute; display: block; transform-origin: 0 0; scale: var(--s); transition: translate .9s var(--ease); }
+.q28-stage { --s: .64; --w: 520; --h: 500; height: 540px; }
+.q28-stage > * { transform-origin: 0 0; scale: var(--s); }
 /* iPhone 17 Pro: a 402 × 874 screen in a thin black bezel. */
 .q28-phone { left: 20px; top: 48px; width: 426px; height: 898px; padding: 12px; border-radius: 68px; background: #0b0c0e; box-shadow: inset 0 0 0 2px #3a3c40, 0 60px 90px rgba(0, 30, 70, .35); }
 .q28-screen { position: relative; display: block; height: 100%; border-radius: 56px; overflow: hidden; background: #f3f3ef; }
@@ -70,8 +70,9 @@ body[data-q28="live"] .t-quit .media.q-now { display: none; }
 body[data-q28="live"] .t-quit .media.q-live { display: block; }
 
 /* ───────── Work as a mosaic (after raylight.app) ─────────
-   Colour tiles, the product big, a name and a few words underneath. The tile never moves; on hover its
-   coloured shadow comes up and the art drifts a little with the pointer (lab: Hover). */
+   Colour tiles, the product big, a name and a few words underneath. The tile never moves. On hover its
+   coloured shadow comes up and the pictures inside move apart in layers, the back ones against the pointer and
+   the front ones with it (--d, eased by q28-card.js). Lab: Hover → Layers + tilt is the old cards' way. */
 body[data-work="mosaic"] .work { display: none; }
 body[data-work="cards"] .mosaic { display: none; }
 .mosaic { position: relative; z-index: 6; max-width: 1380px; margin: -150px auto 0; padding: 0 var(--gutter) 110px; display: grid; grid-template-columns: repeat(12, 1fr); gap: 40px 16px; }
@@ -82,13 +83,15 @@ body[data-work="cards"] .mosaic { display: none; }
     radial-gradient(70% 60% at 0% 0%, color-mix(in oklab, var(--bg1) 72%, white), transparent 65%),
     linear-gradient(165deg, var(--bg1), color-mix(in oklab, var(--bg1) 82%, black));
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, .22); transition: box-shadow .5s var(--ease), translate .5s var(--ease); }
-.tile-art img { position: absolute; max-width: none; transition: transform .8s var(--ease); }
-.tile-cap { display: flex; align-items: baseline; gap: 10px; padding: 0 4px; font-size: 15px; color: var(--whisper); }
-.tile-cap b { font-weight: 400; color: var(--ink); }
+.tile-cap { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 10px; padding: 0 4px; font-size: 15px; color: var(--whisper); }
+.tile-cap b { font-weight: 400; color: var(--ink); white-space: nowrap; }
+/* Each tile's pictures sit on a stage --w × --h (design pixels), scaled by --k to fit the tile, centred. */
+.stage { position: absolute; left: 50%; top: 50%; width: calc(var(--w) * 1px); height: calc(var(--h) * 1px); translate: -50% -50%; scale: var(--k, 1); }
+.stage > * { position: absolute; display: block; max-width: none; translate: calc(var(--px, 0) * var(--d, 0) * 44px) calc(var(--py, 0) * var(--d, 0) * 32px); }
 @media (hover: hover) {
   .tile:hover .tile-art { box-shadow: inset 0 1px 0 rgba(255, 255, 255, .22), 0 26px 60px -10px color-mix(in srgb, var(--bg1, #000) 45%, transparent); }
-  .tile:hover .tile-art img { transform: translate3d(var(--mx, 0), var(--my, 0), 0); }
   body[data-hover="lift"] .tile:hover .tile-art { translate: 0 -6px; }
+  body[data-hover="tilt"] .tile-art > :is(.stage, img, .shelf) { transform: perspective(1300px) rotateX(calc(var(--py, 0) * -6deg)) rotateY(calc(var(--px, 0) * 8deg)); }
 }
 .m-snap { grid-column: span 7; }
 .m-quit { grid-column: span 5; }
@@ -97,21 +100,27 @@ body[data-work="cards"] .mosaic { display: none; }
 .m-photo, .m-ship { grid-column: span 4; }
 .m-jump .tile-art, .m-brain .tile-art { height: 480px; }
 .m-photo .tile-art, .m-ship .tile-art { height: 380px; }
-/* The art, placed so you see the whole idea, not a close-up. */
-.m-snap-res { width: 54%; left: 4%; top: 26%; rotate: -6deg; border-radius: 12px; box-shadow: 0 30px 60px rgba(20, 0, 80, .35); }
-.m-snap-phone { width: 32%; right: 10%; top: 9%; filter: drop-shadow(0 40px 50px rgba(20, 0, 80, .4)); }
-.m-jump-a { width: 52%; left: 4%; top: 10%; rotate: -4deg; border-radius: 10px; box-shadow: 0 30px 60px rgba(0, 30, 20, .4); }
-.m-jump-b { width: 44%; left: 34%; top: 28%; rotate: 1.5deg; border-radius: 10px; box-shadow: 0 30px 60px rgba(0, 30, 20, .45); }
-.m-jump-c { width: 30%; right: 4%; top: 52%; rotate: 4deg; border-radius: 10px; box-shadow: 0 30px 60px rgba(0, 30, 20, .45); }
-.m-brain-phone { width: 52%; left: 24%; top: 10%; filter: drop-shadow(0 40px 50px rgba(30, 0, 80, .45)); }
-.m-photo .tile-art img { inset: 0; width: 100%; height: 100%; object-fit: cover; }
-.m-ship .tile-art { display: flex; align-items: center; justify-content: center; background: color-mix(in srgb, var(--ink) 4%, var(--bg)); }
-.m-ship .shelf { display: flex; align-items: flex-end; justify-content: center; gap: 14px; }
-.m-ship .shelf .obj { flex: none; }
-.m-ship .shelf .obj:nth-child(-n+2) { display: none; }
-.m-ship .tile-art .obj img { position: static; width: 100%; height: 100%; transform: none; }
-.m-ship .shelf .obj-icon, .m-ship .shelf .obj-tile { width: 92px; height: 92px; border-radius: 22px; }
-.m-ship .shelf .obj-cutout { width: 130px; height: 130px; }
+/* Snapshot: the results card behind, the phone in front running off the bottom. */
+.m-snap .stage { --w: 640; --h: 540; }
+.m-snap-res { width: 440px; left: -6px; top: 118px; rotate: -4deg; border-radius: 14px; box-shadow: 0 30px 60px rgba(20, 0, 80, .35); }
+.m-snap-phone { width: 250px; left: 396px; top: 52px; filter: drop-shadow(0 40px 50px rgba(20, 0, 80, .4)); }
+/* JumpStart: the client report big, the PowerPoint export in front. */
+.m-jump .stage { --w: 840; --h: 480; }
+.m-jump-report { width: 600px; left: 64px; top: 50px; border-radius: 12px; box-shadow: 0 30px 70px rgba(0, 30, 20, .4); }
+.m-jump-export { width: 330px; left: 478px; top: 228px; border-radius: 12px; box-shadow: 0 30px 60px rgba(0, 30, 20, .5); }
+/* Brain Dump: home in front, the voice screen behind. */
+.m-brain .stage { --w: 420; --h: 480; }
+.m-brain-phone { width: 236px; left: 156px; top: 48px; filter: drop-shadow(0 40px 50px rgba(30, 0, 80, .45)); }
+.m-brain-back { width: 196px; left: 14px; top: 96px; rotate: -8deg; opacity: .9; filter: drop-shadow(0 24px 30px rgba(30, 0, 80, .35)); }
+/* Cipher and Amp: one photo, a touch bigger than the tile so moving it never shows an edge. */
+.m-photo .tile-art img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; scale: 1.08; translate: calc(var(--px, 0) * -16px) calc(var(--py, 0) * -12px); }
+/* Shipped: the app icons from the latest ships, dropped on the tile. */
+.m-ship .tile-art { display: flex; align-items: center; justify-content: center; }
+.m-ship .shelf { display: flex; align-items: center; justify-content: center; }
+.m-ship .shelf > :not(.obj-icon) { display: none; }
+.m-ship .shelf .obj-icon { width: 148px; height: 148px; margin: 0 -6px; rotate: -7deg; translate: calc(var(--px, 0) * var(--d, .6) * 40px) calc(var(--py, 0) * var(--d, .6) * 30px); }
+.m-ship .shelf .obj-icon:last-child { --d: 1.2; rotate: 6deg; margin-top: 46px; }
+.m-ship .obj img { position: static; width: 100%; height: 100%; }
 
 /* ───────── The older glass cards (lab: Work → Cards) ───────── */
 .home .work { margin-top: -150px; padding-top: 0; }
@@ -139,6 +148,15 @@ body[data-brain="hide"] .t-shipped { grid-column: span 12; }
   .m-snap, .m-quit, .m-jump, .m-brain, .m-photo, .m-ship { grid-column: span 12; }
   .tile-art, .m-jump .tile-art, .m-brain .tile-art { height: min(110vw, 460px); }
   .m-photo .tile-art, .m-ship .tile-art { height: min(80vw, 340px); }
+  /* Tighter stages, so the products fill a phone-width tile. */
+  .m-snap .tile-art { height: min(96vw, 420px); }
+  .m-snap .stage { --w: 400; --h: 420; }
+  .m-snap-res { width: 300px; left: -14px; top: 150px; }
+  .m-snap-phone { width: 188px; left: 206px; top: 38px; }
+  .m-jump .tile-art { height: min(92vw, 400px); }
+  .m-jump .stage { --w: 400; --h: 400; }
+  .m-jump-report { width: 430px; left: 20px; top: 84px; }
+  .m-jump-export { width: 230px; left: 150px; top: 236px; }
 }
 @media (max-width: 700px) {
   .home .hero { padding-top: 92px; }
@@ -147,14 +165,8 @@ body[data-brain="hide"] .t-shipped { grid-column: span 12; }
   .t-shipped .shelf .obj:nth-child(n+4) { display: none; }
 }
 
-/* Pictures: Close brings the products right up, cropped by the tile (lab). */
-body[data-zoom="close"] .m-snap-res { width: 66%; left: -6%; top: 22%; }
-body[data-zoom="close"] .m-snap-phone { width: 42%; right: 6%; top: 8%; }
-body[data-zoom="close"] .m-jump-a { width: 70%; left: 6%; top: 12%; }
-body[data-zoom="close"] .m-jump-b { width: 56%; left: auto; right: -4%; top: 30%; }
-body[data-zoom="close"] .m-jump-c { display: none; }
-body[data-zoom="close"] .m-brain-phone { width: 64%; left: 18%; top: 12%; }
-
+/* Pictures: Close brings everything right up, cropped by the tile (lab). */
+body[data-zoom="close"] .stage { scale: calc(var(--k, 1) * 1.22); }
 
 /* ───────── Contact (lab: Contact) ─────────
    Big: as it was, with the LinkedIn and X logos underneath. Quiet: a smaller heading, the email as a plain link. */
@@ -171,9 +183,6 @@ body[data-contact="quiet"] .email::before, body[data-contact="quiet"] .email-ico
 body[data-contact="quiet"] .copy { height: 34px; padding: 0 12px; font-size: 13px; }
 body[data-contact="quiet"] .cta { margin-top: 26px; gap: 14px; }
 
-/* Round 5 fixes. */
-/* Photos are scaled up a little so the drift never shows their edges. */
-.m-photo .tile-art img { scale: 1.08; }
 /* At night the bright tiles are dimmed, so they sit in the dark page instead of glaring. */
 .tile-art::before { content: ""; position: absolute; z-index: 5; inset: 0; background: #05070b; opacity: 0; pointer-events: none; transition: opacity .6s var(--ease); }
 [data-theme="dark"] .tile-art::before { opacity: .3; }

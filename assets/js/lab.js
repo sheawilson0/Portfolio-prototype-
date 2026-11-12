@@ -9,7 +9,7 @@
     ['small', 'Small updates', [['hide', 'Hidden', 1], ['small', 'Smaller']]],
   ] : [
     ['work', 'Work', [['mosaic', 'Mosaic', 1], ['cards', 'Cards']]],
-    ['hover', 'Hover', [['glow', 'Glow + drift', 1], ['lift', 'Glow + drift + lift']]],
+    ['hover', 'Hover', [['glow', 'Layers', 1], ['tilt', 'Layers + tilt'], ['lift', 'Layers + lift']]],
     ['zoom', 'Pictures', [['wide', 'Wide', 1], ['close', 'Close']]],
     ['q28', 'Quit28 (cards)', [['now', 'As now'], ['live', 'Live', 1]]],
     ['contact', 'Contact', [['big', 'Big', 1], ['quiet', 'Quiet']]],
