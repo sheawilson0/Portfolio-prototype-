@@ -78,10 +78,6 @@
 @media (hover: hover) { .st-item:hover .st-words > :is(h2, .st-p) { opacity: 1; translate: 0 0; } }
 .st-item.is-open > time { color: var(--hi); }
 /* Small updates (shown only when the lab asks): a short stand. */
-body[data-small="small"] .st-item.is-minor { width: 150px; }
-body[data-small="small"] .st-item.is-minor .obj { scale: .6; transform-origin: 50% 100%; }
-body[data-small="small"] .st-item.is-minor h2 { font-size: 13px; color: var(--ink-2); max-width: 130px; }
-body[data-small="small"] .st-item.is-minor .st-p { display: none; }
 
 /* Tapped: the others step back a little and the details unfold under it. */
 .st-track.has-open .st-item:not(.is-open) { opacity: .5; }

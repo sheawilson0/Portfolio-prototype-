@@ -34,8 +34,8 @@
     };
     paint(); show();
     // Once a second, like the app: the time counts down from 3:00, the word swaps every 4 seconds and the ring
-    // fills (the circles' 8-second breathe animation does the rest). A day is logged every 2 seconds; day 28
-    // brings the confetti, and a few seconds later the calendar starts again.
+    // fills (the circles' 8-second breathe animation does the rest). A day is logged every 2 seconds; the full
+    // calendar stays a few seconds, then starts again.
     function step() {
       gone = (gone + 1) % 180;
       show();
@@ -45,23 +45,7 @@
       paint();
       const c = cells[day - 1];
       c.classList.remove('is-pop'); void c.offsetWidth; c.classList.add('is-pop');
-      if (day === 28) { confetti(); hold = 5; }
-    }
-    // The film's confetti: one burst of pieces from above the tile, falling once with a slow start, drifting and spinning.
-    function confetti() {
-      const { width: W, height: H } = root.getBoundingClientRect(), u = W / 520;
-      root.style.setProperty('--u', u.toFixed(3));
-      for (let i = 0; i < 48; i++) {
-        const p = document.createElement('i'), x = Math.random() * W, r = Math.random() * 360;
-        const spin = (240 + Math.random() * 420) * (Math.random() < .5 ? -1 : 1);
-        p.className = i % 4 === 3 ? 'q28-bit is-dot' : 'q28-bit';
-        p.style.background = ['#06fb06', '#00a7fa', '#f31a7b'][i % 3];
-        root.append(p);
-        p.animate([
-          { transform: `translate(${x}px, ${-(30 + Math.random() * 160) * u}px) rotate(${r}deg)` },
-          { transform: `translate(${x + (Math.random() * 2 - 1) * 120 * u}px, ${H + 30}px) rotate(${r + spin}deg)` },
-        ], { duration: 1400 + Math.random() * 900, delay: Math.random() * 450, easing: 'cubic-bezier(.55, .085, .68, .53)', fill: 'backwards' }).onfinish = () => p.remove();
-      }
+      if (day === 28) hold = 4;
     }
     if (reduced) return;
     new IntersectionObserver(([e]) => {
@@ -70,6 +54,9 @@
       else if (!e.isIntersecting && clock) { clearInterval(clock); clock = null; }
     }, { threshold: .25 }).observe(root);
   });
+
+  // Meridian's butterfly on the Shipped tile and card, awake and watching the pointer (meridian-line.js).
+  if (typeof Line !== 'undefined') document.querySelectorAll('[data-fly]').forEach((h) => Line.mount(h, { eyeset: 'pen', mood: reduced ? 'still' : 'idle', follow: !reduced, label: 'Meridian' }));
 
   // Every .art stage (home.css) is drawn --w × --h; scale it to fit its tile.
   document.querySelectorAll('.art').forEach((stage) => new ResizeObserver(([e]) => {

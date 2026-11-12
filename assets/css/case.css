@@ -28,15 +28,13 @@
 
 /* Picture first, then the title, as on Snapshot, Quit28 and JumpStart (cs-top on <body>). */
 .cs-top main > .stage:first-child { margin-top: 100px; }
+.cs-top main > .hero-shot:first-child { margin-top: 40px; }
 .cs-top .cs-hero { display: block; padding: clamp(48px, 6vw, 80px) 0 clamp(44px, 5vw, 64px); }
 .cs-top .cs-hero h1 { font-size: clamp(48px, 7vw, 104px); }
 .cs-top .cs-hero .lede { max-width: 55ch; margin-top: 26px; font-size: clamp(19px, 2vw, 24px); }
 .cs-top .facts { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 22px; margin-top: 40px; padding-top: 24px; border-top: 1px solid var(--hair); }
 .cs-top .facts dd { font-size: 14px; max-width: 28ch; }
 .cs-top .facts dt { font-size: 12px; }
-/* Amp's screens are black, so they float on its orange rather than the stage's black. */
-.amp-stage .stage-media { background: radial-gradient(70% 90% at 15% 10%, #ffb347, transparent 60%), radial-gradient(70% 90% at 95% 100%, #c33f1f, transparent 65%), #ff6a2b; }
-.amp-stage .stage-media img { object-fit: contain; scale: 1.22; }
 
 /* A cut-out hero that runs wider than the page and taller than the screen, so you scroll through it */
 .hero-shot { position: relative; isolation: isolate; width: min(100vw, 1600px); margin-left: calc(50% - min(50vw, 800px)); margin-top: -3vw; pointer-events: none; }

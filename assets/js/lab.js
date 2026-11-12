@@ -1,24 +1,17 @@
-/* The lab bar, on the homepage and /shipped/. Only on preview hosts, or with ?lab on the live site.
+/* The lab bar, on the homepage. Only on preview hosts, or with ?lab on the live site.
    Each row sets a data attribute on <body>; home.css does the rest. The dot marks my pick. */
 (() => {
   const live = /(^|\.)sheawilson\.uk$|\.vercel\.app$/.test(location.hostname);
   if (live && !new URLSearchParams(location.search).has('lab')) return;
-  const street = document.body.classList.contains('is-street');
-  const ROWS = street ? [
-    ['sky', 'Sky', [['sun', 'Follows the sun', 1], ['day', 'Always midday']]],
-    ['small', 'Small updates', [['hide', 'Hidden', 1], ['small', 'Smaller']]],
-  ] : [
-    ['work', 'Work', [['mosaic', 'Mosaic', 1], ['cards', 'Cards']]],
-    ['tiles', 'Mosaic tiles', [['colour', 'Gradient', 1], ['glass', 'Glass']]],
-    ['gap', 'Space between tiles', [['roomy', 'More', 1], ['tight', 'As before']]],
-    ['phones', 'Two phones', [['snap', 'Flip Snapshot', 1], ['quit', 'Flip Quit28'], ['side', 'Side by side']]],
-    ['ship', 'Shipped colour', [['yellow', 'Yellow', 1], ['red', 'Red'], ['silver', 'Silver'], ['ink', 'Ink']]],
+  const ROWS = [
+    ['work', 'Work', [['cards', 'Cards', 1], ['mosaic', 'Mosaic']]],
+    ['copy', 'Card words (cards)', [['cap', 'Just a caption', 1], ['lean', 'Lean'], ['full', 'Full']]],
+    ['gap', 'Space between tiles (mosaic)', [['roomy', 'More', 1], ['tight', 'As before']]],
+    ['phones', 'Two phones (mosaic)', [['snap', 'Flip Snapshot', 1], ['quit', 'Flip Quit28'], ['side', 'Side by side']]],
+    ['ship', 'Shipped colour', [['red', 'Red', 1], ['yellow', 'Yellow']]],
     ['q28', 'Quit28 (cards)', [['now', 'As now'], ['live', 'Live', 1]]],
-    ['contact', 'Contact', [['big', 'Big'], ['quiet', 'Quiet', 1]]],
-    ['copy', 'Card words (cards)', [['full', 'Full'], ['lean', 'Lean', 1]]],
   ];
-  if (!ROWS.length) return;
-  const KEY = street ? 'street-lab' : 'home-lab-4'; // home-lab-4: picks changed 12 Nov, start everyone on them
+  const KEY = 'home-lab-5'; // home-lab-5: picks changed 12 Nov, start everyone on them
   const get = (k) => { try { return JSON.parse(localStorage.getItem(KEY) || '{}')[k]; } catch (e) { return null; } };
   const set = (k, v) => { try { const o = JSON.parse(localStorage.getItem(KEY) || '{}'); o[k] = v; localStorage.setItem(KEY, JSON.stringify(o)); } catch (e) {} };
   const apply = (k, v) => { document.body.dataset[k] = v; };
@@ -37,7 +30,6 @@
   bar.innerHTML = `<div class="lab-head"><b>Lab</b><button type="button" data-shut>Hide</button></div>` + ROWS.map(([k, label, opts]) =>
     `<div class="lab-row"><p>${label}</p><div class="lab-opts">${opts.map(([v, name, pick]) =>
       `<button type="button" data-k="${k}" data-v="${v}" class="${pick ? 'is-pick' : ''}" aria-pressed="${document.body.dataset[k] === v}">${name}</button>`).join('')}</div></div>`).join('');
-  if (street) Object.assign(bar.style, innerWidth > 700 ? { left: 'auto', right: '16px', bottom: 'auto', top: '84px' } : { bottom: 'auto', top: '72px' });
   document.body.append(bar);
   bar.addEventListener('click', (e) => {
     if (e.target.closest('[data-shut]')) { bar.classList.toggle('is-shut'); e.target.textContent = bar.classList.contains('is-shut') ? 'Show' : 'Hide'; return; }

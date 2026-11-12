@@ -224,7 +224,6 @@
     const html = document.documentElement, body = document.body;
     const t = new URLSearchParams(location.search).get('t');
     function paint() {
-      if (body.dataset.sky === 'day') { body.removeAttribute('style'); body.classList.remove('is-night'); return; }
       const d = new Date(), mode = html.dataset.mode;
       const min = mode === 'dark' ? 0 : t ? +t.split(':')[0] * 60 + +(t.split(':')[1] || 0) : d.getHours() * 60 + d.getMinutes();
       const sun = window.__sky?.sun() || { rise: 450, set: 1020, tw: 38 };
@@ -236,7 +235,6 @@
     paint();
     setInterval(paint, 30000);
     new MutationObserver(paint).observe(html, { attributes: true, attributeFilter: ['data-mode'] });
-    new MutationObserver(paint).observe(body, { attributes: true, attributeFilter: ['data-sky'] });
   }
 
   function street(all) {
@@ -247,7 +245,7 @@
     const read = () => { try { return new Set(JSON.parse(localStorage.getItem('shipped-hearts') || '[]')); } catch (e) { return new Set(); } };
     const hearts = read();
     const save = () => { try { localStorage.setItem('shipped-hearts', JSON.stringify([...hearts])); } catch (e) {} };
-    const shown = () => all.filter((s) => !(s.minor && document.body.dataset.small !== 'small')); // small updates stay hidden
+    const shown = () => all.filter((s) => !s.minor); // small updates stay hidden
     let filter = 'all', items = [], marks = [], current = -1;
 
     // The filter menu: everything, personal or work, and the projects with more than one thing in them.
@@ -487,7 +485,7 @@
         e.preventDefault(); if (!n) return;
         hit = (hit + (e.key === 'ArrowDown' ? 1 : n - 1)) % n;
         results.querySelectorAll('button').forEach((b, i) => b.classList.toggle('is-on', i === hit));
-      } else if (e.key === 'Enter') choose(hits[hit]);
+      } else if (e.key === 'Enter') { e.preventDefault(); choose(hits[hit]); } // or the Enter carries on to the search button and opens it again
     });
 
     addEventListener('keydown', (e) => {
@@ -501,7 +499,6 @@
       go(items[Math.max(0, Math.min(items.length - 1, current + step))]);
     });
 
-    new MutationObserver(() => render()).observe(document.body, { attributes: true, attributeFilter: ['data-small'] });
     render(decodeURIComponent(location.hash.slice(1)));
   }
 })();

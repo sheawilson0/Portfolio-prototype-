@@ -34,7 +34,7 @@
 <link rel="stylesheet" href="assets/css/ship-objects.css">
 <link rel="stylesheet" href="assets/css/home.css">
 </head>
-<body class="home" data-work="mosaic" data-q28="live" data-copy="lean" data-brain="show" data-contact="quiet" data-ship="yellow" data-tiles="colour" data-gap="roomy" data-phones="snap">
+<body class="home" data-work="cards" data-copy="cap" data-q28="live" data-brain="show" data-contact="quiet" data-ship="red" data-gap="roomy" data-phones="snap">
 
 <header class="nav">
   <div class="nav-inner">
@@ -88,7 +88,7 @@
     <span class="tile-cap"><b>Amp</b><span>Concept</span></span>
   </a>
   <a class="tile m-ship" href="shipped/">
-    <span class="tile-art"><span class="shelf" data-shelf></span></span>
+    <span class="tile-art"><span class="ship-hero" aria-hidden="true"><span class="ship-fly" data-fly></span><span class="obj-sprite ship-pip" style="--sheet:url('/assets/media/shipped/pip.png')"></span></span></span>
     <span class="tile-cap"><b>Shipped</b><span><span data-ship-count>29</span> things since August</span></span>
   </a>
 </section>
@@ -123,6 +123,7 @@
           <img decoding="async" class="device" data-depth="1" src="assets/media/home/snapshot-phone.webp" alt="Smoking Snapshot on a phone, asking which smoking pattern sounds like you" width="720" height="1491">
         </div>
       </div>
+      <a class="tile-cap item-cap" href="snapshot.html" tabindex="-1"><b>Smoking Snapshot</b><span>Used 1,000+ times for the NHS</span></a>
     </article>
 
     <article class="item t-quit reveal" id="quit28" data-cursor="View case study" style="--tone:#00a7fa; --a:#00a7fa; --b:#5cc8ff; --c:#ff2d87">
@@ -150,6 +151,7 @@
         </div>
         <div class="media q-live" data-q28-live></div>
       </div>
+      <a class="tile-cap item-cap" href="quit28.html" tabindex="-1"><b>Quit28</b><span>Live now</span></a>
     </article>
 
     <article class="item t-jump reveal" id="jumpstart" data-cursor="View case study" style="--tone:#4fae86; --a:#4fae86; --b:#8fd4b4; --c:#0b5c45">
@@ -177,6 +179,7 @@
           </div>
         </div>
       </div>
+      <a class="tile-cap item-cap" href="jumpstart.html" tabindex="-1"><b>JumpStart</b><span>In pilot with the National Football Museum</span></a>
     </article>
 
     <article class="item t-brain reveal" id="brain" data-cursor="View case study" style="--tone:#8a3cff; --d:.06s; --a:#8a3cff; --b:#5b2bff; --c:#c77dff">
@@ -201,6 +204,7 @@
           </div>
         </div>
       </a>
+      <a class="tile-cap item-cap" href="braindump.html" tabindex="-1"><b>Brain Dump</b><span>In beta</span></a>
     </article>
 
     <article class="item t-shipped reveal" data-cursor="See everything I’ve shipped" style="--tone:#2fd67b; --d:.06s; --a:#2fd67b; --b:#43d9ff; --c:#8a3cff">
@@ -212,8 +216,9 @@
       <a class="card" href="shipped/">
         <div class="card-top"><span class="label">Everything I’ve made</span><span class="label live">Updated weekly</span></div>
         <div class="card-copy"><h2>Shipped</h2><p class="line"><span data-ship-count>29</span> things since August, from client launches to tools I made for myself.</p></div>
-        <div class="media"><div class="shelf" data-shelf></div></div>
+        <div class="media"><span class="ship-hero" aria-hidden="true"><span class="ship-fly" data-fly></span><span class="obj-sprite ship-pip" style="--sheet:url('/assets/media/shipped/pip.png')"></span></span></div>
       </a>
+      <a class="tile-cap item-cap" href="shipped/" tabindex="-1"><b>Shipped</b><span><span data-ship-count>29</span> things since August</span></a>
     </article>
 
     <article class="item t-small reveal" data-cursor="View case study" style="--tone:#0ec980; --a:#0ec980; --b:#1ab796; --c:#7cf0c0">
@@ -227,6 +232,7 @@
         <div class="card-copy"><h2>Cipher</h2><p class="line">Brand guidelines, website and app for an AI-first bank.</p></div>
         <div class="media"><img decoding="async" src="assets/media/home/cipher.webp" alt="Cipher website on a laptop resting on a ribbed wooden surface" width="1400" height="1050" loading="lazy"></div>
       </a>
+      <a class="tile-cap item-cap" href="cipher.html" tabindex="-1"><b>Cipher</b><span>Concept</span></a>
     </article>
 
     <article class="item t-small reveal" data-cursor="View case study" style="--tone:#ff6a2b; --a:#ff6a2b; --b:#c33f1f; --c:#ffb347; --d:.06s">
@@ -240,6 +246,7 @@
         <div class="card-copy"><h2>Amp</h2><p class="line">A music player built around smart playback and moving between devices.</p></div>
         <div class="media"><img decoding="async" src="assets/media/home/amp.webp" alt="Amp music player on a phone standing on dark rock" width="1400" height="1050" loading="lazy"></div>
       </a>
+      <a class="tile-cap item-cap" href="amp.html" tabindex="-1"><b>Amp</b><span>Concept</span></a>
     </article>
   </div>
   <p class="earlier reveal"><span>Earlier concepts</span><a href="cipher.html">Cipher</a><a href="amp.html">Amp</a></p>
@@ -289,6 +296,7 @@
 <script src="assets/js/site.js" defer></script>
 <script src="assets/js/ship-objects.js" defer></script>
 <script src="assets/js/shipped.js" defer></script>
+<script src="assets/js/meridian-line.js" defer></script>
 <script src="assets/js/q28-card.js" defer></script>
 <script src="assets/js/lab.js" defer></script>
 </body>
