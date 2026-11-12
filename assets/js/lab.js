@@ -5,8 +5,7 @@
   if (live && !new URLSearchParams(location.search).has('lab')) return;
   const street = document.body.classList.contains('is-street');
   const ROWS = street ? [
-    ['newest', 'Newest', [['right', 'Right edge'], ['middle', 'In the middle', 1]]],
-    ['small', 'Small updates', [['same', 'Same size'], ['small', 'Smaller', 1], ['hide', 'Hidden']]],
+    ['wraps', 'Under wraps', [['frost', 'Frosted', 1], ['lock', 'Lock'], ['eye', 'Eye'], ['redact', 'Redacted']]],
   ] : [
     ['hero', 'Hero', [['words', 'Just the line', 1], ['object', 'With the object']]],
     ['work', 'Work', [['mosaic', 'Mosaic', 1], ['cards', 'Cards']]],

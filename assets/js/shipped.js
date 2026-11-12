@@ -19,7 +19,10 @@
   const LOCK = '<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><rect x="2.5" y="5.5" width="7" height="5" rx="1.2"/><path d="M4 5.5V4a2 2 0 0 1 4 0v1.5"/></svg>';
 
   /* Each ship stands as an object: an app icon, a cut-out, a phone, a window, or a lettered tile. */
+  // Hand-made objects (assets/js/ship-objects.js) win over the generic ones, keyed by the ship's "obj".
   function object(s) {
+    const made = window.SHIP_OBJECTS && (s.wraps ? window.SHIP_OBJECTS.wraps : window.SHIP_OBJECTS[s.obj]);
+    if (made) return made(s);
     if (s.wraps) return `<span class="obj obj-tile is-wraps"><span class="obj-blur"></span>${LOCK}</span>`;
     const img = s.img ? `<img src="${esc(s.img)}" alt="" loading="lazy" decoding="async" draggable="false">` : '';
     switch (s.img && s.o) {
