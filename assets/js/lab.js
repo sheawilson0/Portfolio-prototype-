@@ -1,16 +1,21 @@
-/* The homepage lab bar. Only on preview hosts, or with ?lab on the live site.
+/* The lab bar, on the homepage and /shipped/. Only on preview hosts, or with ?lab on the live site.
    Each row sets a data attribute on <body>; home.css does the rest. The dot marks my pick. */
 (() => {
   const live = /(^|\.)sheawilson\.uk$|\.vercel\.app$/.test(location.hostname);
   if (live && !new URLSearchParams(location.search).has('lab')) return;
-  const ROWS = [
+  const street = document.body.classList.contains('is-street');
+  const ROWS = street ? [
+    ['newest', 'Newest', [['right', 'Right edge'], ['middle', 'In the middle', 1]]],
+    ['small', 'Small updates', [['same', 'Same size'], ['small', 'Smaller', 1], ['hide', 'Hidden']]],
+  ] : [
     ['hero', 'Hero', [['object', 'Last shipped', 1], ['words', 'Words only']]],
     ['q28', 'Quit28 card', [['now', 'As now'], ['live', 'Live', 1], ['live-hover', 'Live on hover']]],
     ['copy', 'Card words', [['full', 'Full'], ['lean', 'Lean', 1]]],
     ['brain', 'Brain Dump', [['show', 'Show', 1], ['hide', 'Hide']]],
   ];
-  const get = (k) => { try { return JSON.parse(localStorage.getItem('home-lab') || '{}')[k]; } catch (e) { return null; } };
-  const set = (k, v) => { try { const o = JSON.parse(localStorage.getItem('home-lab') || '{}'); o[k] = v; localStorage.setItem('home-lab', JSON.stringify(o)); } catch (e) {} };
+  const KEY = street ? 'street-lab' : 'home-lab';
+  const get = (k) => { try { return JSON.parse(localStorage.getItem(KEY) || '{}')[k]; } catch (e) { return null; } };
+  const set = (k, v) => { try { const o = JSON.parse(localStorage.getItem(KEY) || '{}'); o[k] = v; localStorage.setItem(KEY, JSON.stringify(o)); } catch (e) {} };
   const apply = (k, v) => { document.body.dataset[k] = v; };
   // A saved choice that's no longer an option falls back to my pick.
   ROWS.forEach(([k, , opts]) => { const v = get(k); apply(k, opts.some((o) => o[0] === v) ? v : (opts.find((o) => o[2]) || opts[0])[0]); });
@@ -27,6 +32,7 @@
   bar.innerHTML = `<div class="lab-head"><b>Lab</b><button type="button" data-shut>Hide</button></div>` + ROWS.map(([k, label, opts]) =>
     `<div class="lab-row"><p>${label}</p><div class="lab-opts">${opts.map(([v, name, pick]) =>
       `<button type="button" data-k="${k}" data-v="${v}" class="${pick ? 'is-pick' : ''}" aria-pressed="${document.body.dataset[k] === v}">${name}</button>`).join('')}</div></div>`).join('');
+  if (street) Object.assign(bar.style, { left: 'auto', right: '16px', bottom: 'auto', top: '84px' });
   document.body.append(bar);
   bar.addEventListener('click', (e) => {
     if (e.target.closest('[data-shut]')) { bar.classList.toggle('is-shut'); e.target.textContent = bar.classList.contains('is-shut') ? 'Show' : 'Hide'; return; }

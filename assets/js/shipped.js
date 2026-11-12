@@ -90,11 +90,12 @@
     let kind = 'all', items = [], marks = [], current = -1;
 
     function render(focusId) {
-      const list = all.filter((s) => kind === 'all' || s.k === kind).slice().reverse(); // oldest left, newest right
+      const hideSmall = document.body.dataset.small === 'hide';
+      const list = all.filter((s) => (kind === 'all' || s.k === kind) && !(hideSmall && s.minor)).slice().reverse(); // oldest left, newest right
       track.innerHTML = list.map((s) => {
         const key = id(s), on = hearts.has(key), title = s.wraps ? 'Client work' : esc(s.t);
         const open = s.href && !s.wraps ? `<a class="st-open" href="${esc(s.href)}">Open<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 6h7M6.5 3l3 3-3 3"/></svg></a>` : '';
-        return `<li class="st-item${s.wraps ? ' is-wraps' : ''}" id="${key}">
+        return `<li class="st-item${s.wraps ? ' is-wraps' : ''}${s.minor ? ' is-minor' : ''}" id="${key}">
           <button class="st-hit" type="button" aria-expanded="false" aria-label="${title}, ${short(s.d)}"></button>
           <time datetime="${s.d}">${when(s.d)}</time>
           <span class="st-stand">${object(s)}</span>
@@ -120,6 +121,7 @@
       const target = focusId && items.find((el) => el.id === focusId);
       requestAnimationFrame(() => {
         if (target) { centre(target, false); select(target); }
+        else if (document.body.dataset.newest === 'middle') centre(items[items.length - 1], false);
         else track.scrollLeft = track.scrollWidth;
         onScroll();
       });
@@ -133,15 +135,45 @@
       history.replaceState(null, '', open ? `#${el.id}` : location.pathname);
     }
 
-    // The ticks follow how far along the street you are; passing one makes the soft tick sound.
-    function onScroll() {
+    // Which ship is in focus: the one nearest the middle, or (newest on the right edge) how far along you are.
+    // Ticks swell in a wave around it, and around the pointer when it's over the scrubber; objects near
+    // the middle stand a touch taller. Passing a ship makes the soft tick sound.
+    let pointerTick = null, raf = 0;
+    function focusIndex() {
+      if (document.body.dataset.newest === 'middle') {
+        const mid = track.scrollLeft + track.clientWidth / 2;
+        let best = 0, bestD = Infinity;
+        items.forEach((el, i) => { const d = Math.abs(el.offsetLeft + el.offsetWidth / 2 - mid); if (d < bestD) { bestD = d; best = i; } });
+        return best;
+      }
       const max = track.scrollWidth - track.clientWidth;
-      const best = max > 0 ? Math.round(track.scrollLeft / max * (items.length - 1)) : items.length - 1;
+      return max > 0 ? Math.round(track.scrollLeft / max * (items.length - 1)) : items.length - 1;
+    }
+    function wave() {
+      raf = 0;
+      const mid = track.scrollLeft + track.clientWidth / 2, w = track.clientWidth / 2;
+      items.forEach((el) => {
+        const d = Math.min(1, Math.abs(el.offsetLeft + el.offsetWidth / 2 - mid) / w);
+        el.style.setProperty('--near', (1 - d * d).toFixed(3));
+      });
+      const at = pointerTick ?? current;
+      marks.forEach((m, i) => { const k = Math.abs(i - at); m.style.setProperty('--lift', (Math.exp(-(k * k) / 6)).toFixed(3)); });
+    }
+    const queue = () => { if (!raf) raf = requestAnimationFrame(wave); };
+    function onScroll() {
+      const best = focusIndex();
       if (best !== current) {
         if (current !== -1) tick(marks[best]?.classList.contains('is-month') ? .75 : 1);
         marks[current]?.classList.remove('is-on'); marks[best]?.classList.add('is-on'); current = best;
       }
+      queue();
     }
+    ticks.addEventListener('pointermove', (e) => {
+      const r = ticks.getBoundingClientRect();
+      pointerTick = Math.max(0, Math.min(marks.length - 1, (e.clientX - r.left) / r.width * (marks.length - 1)));
+      queue();
+    });
+    ticks.addEventListener('pointerleave', () => { pointerTick = null; queue(); });
     track.addEventListener('scroll', onScroll, { passive: true });
 
     // A mouse wheel moves the street sideways.
@@ -187,7 +219,8 @@
     const scrubTo = (x) => {
       const r = ticks.getBoundingClientRect();
       const p = Math.max(0, Math.min(1, (x - r.left) / r.width));
-      track.scrollLeft = p * (track.scrollWidth - track.clientWidth);
+      if (document.body.dataset.newest === 'middle') centre(items[Math.round(p * (items.length - 1))], false);
+      else track.scrollLeft = p * (track.scrollWidth - track.clientWidth);
     };
     ticks.addEventListener('pointerdown', (e) => { scrub = true; ticks.setPointerCapture(e.pointerId); scrubTo(e.clientX); });
     ticks.addEventListener('pointermove', (e) => { if (scrub) scrubTo(e.clientX); });
@@ -208,6 +241,7 @@
       filters.querySelectorAll('[data-kind]').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
       render();
     });
+    new MutationObserver(() => render()).observe(document.body, { attributes: true, attributeFilter: ['data-newest', 'data-small'] });
     render(decodeURIComponent(location.hash.slice(1)));
   }
 })();

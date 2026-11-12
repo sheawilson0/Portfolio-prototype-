@@ -1,5 +1,5 @@
 {
-  "_about": "Everything Shea has shipped, newest first. d = date, t = title, l = one line, p = project, k = personal | work | uni. img and href are optional. wraps: true keeps a card blurred until it can go public; write its t and l so they give nothing away. draft: true hides an entry until Shea has checked it. o is how the picture stands on the timeline: icon (an app icon), cutout (a transparent object), phone (a screenshot in a phone), screen (a screenshot in a window). No img: a tile with the first letter.",
+  "_about": "Everything Shea has shipped, newest first. d = date, t = title, l = one line, p = project, k = personal | work | uni. img and href are optional. wraps: true keeps a card blurred until it can go public; write its t and l so they give nothing away. draft: true hides an entry until Shea has checked it. o is how the picture stands on the timeline: icon (an app icon), cutout (a transparent object), phone (a screenshot in a phone), screen (a screenshot in a window). No img: a tile with the first letter. minor: true marks small updates; the street can shrink or hide them.",
   "ships": [
     {
       "d": "2026-11-11",
@@ -75,7 +75,8 @@
       "k": "personal",
       "t": "Quit28 case study",
       "l": "With the launch film at the top.",
-      "href": "/quit28.html"
+      "href": "/quit28.html",
+      "minor": true
     },
     {
       "d": "2026-10-25",
@@ -84,7 +85,8 @@
       "t": "Meridian runs on any Mac",
       "l": "Portable setup, drafts that go to Notion and Google Docs, and a simpler first screen.",
       "img": "/assets/media/shipped/icons/meridian.webp",
-      "o": "icon"
+      "o": "icon",
+      "minor": true
     },
     {
       "d": "2026-10-19",
@@ -101,7 +103,8 @@
       "p": "Smoking Ends Here",
       "k": "work",
       "t": "A motion lab for the campaign",
-      "l": "Six animated loops for Instagram, exported straight to video."
+      "l": "Six animated loops for Instagram, exported straight to video.",
+      "minor": true
     },
     {
       "d": "2026-10-08",
@@ -160,7 +163,8 @@
       "l": "The campaign's numbers now arrive on their own.",
       "href": "/jumpstart.html",
       "img": "/assets/media/home/jumpstart-report.webp",
-      "o": "screen"
+      "o": "screen",
+      "minor": true
     },
     {
       "d": "2026-09-30",
@@ -193,7 +197,8 @@
       "p": "Portfolio",
       "k": "personal",
       "t": "This portfolio, redesigned",
-      "l": "The eclipse, case studies and a share card."
+      "l": "The eclipse, case studies and a share card.",
+      "minor": true
     },
     {
       "d": "2026-09-19",
@@ -202,14 +207,16 @@
       "t": "Cadence 0.9",
       "l": "I built my own dictation app. Waveform and orb indicators.",
       "img": "/assets/media/shipped/icons/cadence.webp",
-      "o": "icon"
+      "o": "icon",
+      "minor": true
     },
     {
       "d": "2026-09-10",
       "p": "JumpStart",
       "k": "work",
       "t": "JumpStart's website",
-      "l": "With product previews you can click through."
+      "l": "With product previews you can click through.",
+      "minor": true
     },
     {
       "d": "2026-09-05",
