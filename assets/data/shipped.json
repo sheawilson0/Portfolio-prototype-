@@ -7,7 +7,6 @@
       "k": "work",
       "wraps": true,
       "t": "A 3D game for a council",
-      "obj": "wraps",
       "l": "Four playable versions with shared bins, items and physics."
     },
     {
@@ -15,7 +14,6 @@
       "p": "Meridian",
       "k": "personal",
       "t": "Meridian got a face",
-      "obj": "face",
       "l": "An animated logo, and the same feel carried through every screen.",
       "img": "/assets/media/shipped/icons/meridian.webp",
       "o": "icon"
@@ -25,7 +23,6 @@
       "p": "Cadence",
       "k": "personal",
       "t": "Cadence v5",
-      "obj": "cadence",
       "l": "My own dictation app. Meetings now come with a short summary and one-click copy.",
       "img": "/assets/media/shipped/icons/cadence.webp",
       "o": "icon"
@@ -35,7 +32,6 @@
       "p": "Meridian",
       "k": "personal",
       "t": "Talk to Rafe",
-      "obj": "rafe",
       "l": "Call my agent from the sidebar or a shortcut, and it talks back.",
       "img": "/assets/media/shipped/icons/meridian.webp",
       "o": "icon"
@@ -45,7 +41,6 @@
       "p": "Meridian",
       "k": "personal",
       "t": "Agents in the notch",
-      "obj": "notch",
       "l": "Agents work from the menu bar. Drag something onto them to hand it over.",
       "img": "/assets/media/shipped/icons/meridian.webp",
       "o": "icon"
@@ -55,7 +50,6 @@
       "p": "Cadence",
       "k": "personal",
       "t": "Cadence 0.17",
-      "obj": "cadence",
       "l": "Starts recording when a meeting does, tells speakers apart and remembers voices.",
       "img": "/assets/media/shipped/icons/cadence.webp",
       "o": "icon"
@@ -66,7 +60,6 @@
       "k": "work",
       "wraps": true,
       "t": "A calculator that's also an ad",
-      "obj": "wraps",
       "l": "Shipped as a social ad and an interactive film."
     },
     {
@@ -74,7 +67,6 @@
       "p": "Browser lab",
       "k": "personal",
       "t": "A phone browser with no bar",
-      "obj": "browser",
       "l": "Rooms, peek previews and a tab switcher, tuned from real people testing it."
     },
     {
@@ -82,7 +74,6 @@
       "p": "Portfolio",
       "k": "personal",
       "t": "Quit28 case study",
-      "obj": "website",
       "l": "With the launch film at the top.",
       "href": "/quit28.html",
       "minor": true
@@ -92,7 +83,6 @@
       "p": "Meridian",
       "k": "personal",
       "t": "Meridian runs on any Mac",
-      "obj": "anymac",
       "l": "Portable setup, drafts that go to Notion and Google Docs, and a simpler first screen.",
       "img": "/assets/media/shipped/icons/meridian.webp",
       "o": "icon",
@@ -103,7 +93,6 @@
       "p": "Quit28",
       "k": "work",
       "t": "Quit28 launched",
-      "obj": "source",
       "l": "A 28-day quit plan for the NHS campaign. 40 quit dates saved in its first week.",
       "href": "/quit28.html",
       "img": "/assets/media/home/quit28-hand.webp",
@@ -114,7 +103,6 @@
       "p": "Smoking Ends Here",
       "k": "work",
       "t": "A motion lab for the campaign",
-      "obj": "motion",
       "l": "Six animated loops for Instagram, exported straight to video.",
       "minor": true
     },
@@ -123,7 +111,6 @@
       "p": "Device Shots",
       "k": "personal",
       "t": "Device Shots",
-      "obj": "device",
       "l": "Drive a live site inside a device frame, then grab exact-size shots for the team."
     },
     {
@@ -131,7 +118,6 @@
       "p": "Voice coach",
       "k": "personal",
       "t": "A teleprompter that coaches you",
-      "obj": "prompter",
       "l": "It listens while you read and shows your pace, pitch and level."
     },
     {
@@ -139,7 +125,6 @@
       "p": "Voice lab",
       "k": "personal",
       "t": "Talking to drafts",
-      "obj": "drafts",
       "l": "Three voice prototypes with live captions. Take over by hand or voice before it sends."
     },
     {
@@ -147,7 +132,6 @@
       "p": "Meridian",
       "k": "personal",
       "t": "Meridian 1.5",
-      "obj": "mac",
       "l": "My command centre became a Mac app, with a files panel and updates built in.",
       "img": "/assets/media/shipped/icons/meridian.webp",
       "o": "icon"
@@ -157,7 +141,6 @@
       "p": "Meridian",
       "k": "personal",
       "t": "Meridian, day one",
-      "obj": "source",
       "l": "A morning brief and a command centre for me and my agents.",
       "img": "/assets/media/shipped/icons/meridian.webp",
       "o": "icon"
@@ -167,7 +150,6 @@
       "p": "Links page",
       "k": "personal",
       "t": "sheawilson.uk/links",
-      "obj": "source",
       "l": "My link page. There's a game hidden in it.",
       "href": "/links/",
       "img": "/assets/media/shipped/links.webp",
@@ -178,7 +160,6 @@
       "p": "JumpStart",
       "k": "work",
       "t": "Live Snapshot results in JumpStart",
-      "obj": "source",
       "l": "The campaign's numbers now arrive on their own.",
       "href": "/jumpstart.html",
       "img": "/assets/media/home/jumpstart-report.webp",
@@ -190,7 +171,6 @@
       "p": "Portfolio",
       "k": "personal",
       "t": "The sky",
-      "obj": "source",
       "l": "This site follows the sun where you are. Tap the full stop to play with the time.",
       "href": "/",
       "img": "/assets/media/shipped/sky.webp",
@@ -201,7 +181,6 @@
       "p": "Portfolio",
       "k": "personal",
       "t": "Walk through my work in 3D",
-      "obj": "world",
       "l": "Swipe and the camera flies to the next project.",
       "href": "/ar/world.html"
     },
@@ -210,7 +189,6 @@
       "p": "Portfolio",
       "k": "personal",
       "t": "A business card that lifts into 3D",
-      "obj": "card",
       "l": "Point a phone at the card and the work rises off it.",
       "href": "/ar/"
     },
@@ -219,7 +197,6 @@
       "p": "Portfolio",
       "k": "personal",
       "t": "This portfolio, redesigned",
-      "obj": "eclipse",
       "l": "The eclipse, case studies and a share card.",
       "minor": true
     },
@@ -228,7 +205,6 @@
       "p": "Cadence",
       "k": "personal",
       "t": "Cadence 0.9",
-      "obj": "cadence",
       "l": "I built my own dictation app. Waveform and orb indicators.",
       "img": "/assets/media/shipped/icons/cadence.webp",
       "o": "icon",
@@ -239,7 +215,6 @@
       "p": "JumpStart",
       "k": "work",
       "t": "JumpStart's website",
-      "obj": "website",
       "l": "With product previews you can click through.",
       "minor": true
     },
@@ -249,7 +224,6 @@
       "k": "work",
       "wraps": true,
       "t": "An interactive stadium concept",
-      "obj": "wraps",
       "l": "Six rounds, tours and a ticket journey."
     },
     {
@@ -257,7 +231,6 @@
       "p": "JumpStart",
       "k": "work",
       "t": "JumpStart pilot",
-      "obj": "source",
       "l": "Paid media reporting that explains itself, in pilot with the National Football Museum.",
       "href": "/jumpstart.html",
       "img": "/assets/media/home/jumpstart-report.webp",
@@ -268,7 +241,6 @@
       "p": "Smoking Snapshot",
       "k": "work",
       "t": "Smoking Snapshot",
-      "obj": "source",
       "l": "A one-minute calculator for the NHS campaign. Used more than 1,000 times.",
       "href": "/snapshot.html",
       "img": "/assets/media/home/snapshot-phone.webp",
@@ -279,7 +251,6 @@
       "p": "Pip",
       "k": "work",
       "t": "A PowerPoint add-in",
-      "obj": "pip",
       "l": "Puts the brand's assets inside PowerPoint."
     }
   ]
