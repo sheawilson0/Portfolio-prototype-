@@ -5,16 +5,15 @@
   if (live && !new URLSearchParams(location.search).has('lab')) return;
   const ROWS = [
     ['hero', 'Hero', [['object', 'Last shipped', 1], ['words', 'Words only']]],
-    ['order', 'First card', [['snapshot', 'Snapshot', 1], ['quit', 'Quit28']]],
-    ['q28', 'Quit28 card', [['now', 'As now'], ['screens', 'Three screens', 1], ['film', 'Film']]],
+    ['q28', 'Quit28 card', [['now', 'As now'], ['live', 'Live', 1], ['live-hover', 'Live on hover']]],
     ['copy', 'Card words', [['full', 'Full'], ['lean', 'Lean', 1]]],
     ['brain', 'Brain Dump', [['show', 'Show', 1], ['hide', 'Hide']]],
-    ['concepts', 'Concepts', [['cards', 'Cards', 1], ['line', 'One line']]],
   ];
   const get = (k) => { try { return JSON.parse(localStorage.getItem('home-lab') || '{}')[k]; } catch (e) { return null; } };
   const set = (k, v) => { try { const o = JSON.parse(localStorage.getItem('home-lab') || '{}'); o[k] = v; localStorage.setItem('home-lab', JSON.stringify(o)); } catch (e) {} };
   const apply = (k, v) => { document.body.dataset[k] = v; };
-  ROWS.forEach(([k, , opts]) => apply(k, get(k) || opts.find((o) => o[2])?.[0] || opts[0][0]));
+  // A saved choice that's no longer an option falls back to my pick.
+  ROWS.forEach(([k, , opts]) => { const v = get(k); apply(k, opts.some((o) => o[0] === v) ? v : (opts.find((o) => o[2]) || opts[0])[0]); });
 
   const css = document.createElement('style');
   css.textContent = `.lab{position:fixed;z-index:90;left:16px;bottom:16px;width:268px;padding:12px 12px 6px;border-radius:18px;font:400 12px/1.3 var(--sans);color:var(--ink);background:var(--glass-strong);border:1px solid var(--glass-line);box-shadow:0 20px 50px rgba(0,0,0,.18);-webkit-backdrop-filter:blur(18px) saturate(1.6);backdrop-filter:blur(18px) saturate(1.6)}

@@ -32,7 +32,7 @@
 <link rel="stylesheet" href="assets/css/sky.css">
 <link rel="stylesheet" href="assets/css/home.css">
 </head>
-<body class="home" data-hero="object" data-order="snapshot" data-q28="screens" data-copy="lean" data-brain="show" data-concepts="cards">
+<body class="home" data-hero="object" data-order="snapshot" data-q28="live" data-copy="lean" data-brain="show" data-concepts="cards">
 
 <header class="nav">
   <div class="nav-inner">
@@ -92,11 +92,11 @@
       </div>
     </article>
 
-    <article class="item t-quit reveal" id="quit28" data-cursor="View case study" style="--tone:#00a7fa; --a:#00a7fa; --b:#5cc8ff; --c:#06fb06">
+    <article class="item t-quit reveal" id="quit28" data-cursor="View case study" style="--tone:#00a7fa; --a:#00a7fa; --b:#5cc8ff; --c:#ff2d87">
       <div class="bleed" aria-hidden="true">
         <span class="blob" style="--c:#00a7fa; width:58%; left:44%; top:8%; rotate:-16deg"></span>
         <span class="blob" style="--c:#5cc8ff; width:42%; left:58%; top:40%; rotate:22deg; --ar:1.8"></span>
-        <span class="blob" style="--c:#06fb06; width:26%; left:46%; top:62%; rotate:-8deg; --ar:1.3"></span>
+        <span class="blob" style="--c:#ff2d87; width:34%; left:40%; top:58%; rotate:-8deg; --ar:1.3"></span>
       </div>
       <div class="card">
         <a class="card-link" href="quit28.html" aria-label="Read the Quit28 case study"></a>
@@ -115,14 +115,20 @@
           <img class="q-breathe" data-depth="-0.4" decoding="async" src="assets/media/home/quit28-breathe.webp" alt="" width="520" height="520" loading="lazy">
           <img class="device" data-depth="1" decoding="async" src="assets/media/home/quit28-hand.webp" alt="Quit28 on a phone held in one hand, showing Day 1 logged, with the 28-day calendar and the breathing circle behind it" width="1300" height="1218" loading="lazy">
         </div>
-        <div class="media q-film">
-          <div class="q-film-phone" data-depth="1"><video data-inview muted playsinline loop preload="none" poster="assets/media/quit28/film/quit28-film-tall.webp"><source src="assets/media/quit28/film/quit28-film-tall.mp4" type="video/mp4"></video></div>
+        <div class="media q-live" aria-hidden="true">
+          <div class="ql-cal" data-depth="-0.8">
+            <p class="ql-h">Your 28 days</p><p class="ql-s">Day <b data-ql-day>1</b> of 28</p>
+            <div class="ql-grid" data-ql-grid></div>
+          </div>
+          <div class="ql-timer" data-depth="-0.4">
+            <svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="54"/><circle class="ql-ring" cx="60" cy="60" r="54" pathLength="100"/></svg>
+            <span class="ql-breath"></span>
+            <span class="ql-time" data-ql-time>3:00</span>
+            <span class="ql-say" data-ql-say>Breathe in</span>
+          </div>
+          <div class="ql-phone" data-depth="1"><div class="ql-screen"><img decoding="async" src="assets/media/quit28/phone-day-1-logged.webp" alt="" loading="lazy" width="720" height="1566"></div></div>
         </div>
-        <div class="media q-screens">
-          <span class="q-ph q-s1" data-depth="-0.8"><img decoding="async" src="assets/media/quit28/phone-welcome.webp" alt="" loading="lazy"></span>
-          <span class="q-ph q-s3" data-depth="-0.4"><img decoding="async" src="assets/media/quit28/phone-day-7.webp" alt="" loading="lazy"></span>
-          <span class="q-ph q-s2" data-depth="1"><img decoding="async" src="assets/media/quit28/phone-day-1-logged.webp" alt="Quit28 on a phone: day one logged" loading="lazy"></span>
-        </div>
+      </div>
       </div>
     </article>
 
@@ -261,6 +267,7 @@
 
 <script src="assets/js/site.js" defer></script>
 <script src="assets/js/shipped.js" defer></script>
+<script src="assets/js/q28-card.js" defer></script>
 <script src="assets/js/lab.js" defer></script>
 </body>
 </html>
