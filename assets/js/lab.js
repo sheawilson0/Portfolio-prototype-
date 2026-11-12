@@ -5,11 +5,12 @@
   if (live && !new URLSearchParams(location.search).has('lab')) return;
   const ROWS = [
     ['work', 'Work', [['cards', 'Cards', 1], ['mosaic', 'Mosaic']]],
-    ['copy', 'Card words (cards)', [['cap', 'Just a caption', 1], ['lean', 'Lean'], ['full', 'Full']]],
-    ['gap', 'Space between tiles (mosaic)', [['roomy', 'More', 1], ['tight', 'As before']]],
+    ['copy', 'Card words (cards)', [['cap', 'Just a caption', 1], ['lean', 'Lean, card sizes'], ['full', 'Full']]],
+    ['gap', 'Space between', [['roomy', 'More', 1], ['tight', 'As before']]],
     ['phones', 'Two phones (mosaic)', [['snap', 'Flip Snapshot', 1], ['quit', 'Flip Quit28'], ['side', 'Side by side']]],
+    ['skylook', 'Page sky', [['site', 'Site', 1], ['street', 'Shipped street']]],
     ['ship', 'Shipped colour', [['red', 'Red', 1], ['yellow', 'Yellow']]],
-    ['q28', 'Quit28 (cards)', [['now', 'As now'], ['live', 'Live', 1]]],
+    ['q28', 'Quit28 card', [['hand', 'Hand, calendar, circle', 1], ['hand-cal', 'Hand, calendar'], ['hand-circle', 'Hand, circle'], ['live', 'iPhone']]],
   ];
   const KEY = 'home-lab-5'; // home-lab-5: picks changed 12 Nov, start everyone on them
   const get = (k) => { try { return JSON.parse(localStorage.getItem(KEY) || '{}')[k]; } catch (e) { return null; } };

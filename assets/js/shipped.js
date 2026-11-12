@@ -220,22 +220,27 @@
     const lum = [1, 3, 5].map((j) => { const v = parseInt(midC.slice(j, j + 2), 16) / 255; return v <= .04045 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4; }).reduce((t, v, j) => t + v * [.2126, .7152, .0722][j], 0);
     return { top: mix(a.top, b.top), mid: midC, low: mix(a.low, b.low), glow: mix(a.glow, b.glow), ga: a.ga + (b.ga - a.ga) * k, dark: lum < .26 };
   }
-  function streetSky() {
+  // on(): whether to paint. The homepage only wears this sky with lab: Page sky → Street.
+  function streetSky(on = () => true) {
     const html = document.documentElement, body = document.body;
     const t = new URLSearchParams(location.search).get('t');
     function paint() {
+      if (!on()) { ['--sky-top', '--sky-mid', '--sky-low', '--sky-sun', '--sky-sun-a'].forEach((k) => body.style.removeProperty(k)); return; }
       const d = new Date(), mode = html.dataset.mode;
       const min = mode === 'dark' ? 0 : t ? +t.split(':')[0] * 60 + +(t.split(':')[1] || 0) : d.getHours() * 60 + d.getMinutes();
       const sun = window.__sky?.sun() || { rise: 450, set: 1020, tw: 38 };
       const L = mode === 'light' ? SKIES.day : skyAt(min, sun);
       [['--sky-top', L.top], ['--sky-mid', L.mid], ['--sky-low', L.low], ['--sky-sun', L.glow], ['--sky-sun-a', L.ga.toFixed(2)]].forEach(([k, v]) => body.style.setProperty(k, v));
+      if (!body.classList.contains('is-street')) return;
       body.classList.toggle('is-night', !!L.dark);
       document.querySelector('meta[name="theme-color"]')?.setAttribute('content', L.top);
     }
     paint();
     setInterval(paint, 30000);
     new MutationObserver(paint).observe(html, { attributes: true, attributeFilter: ['data-mode'] });
+    new MutationObserver(paint).observe(body, { attributes: true, attributeFilter: ['data-skylook'] });
   }
+  if (document.body.classList.contains('home')) streetSky(() => document.body.dataset.skylook === 'street');
 
   function street(all) {
     const root = document.querySelector('[data-street]');

@@ -12,6 +12,7 @@
   document.querySelectorAll('[data-q28-live]').forEach((root) => {
     root.innerHTML = `<span class="art q28-stage">
       <img class="q28-phone" style="--d:.4" src="assets/media/home/quit28-iphone.webp" alt="Quit28 on an iPhone: Day 1 logged" loading="lazy" decoding="async">
+      <img class="q28-hand" style="--d:.4" src="assets/media/home/quit28-hand.webp" alt="Quit28 on a phone held in one hand: Day 1 logged" loading="lazy" decoding="async">
       <span class="q28-float" style="--d:.7" aria-hidden="true">
         <span class="q28-breath"><svg class="q28-hug" viewBox="0 0 268 268"><circle cx="134" cy="134" r="131"/><circle class="q28-fill" cx="134" cy="134" r="131" stroke-dasharray="${RING}" stroke-dashoffset="${RING}"/></svg><i class="q28-outer"></i><i class="q28-inner"></i><span class="q28-words"><b>Breathe in</b><small>3:00</small></span></span>
       </span>
@@ -64,9 +65,9 @@
     stage.style.setProperty('--k', Math.min(width / cs.getPropertyValue('--w'), height / cs.getPropertyValue('--h')).toFixed(4));
   }).observe(stage.parentElement));
 
-  // Hover: --px and --py (-.5 to .5) follow the pointer, eased, and ease back to 0 when it leaves.
+  // Hover, on the mosaic tiles and the cards: --px and --py (-.5 to .5) follow the pointer, eased, and ease back to 0.
   if (reduced || !matchMedia('(hover: hover) and (pointer: fine)').matches) return;
-  const tiles = [...document.querySelectorAll('.tile')].map((el) => ({ el, x: 0, y: 0, tx: 0, ty: 0 }));
+  const tiles = [...document.querySelectorAll('.tile, .item')].map((el) => ({ el, x: 0, y: 0, tx: 0, ty: 0 }));
   let raf = 0;
   const frame = () => {
     raf = 0;

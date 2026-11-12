@@ -58,11 +58,18 @@
 .q28-days i.is-pop { animation: q28-pop .35s cubic-bezier(.2, .9, .3, 1.3); }
 @keyframes q28-pop { 50% { scale: 1.18; } }
 @media (prefers-reduced-motion: reduce) { .q28-breath > i { animation: none !important; } }
-/* In the old card (lab: Work → Cards). */
-.t-quit .media.q-now { display: block; }
-.t-quit .media.q-live { display: none; }
-body[data-q28="live"] .t-quit .media.q-now { display: none; }
-body[data-q28="live"] .t-quit .media.q-live { display: block; }
+/* On the Quit28 card (lab: Quit28 card): the iPhone mock-up, or the hand-held one with the live calendar and circle
+   around it. The hand runs off the bottom right; the phone in it is the same size as the mock-up. */
+.q28-hand { display: none; left: 190px; top: 34px; width: 1210px; filter: drop-shadow(0 50px 50px rgba(0, 30, 70, .22)); }
+body[data-q28^="hand"] .work .q28-phone { display: none; }
+body[data-q28^="hand"] .work .q28-hand { display: block; }
+body[data-q28^="hand"] .work :is(.q28-cal, .q28-float) { right: auto; transform-origin: 0 0; }
+body[data-q28^="hand"] .work .q28-pin { right: auto; left: 22px; rotate: -12deg; }
+body[data-q28="hand"] .work .q28-cal { left: 2px; top: 44px; rotate: -5deg; }
+body[data-q28="hand"] .work .q28-float { left: -34px; top: 262px; }
+body[data-q28="hand-cal"] .work .q28-float, body[data-q28="hand-circle"] .work .q28-cal { display: none; }
+body[data-q28="hand-cal"] .work .q28-cal { left: 34px; top: 150px; rotate: -8deg; }
+body[data-q28="hand-circle"] .work .q28-float { left: -8px; top: 120px; }
 
 /* ───────── Work as a mosaic (after raylight.app) ─────────
    Colour tiles, the product big, a name and a few words underneath. The tile never moves. On hover its
@@ -74,6 +81,7 @@ body[data-work="cards"] .mosaic { display: none; }
 .mosaic { position: relative; z-index: 6; max-width: 1380px; margin: -150px auto 0; padding: 0 var(--gutter) 110px; display: grid; grid-template-columns: repeat(12, 1fr); gap: 64px 24px; }
 .tile { --bg1: #eeeef1; --bg2: #e2e2e8; display: flex; flex-direction: column; gap: 16px; }
 body[data-gap="tight"] .mosaic { gap: 40px 16px; }
+body[data-gap="tight"] .work .grid { gap: 22px; }
 body[data-gap="tight"] .tile { gap: 14px; }
 .tile-art { position: relative; display: block; overflow: hidden; height: 540px; border-radius: 22px; corner-shape: squircle; isolation: isolate;
   background:
@@ -143,7 +151,6 @@ body[data-ship="yellow"] .m-ship { --bg1: #ffc21f; --bg2: #ff8a1f; --shade: #c24
 .ship-hero { position: relative; display: flex; align-items: flex-end; gap: 6px; }
 .ship-hero > * { translate: calc(var(--px, 0) * var(--d, 0) * 40px) calc(var(--py, 0) * var(--d, 0) * 30px); }
 .ship-fly { --d: -.5; width: 190px; height: 190px; margin-bottom: 40px; color: #f6c93a; --head: currentColor; filter: drop-shadow(0 18px 22px rgba(60, 0, 0, .3)); }
-body[data-ship="yellow"] .ship-fly { color: #121214; }
 .ship-pip { --d: 1; --z: 2; flex: none; animation: pip-idle 5.4s steps(6) infinite; filter: drop-shadow(0 18px 18px rgba(60, 0, 0, .28)); }
 :is(.tile, .item):hover .ship-pip { animation: pip-greet 1.3s steps(5) infinite; }
 @keyframes pip-idle { from { background-position: 0 -624px; } to { background-position: -1152px -624px; } }
@@ -152,49 +159,55 @@ body[data-ship="yellow"] .ship-fly { color: #121214; }
 
 /* ───────── The older glass cards (lab: Work → Cards) ───────── */
 .home .work { margin-top: -150px; padding-top: 0; }
-body[data-copy="lean"] :is(.stats, .pilot, .card-btn:not(.is-primary)) { display: none; }
-body[data-copy="lean"] :is(.t-snapshot, .t-quit) .card { min-height: 640px; }
-body[data-copy="lean"] .t-jump .card { min-height: 600px; }
-body[data-copy="lean"] .card-copy { justify-content: flex-end; }
 body[data-brain="hide"] .t-brain { display: none; }
 body[data-brain="hide"] .t-shipped { grid-column: span 12; }
 .t-shipped { grid-column: span 6; }
 .t-shipped .card { min-height: 0; height: 100%; }
-.t-shipped .media { display: flex; align-items: flex-end; justify-content: center; padding: 0 20px 56px; }
-.t-shipped .shelf { display: flex; align-items: flex-end; justify-content: center; gap: 14px; width: 100%; }
-.t-shipped .shelf .obj { flex: none; }
-.t-shipped .shelf .obj-icon, .t-shipped .shelf .obj-tile { width: 78px; height: 78px; margin: 0; border-radius: 19px; }
-.t-shipped .shelf .obj-cutout { width: 110px; height: 110px; }
-.t-shipped .shelf .obj-phone { width: 56px; height: 114px; padding: 3px; border-radius: 13px; }
-.t-shipped .shelf .obj-screen { width: 130px; height: 88px; padding: 12px 3px 3px; border-radius: 9px; }
+.t-shipped .media { display: grid; place-items: center; padding: 30px 20px; }
 .t-small .card { min-height: 0; }
 .t-small .media { aspect-ratio: 4 / 3; flex: none; }
-.t-shipped .media .ship-hero { margin: 0 auto; }
+/* Shipped's light and accent follow its colour (lab: Shipped colour): red, or yellow. */
+.t-shipped { --tone: #ff3d2e; --a: #ff3d2e; --b: #ff8a65; --c: #ffb347; }
+.t-shipped .blob:nth-child(1) { --c: #ff3d2e; } .t-shipped .blob:nth-child(2) { --c: #ff8a65; } .t-shipped .blob:nth-child(3) { --c: #ffb347; }
+body[data-ship="yellow"] .t-shipped { --tone: #f5a300; --a: #ffc21f; --b: #ff8a1f; --c: #ffd84d; }
+body[data-ship="yellow"] .t-shipped .blob:nth-child(1) { --c: #ffc21f; } body[data-ship="yellow"] .t-shipped .blob:nth-child(2) { --c: #ff8a1f; } body[data-ship="yellow"] .t-shipped .blob:nth-child(3) { --c: #ffd84d; }
 
-/* Just a caption (lab: Card words): the glass cards hold only the picture, and the name and one line sit under
-   each card, small, like the mosaic. Laid out like the mosaic too. */
+/* Card words (lab). Full: the cards as they were. Lean: the same cards, but each holds only its picture, with the
+   name and one line underneath, small, like the mosaic. Just a caption: that, laid out like the mosaic. */
 .item-cap { display: none; }
-body[data-copy="cap"] .work .grid { gap: 64px 24px; }
-body[data-copy="cap"] .work .item { display: flex; flex-direction: column; gap: 16px; }
-body[data-copy="cap"] .work .item-cap { display: flex; }
-body[data-copy="cap"] .work :is(.card-top, .card-copy) { display: none; }
-body[data-copy="cap"] .work .item > .card { flex: none; display: block; height: 540px; min-height: 0; }
-body[data-copy="cap"] .work .media { position: absolute; inset: 0; margin: 0; }
+body:is([data-copy="cap"], [data-copy="lean"]) .work .grid { gap: 64px 24px; }
+body:is([data-copy="cap"], [data-copy="lean"])[data-gap="tight"] .work .grid { gap: 22px; }
+body:is([data-copy="cap"], [data-copy="lean"]) .work .item { display: flex; flex-direction: column; gap: 16px; }
+body:is([data-copy="cap"], [data-copy="lean"]) .work .item-cap { display: flex; }
+body:is([data-copy="cap"], [data-copy="lean"]) .work :is(.card-top, .card-copy) { display: none; }
+body:is([data-copy="cap"], [data-copy="lean"]) .work .item > .card { flex: none; display: block; height: 540px; min-height: 0; }
+body:is([data-copy="cap"], [data-copy="lean"]) .work .media { position: absolute; inset: 0; margin: 0; }
+body:is([data-copy="cap"], [data-copy="lean"]) .work .t-small .media { inset: 14px; aspect-ratio: auto; }
+body:is([data-copy="cap"], [data-copy="lean"]) .work .t-shipped .media { padding: 0; }
+body:is([data-copy="cap"], [data-copy="lean"]) .work .t-shipped { order: 1; }
+/* Snapshot: phone on the left, the results card behind it on the right, so it isn't next to Quit28's phone. */
+body:is([data-copy="cap"], [data-copy="lean"]) .work .t-snapshot .device { position: absolute; width: 35%; height: auto; left: 5%; top: 8%; margin: 0; }
+body:is([data-copy="cap"], [data-copy="lean"]) .work .t-snapshot .snap-results { width: 62%; left: 35%; top: 22%; transform: rotate(4deg); }
+body:is([data-copy="cap"], [data-copy="lean"]) .work .item.is-hot .snap-results { transform: rotate(6deg) translate3d(4%, -3%, 0); }
+/* JumpStart: a little further out than in the old card, so the three screens read as three. */
+body:is([data-copy="cap"], [data-copy="lean"]) .work .screen-back { width: 58%; left: 4%; top: 7%; }
+body:is([data-copy="cap"], [data-copy="lean"]) .work .screen-front { width: 46%; left: 33%; top: 21%; }
+body:is([data-copy="cap"], [data-copy="lean"]) .work .screen-export { width: 32%; left: 63%; top: 47%; }
+/* Just a caption: mosaic sizes. */
 body[data-copy="cap"] .work .t-snapshot { grid-column: span 7; }
 body[data-copy="cap"] .work .t-quit { grid-column: span 5; }
 body[data-copy="cap"] .work .t-jump { grid-column: span 8; }
 body[data-copy="cap"] .work :is(.t-brain, .t-small, .t-shipped) { grid-column: span 4; }
-body[data-copy="cap"] .work .t-shipped { order: 1; }
 body[data-copy="cap"] .work :is(.t-jump, .t-brain) > .card { height: 480px; }
 body[data-copy="cap"] .work :is(.t-small, .t-shipped) > .card { height: 380px; }
-/* Snapshot: phone on the left, the results card behind it on the right, so it isn't next to Quit28's phone. */
-body[data-copy="cap"] .work .t-snapshot .device { position: absolute; width: 35%; height: auto; left: 5%; top: 8%; margin: 0; }
-body[data-copy="cap"] .work .t-snapshot .snap-results { width: 62%; left: 35%; top: 22%; transform: rotate(4deg); }
-body[data-copy="cap"] .work .item.is-hot .snap-results { transform: rotate(6deg) translate3d(4%, -3%, 0); }
-body[data-copy="cap"] .work .screen-front { top: 18%; }
-body[data-copy="cap"] .work .screen-export { top: 46%; }
-body[data-copy="cap"] .work .t-small .media { inset: 14px; aspect-ratio: auto; }
-body[data-copy="cap"] .work .t-shipped .media { display: grid; place-items: center; padding: 0; }
+/* Lean: the cards' own sizes, Snapshot, Quit28 and JumpStart across the page and the rest in pairs. */
+body[data-copy="lean"] .work :is(.t-snapshot, .t-quit, .t-jump) > .card { height: 640px; }
+body[data-copy="lean"] .work :is(.t-brain, .t-small, .t-shipped) > .card { height: 500px; }
+body[data-copy="lean"] .work .t-snapshot .device { width: 20%; left: 24%; top: 9%; }
+body[data-copy="lean"] .work .t-snapshot .snap-results { width: 44%; left: 39%; top: 19%; }
+body[data-copy="lean"] .work .screen-back { width: 44%; left: 9%; top: 8%; }
+body[data-copy="lean"] .work .screen-front { width: 36%; left: 34%; top: 22%; }
+body[data-copy="lean"] .work .screen-export { width: 25%; left: 63%; top: 44%; }
 .earlier { display: none; }
 
 @media (max-width: 900px) {
@@ -214,16 +227,29 @@ body[data-copy="cap"] .work .t-shipped .media { display: grid; place-items: cent
   .home .hero { padding-top: 92px; }
   .home .eclipse { left: -45vw; width: 190vw; top: 72%; }
   .t-shipped { grid-column: span 12; }
-  body[data-copy="cap"] .work .item { grid-column: span 12; }
-  body[data-copy="cap"] .work .grid { gap: 44px 12px; }
-  body[data-copy="cap"] .work .item > .card { height: min(110vw, 460px); }
-  body[data-copy="cap"] .work :is(.t-small, .t-shipped) > .card { height: min(80vw, 340px); }
-  body[data-copy="cap"] .work .t-snapshot .device { width: 46%; top: 10%; left: 3%; }
-  body[data-copy="cap"] .work .t-snapshot .snap-results { width: 82%; left: 22%; top: 30%; }
+  body:is([data-copy="cap"], [data-copy="lean"]) .work .item { grid-column: span 12; }
+  body:is([data-copy="cap"], [data-copy="lean"]) .work .grid { gap: 44px 12px; }
+  body:is([data-copy="cap"], [data-copy="lean"])[data-gap="tight"] .work .grid { gap: 22px 12px; }
+  body:is([data-copy="cap"], [data-copy="lean"]) .work .item > .card { height: min(110vw, 460px); }
+  body:is([data-copy="cap"], [data-copy="lean"]) .work :is(.t-small, .t-shipped, .t-jump) > .card { height: min(80vw, 340px); }
+  body:is([data-copy="cap"], [data-copy="lean"]) .work .t-snapshot .device { width: 46%; top: 10%; left: 3%; }
+  body:is([data-copy="cap"], [data-copy="lean"]) .work .t-snapshot .snap-results { width: 82%; left: 22%; top: 30%; }
+  body:is([data-copy="cap"], [data-copy="lean"]) .work .screen-back { width: 66%; left: 3%; top: 7%; }
+  body:is([data-copy="cap"], [data-copy="lean"]) .work .screen-front { width: 54%; left: 30%; top: 24%; }
+  body:is([data-copy="cap"], [data-copy="lean"]) .work .screen-export { width: 38%; left: 60%; top: 50%; }
   .ship-hero { scale: .8; }
-  body[data-copy="cap"] .work .t-jump > .card { height: min(80vw, 340px); }
-  .t-shipped .shelf .obj:nth-child(n+4) { display: none; }
 }
+
+/* ───────── Page sky (lab): Shipped street ─────────
+   The homepage under the street's sky (streetSky() in shipped.js, following the sun the same way): the gradient,
+   the glow on the horizon at sunrise and sunset, the eclipse's disc in the sky's colour, and the glass cards
+   frosted over it instead of sitting on white. */
+body.home[data-skylook="street"] { --pane: rgb(255 255 255 / .45); background: var(--sky-low, #f9ede2) linear-gradient(180deg, var(--sky-top, #9ec0e9) 0%, var(--sky-mid, #cdd9e9) 48%, var(--sky-low, #f9ede2) 92%) fixed; }
+[data-theme="dark"] body.home[data-skylook="street"] { --pane: rgb(18 30 56 / .5); }
+body.home[data-skylook="street"]::before { content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none; background: radial-gradient(80% 50% at 50% 108%, var(--sky-sun, transparent), transparent 70%); opacity: var(--sky-sun-a, 0); }
+body.home[data-skylook="street"] .disc { background: var(--sky-top, var(--bg)); }
+body.home[data-skylook="street"] .work .card { -webkit-backdrop-filter: blur(22px) saturate(1.4); backdrop-filter: blur(22px) saturate(1.4);
+  background: linear-gradient(var(--pane), var(--pane)) padding-box, radial-gradient(260px circle at var(--rx, 50%) var(--ry, -400px), var(--rimc), var(--glass-edge) 72%) border-box; }
 
 /* ───────── Contact (lab: Contact) ─────────
    Big: as it was, with the LinkedIn and X logos underneath. Quiet: a smaller heading, the email as a plain link. */
