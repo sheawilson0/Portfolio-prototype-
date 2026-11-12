@@ -36,9 +36,9 @@
 
   /* One quiet sound: a soft tick for each ship you pass. It used to be fresh random noise every time, dropped
      any tick within 45ms of the last, and only woke up on the very first press, so it came and went.
-     Now it's one fixed click (made once), ticks queue a few ms apart instead of being dropped, and every
-     press or key wakes the sound again if the browser has put it to sleep. */
-  let ctx = null, clicks = null, nextAt = 0;
+     Now it's one fixed click (made once), every ship you pass counts, and every press or key wakes the sound
+     again if the browser has put it to sleep. */
+  let ctx = null, clicks = null;
   // A soft detent, like a dial clicking past a notch: a low knock with a gentle click on top and a breath of
   // texture, eased in over half a millisecond so it has no hard edge. Made once and played the same every time.
   function makeClick(tone) {
@@ -57,18 +57,29 @@
     for (let i = 0; i < len; i++) d[i] *= .11 / peak;
     return buf;
   }
-  function tick(times = 1, month = false) {
+  // Like a dial: stepping one or two ships gives a full click each. On a flick, ships pass faster than a click
+  // can ring, so the clicks thin out (never closer than 55ms) and go lighter the faster you go, and one full
+  // click marks where it lands.
+  let lastPass = -9, lastPlay = -9, missed = false;
+  function play(level, month) {
+    const src = ctx.createBufferSource(), g = ctx.createGain();
+    src.buffer = month ? clicks.month : clicks.plain; g.gain.value = level;
+    src.connect(g).connect(ctx.destination); src.start();
+    lastPlay = ctx.currentTime;
+  }
+  function tick(passed = 1, month = false) {
     if (!ctx || ctx.state !== 'running') return;
     clicks = clicks || { plain: makeClick(1), month: makeClick(.86) };
-    const now = ctx.currentTime;
-    nextAt = Math.max(nextAt, now + .005);
-    for (let i = 0; i < Math.min(times, 4); i++) {
-      if (nextAt > now + .2) break; // never let a backlog build up
-      const src = ctx.createBufferSource();
-      src.buffer = month && i === 0 ? clicks.month : clicks.plain;
-      src.connect(ctx.destination); src.start(nextAt);
-      nextAt += .038;
-    }
+    const now = ctx.currentTime, each = (now - lastPass) / passed; // seconds per ship
+    lastPass = now;
+    if (now - lastPlay < .055) { missed = true; return; }
+    missed = each < .12; // fast: owe a landing click
+    play(each >= .12 ? 1 : Math.max(.28, each / .12), month);
+  }
+  function land(month) {
+    if (!ctx || ctx.state !== 'running' || !missed) return;
+    missed = false;
+    if (ctx.currentTime - lastPlay < .04) setTimeout(() => play(1, month), 40); else play(1, month);
   }
   // Browsers only allow sound after a press or key, and can put it back to sleep (a tab in the background,
   // Safari after a call), so every press checks it's awake.
@@ -181,7 +192,7 @@
     // Which ship is in focus: the one nearest the middle, or (newest on the right edge) how far along you are.
     // Ticks swell in a wave around it, and around the pointer when it's over the scrubber; objects near
     // the middle stand a touch taller. Passing ships makes the soft tick, one per ship.
-    let pointerTick = null, raf = 0;
+    let pointerTick = null, raf = 0, landing = 0;
     function focusIndex() {
       if (document.body.dataset.newest === 'middle') {
         const mid = track.scrollLeft + track.clientWidth / 2;
@@ -214,6 +225,7 @@
       // With a card open, scrolling moves the opening along: whatever reaches the middle opens.
       if (steer && items[best] === steer) steer = null;
       if (opened && !steer && items[best] !== opened) open(items[best]);
+      clearTimeout(landing); landing = setTimeout(() => land(marks[current]?.classList.contains('is-month')), 110); // once the street stops
       queue();
     }
     ticks.addEventListener('pointermove', (e) => {
@@ -225,14 +237,23 @@
     track.addEventListener('scroll', onScroll, { passive: true });
     track.addEventListener('scrollend', () => { steer = null; onScroll(); });
 
-    // A mouse wheel moves the street sideways. Snapping is off while it turns, or one notch (less than half
-    // a ship) gets pulled straight back and nothing moves; it settles on the nearest ship once the wheel stops.
-    let wheelRest = 0;
+    // A mouse wheel moves the street sideways. Snapping is off while it turns; when it stops, the street settles
+    // on the nearest ship, but always at least one ship along, so a single notch (less than half a ship) moves.
+    let wheelRest = 0, wheelFrom = null;
     track.addEventListener('wheel', (e) => {
       if (Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
       e.preventDefault(); steer = null;
+      if (wheelFrom === null) wheelFrom = { left: track.scrollLeft, at: current };
       track.classList.add('is-wheeling'); track.scrollLeft += e.deltaY;
-      clearTimeout(wheelRest); wheelRest = setTimeout(() => track.classList.remove('is-wheeling'), 180);
+      clearTimeout(wheelRest);
+      wheelRest = setTimeout(() => {
+        const moved = track.scrollLeft - wheelFrom.left;
+        let to = focusIndex();
+        if (to === wheelFrom.at && Math.abs(moved) > 12) to += Math.sign(moved);
+        wheelFrom = null;
+        track.classList.remove('is-wheeling');
+        centre(items[Math.max(0, Math.min(items.length - 1, to))]);
+      }, 140);
     }, { passive: false });
 
     // Drag the street with a mouse (touch scrolls on its own).
