@@ -29,7 +29,7 @@
 <link rel="stylesheet" href="/assets/css/sky.css">
 <link rel="stylesheet" href="/assets/css/shipped.css">
 </head>
-<body class="calm">
+<body class="calm is-street">
 
 <header class="nav">
   <div class="nav-inner">
@@ -46,23 +46,23 @@
   </div>
 </header>
 
-<main class="tl" id="top">
-  <header class="tl-head">
+<main class="street" id="top" data-street>
+  <header class="st-head">
     <h1>Shipped<em>.</em></h1>
-    <p><span data-ship-count>29</span> things since <span data-ship-since>August</span>, newest first. Client work stays blurred until it launches.</p>
-    <div class="tl-filters" data-filters role="group" aria-label="Show">
+    <p><span data-ship-count>29</span> things, newest on the right. Tap one for more.</p>
+  </header>
+  <ol class="st-track" aria-label="Everything I’ve shipped, oldest first"></ol>
+  <div class="st-bar">
+    <div class="st-filters" data-filters role="group" aria-label="Show">
       <button type="button" data-kind="all" aria-pressed="true">All</button>
       <button type="button" data-kind="personal" aria-pressed="false">Personal</button>
       <button type="button" data-kind="work" aria-pressed="false">Work</button>
     </div>
-  </header>
-  <div data-timeline><p class="tl-empty">Loading…</p></div>
+    <div class="st-ticks" aria-hidden="true"></div>
+    <span class="st-keys">← → to move</span>
+  </div>
 </main>
 
-<footer>
-  <span>© 2026 Shea Wilson</span>
-  <nav aria-label="Footer"><a href="/">Home</a><a href="https://www.linkedin.com/in/sheawilson0/" target="_blank" rel="noopener">LinkedIn</a><a href="#top">Back to top</a></nav>
-</footer>
 
 <script src="/assets/js/site.js" defer></script>
 <script src="/assets/js/shipped.js" defer></script>

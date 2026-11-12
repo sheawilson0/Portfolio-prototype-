@@ -1,195 +1,206 @@
 /* Shipped: everything I've made, from assets/data/shipped.json.
-   On the homepage it's the stack of cards on the horizon (drag, flick, arrows or keys), the "Last shipped"
-   line and the Shipped tile. On /shipped/ it's the timeline. Hearts are only kept in the visitor's browser
-   for now; counts and a leaderboard need a small database. */
+   Homepage: the newest thing stands on the horizon as an object, and "Last shipped …" links to it.
+   /shipped/: the things stand in one row, oldest on the left, newest on the right, like a street.
+   Scroll, drag or use the arrow keys; the ticks underneath are a scrubber that clicks as you pass.
+   Hearts are only kept in the visitor's browser for now; counts and a leaderboard need a small database. */
 (() => {
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  const LONG = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
   const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const day = (d) => new Date(`${d}T12:00:00`);
-  const short = (d) => { const x = day(d); return `${x.getDate()} ${MONTHS[x.getMonth()]}`; };
-  function ago(d) {
+  const short = (d) => { const x = day(d); return `${MONTHS[x.getMonth()]} ${x.getDate()}`; };
+  function when(d) {
     const t = new Date(); t.setHours(12, 0, 0, 0);
     const n = Math.round((t - day(d)) / 864e5);
-    return n <= 0 ? 'today' : n === 1 ? 'yesterday' : n < 7 ? `${n} days ago` : `on ${short(d)}`;
+    return n <= 0 ? 'Today' : n === 1 ? 'Yesterday' : short(d);
   }
+  const ago = (d) => { const w = when(d); return w === 'Today' || w === 'Yesterday' ? w.toLowerCase() : `on ${w}`; };
   const id = (s) => `${s.d}-${s.t.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}`;
-  const link = (s) => s.wraps ? `/shipped/#${id(s)}` : s.href || `/shipped/#${id(s)}`;
   const LOCK = '<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><rect x="2.5" y="5.5" width="7" height="5" rx="1.2"/><path d="M4 5.5V4a2 2 0 0 1 4 0v1.5"/></svg>';
 
-  /* One quiet sound: a card leaving the stack. Short filtered noise, made on the spot. */
-  let ctx = null;
-  function flick() {
+  /* Each ship stands as an object: an app icon, a cut-out, a phone, a window, or a lettered tile. */
+  function object(s) {
+    if (s.wraps) return `<span class="obj obj-tile is-wraps"><span class="obj-blur"></span>${LOCK}</span>`;
+    const img = s.img ? `<img src="${esc(s.img)}" alt="" loading="lazy" decoding="async" draggable="false">` : '';
+    switch (s.img && s.o) {
+      case 'icon': return `<span class="obj obj-icon">${img}</span>`;
+      case 'cutout': return `<span class="obj obj-cutout">${img}</span>`;
+      case 'phone': return `<span class="obj obj-phone"><span>${img}</span></span>`;
+      case 'screen': return `<span class="obj obj-screen"><i></i><span>${img}</span></span>`;
+      default: return `<span class="obj obj-tile"><b>${esc(s.p.charAt(0))}</b></span>`;
+    }
+  }
+
+  /* One quiet sound: a soft tick, for passing a mark on the scrubber. */
+  let ctx = null, lastTick = 0;
+  function tick(pitch = 1) {
+    const now = performance.now();
+    if (now - lastTick < 45) return; lastTick = now;
     try {
-      ctx = ctx || new (window.AudioContext || window.webkitAudioContext)();
-      const len = ctx.sampleRate * .07, buf = ctx.createBuffer(1, len, ctx.sampleRate), data = buf.getChannelData(0);
-      for (let i = 0; i < len; i++) data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 3);
+      if (!ctx || ctx.state !== 'running') return;
+      const len = ctx.sampleRate * .025, buf = ctx.createBuffer(1, len, ctx.sampleRate), data = buf.getChannelData(0);
+      for (let i = 0; i < len; i++) data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 4);
       const src = ctx.createBufferSource(), bp = ctx.createBiquadFilter(), g = ctx.createGain();
-      bp.type = 'bandpass'; bp.frequency.value = 2400; bp.Q.value = .8; g.gain.value = .07;
+      bp.type = 'bandpass'; bp.frequency.value = 3200 * pitch; bp.Q.value = 1.4; g.gain.value = .05;
       src.buffer = buf; src.connect(bp).connect(g).connect(ctx.destination); src.start();
     } catch (e) {}
   }
+  // Browsers only allow sound after a press, so the first press or key wakes it.
+  const wakeAudio = () => { try { ctx = ctx || new (window.AudioContext || window.webkitAudioContext)(); ctx.resume(); } catch (e) {} };
+  addEventListener('pointerdown', wakeAudio, { once: true, capture: true });
+  addEventListener('keydown', wakeAudio, { once: true, capture: true });
 
   fetch('/assets/data/shipped.json').then((r) => r.json()).then(({ ships }) => {
     ships = ships.filter((s) => !s.draft).sort((a, b) => b.d.localeCompare(a.d));
     if (!ships.length) return;
     home(ships);
-    timeline(ships);
+    street(ships);
   }).catch(() => {});
 
   /* ───────── Homepage ───────── */
   function home(ships) {
     const latest = ships.find((s) => !s.wraps) || ships[0];
+    const href = `/shipped/#${id(latest)}`;
     const last = document.querySelector('.last');
-    if (last) last.innerHTML = `Last shipped <a href="${esc(link(latest))}">${esc(latest.t)}</a> ${ago(latest.d)}.`;
-    const count = document.querySelector('[data-ship-count]');
-    if (count) count.textContent = ships.length;
-    const list = document.querySelector('[data-ship-list]');
-    if (list) list.innerHTML = ships.slice(0, 6).map((s) => `<span class="st-row${s.wraps ? ' is-wraps' : ''}"><time>${short(s.d)}</time><span>${esc(s.t)}</span></span>`).join('');
-    const stack = document.querySelector('.stack');
-    if (stack) makeStack(stack, ships);
-  }
-
-  function card(s) {
-    const media = s.img && !s.wraps
-      ? `<img src="${esc(s.img)}" alt="" loading="lazy" decoding="async" draggable="false">`
-      : `<span class="ship-word">${esc(s.t)}</span>${s.wraps ? `<span class="wraps-tag">${LOCK}Under wraps</span>` : ''}`;
-    return `<span class="ship-top"><b>${esc(s.p)}</b><span>${ago(s.d).replace(/^on /, '')}</span></span>
-      <span class="ship-media">${media}</span>
-      <span class="ship-text">${s.img || s.wraps ? `<h3>${esc(s.wraps ? 'Client work' : s.t)}</h3>` : ''}<p>${esc(s.wraps ? 'Out soon. It unblurs when it launches.' : s.l)}</p></span>`;
-  }
-
-  function makeStack(stack, ships) {
-    const els = ships.map((s, i) => {
-      const a = document.createElement('a');
-      a.className = `ship${s.wraps ? ' is-wraps' : ''}`;
-      a.href = link(s); a.draggable = false; a.tabIndex = -1;
-      a.setAttribute('aria-label', `${s.wraps ? 'Client work, under wraps' : s.t}, shipped ${ago(s.d)}`);
-      a.innerHTML = card(s);
-      stack.append(a);
-      return a;
-    });
-    stack.tabIndex = 0;
-    const hint = document.createElement('div');
-    hint.className = 'stack-hint';
-    hint.innerHTML = `<button type="button" data-step="-1" aria-label="Previous"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 3l-3 3 3 3"/></svg></button><output aria-live="polite"></output><button type="button" data-step="1" aria-label="Next"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 3l3 3-3 3"/></svg></button>`;
-    stack.append(hint);
-    const out = hint.querySelector('output');
-    // Open on the newest thing people can actually see; under-wraps cards are one flick back.
-    let top = Math.max(0, ships.findIndex((s) => !s.wraps));
-
-    // The three behind fan up and back, so it reads as a pile you can go through.
-    function layout() {
-      els.forEach((el, i) => {
-        const k = (i - top + els.length) % els.length;
-        el.classList.toggle('is-top', k === 0);
-        el.style.zIndex = String(els.length - k);
-        el.style.opacity = k < 4 ? '1' : '0';
-        el.style.transform = k === 0 ? 'none' : `translateY(${-k * 12}px) scale(${1 - k * .05}) rotate(${(k % 2 ? -1 : 1) * k * 1.6}deg)`;
-      });
-      out.textContent = `${top + 1} / ${els.length}`;
+    if (last) last.innerHTML = `Last shipped <a href="${href}">${esc(latest.t)}</a> ${ago(latest.d)}.`;
+    const spot = document.querySelector('[data-latest]');
+    if (spot) {
+      spot.href = href;
+      spot.setAttribute('aria-label', `Last shipped: ${latest.t}. See everything I've shipped`);
+      spot.innerHTML = `${object(latest)}<span class="latest-cap"><span>${when(latest.d)}</span>${esc(latest.t)}</span>`;
     }
-    function step(dir, flung) {
-      const el = els[top];
-      if (dir > 0) {
-        const x = flung || 1;
-        el.style.transform = `translate(${x * 120}%, -6%) rotate(${x * 14}deg)`;
-        el.style.opacity = '0';
-        top = (top + 1) % els.length;
-        setTimeout(layout, reduced ? 0 : 260);
-      } else {
-        top = (top - 1 + els.length) % els.length;
-        const back = els[top];
-        back.style.transition = 'none'; back.style.transform = 'translate(-120%, -6%) rotate(-14deg)'; back.style.opacity = '0'; back.style.zIndex = String(els.length + 1);
-        void back.offsetWidth; back.style.transition = '';
-        layout();
-      }
-      flick();
+    document.querySelectorAll('[data-ship-count]').forEach((n) => { n.textContent = ships.length; });
+    // The Shipped card's shelf: the latest few with pictures, no picture twice, oldest on the left.
+    const shelf = document.querySelector('[data-shelf]');
+    if (shelf) {
+      const seen = new Set(), pick = [];
+      for (const s of ships) { if (s.wraps || !s.img || seen.has(s.img)) continue; seen.add(s.img); pick.push(s); if (pick.length === 5) break; }
+      shelf.innerHTML = pick.reverse().map(object).join('');
     }
-    hint.addEventListener('click', (e) => { const b = e.target.closest('[data-step]'); if (b) step(+b.dataset.step); });
-    stack.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowRight') { e.preventDefault(); step(1); }
-      if (e.key === 'ArrowLeft') { e.preventDefault(); step(-1); }
-      if (e.key === 'Enter') location.href = els[top].href;
-    });
-
-    // Drag the top card. A short tap opens it; a throw sends it to the back.
-    let drag = null;
-    stack.addEventListener('pointerdown', (e) => {
-      const el = e.target.closest('.ship.is-top');
-      if (!el || e.button !== 0) return;
-      drag = { el, x: e.clientX, y: e.clientY, dx: 0, t: performance.now(), vx: 0, lx: e.clientX, lt: performance.now() };
-      el.setPointerCapture(e.pointerId);
-    });
-    stack.addEventListener('pointermove', (e) => {
-      if (!drag) return;
-      drag.dx = e.clientX - drag.x;
-      const dy = (e.clientY - drag.y) * .25, now = performance.now();
-      drag.vx = (e.clientX - drag.lx) / Math.max(1, now - drag.lt); drag.lx = e.clientX; drag.lt = now;
-      if (Math.abs(drag.dx) > 4) drag.el.classList.add('is-dragging');
-      drag.el.style.transform = `translate(${drag.dx}px, ${dy}px) rotate(${drag.dx * .05}deg)`;
-    });
-    const end = () => {
-      if (!drag) return;
-      const { el, dx, vx } = drag; drag = null;
-      el.classList.remove('is-dragging');
-      if (Math.abs(dx) > 4) el.dataset.moved = '1';
-      if (Math.abs(dx) > 90 || Math.abs(vx) > .6) step(1, Math.sign(dx || vx));
-      else el.style.transform = 'none';
-    };
-    stack.addEventListener('pointerup', end);
-    stack.addEventListener('pointercancel', end);
-    // A drag shouldn't count as a click.
-    stack.addEventListener('click', (e) => {
-      const el = e.target.closest('.ship');
-      if (el && (el.dataset.moved || el.classList.contains('is-dragging'))) { e.preventDefault(); delete el.dataset.moved; }
-    }, true);
-    layout();
   }
 
   /* ───────── /shipped/ ───────── */
-  function timeline(ships) {
-    const root = document.querySelector('[data-timeline]');
+  function street(all) {
+    const root = document.querySelector('[data-street]');
     if (!root) return;
+    const track = root.querySelector('.st-track'), ticks = root.querySelector('.st-ticks');
     const read = () => { try { return new Set(JSON.parse(localStorage.getItem('shipped-hearts') || '[]')); } catch (e) { return new Set(); } };
     const hearts = read();
     const save = () => { try { localStorage.setItem('shipped-hearts', JSON.stringify([...hearts])); } catch (e) {} };
-    const first = ships[ships.length - 1];
-    document.querySelectorAll('[data-ship-count]').forEach((n) => { n.textContent = ships.length; });
-    document.querySelectorAll('[data-ship-since]').forEach((n) => { n.textContent = LONG[day(first.d).getMonth()]; });
-    const filters = document.querySelector('[data-filters]');
-    let kind = 'all';
+    let kind = 'all', items = [], marks = [], current = -1;
 
-    function render() {
-      const list = ships.filter((s) => kind === 'all' || s.k === kind);
-      let month = '', html = '';
-      list.forEach((s) => {
-        const m = s.d.slice(0, 7);
-        if (m !== month) { if (month) html += '</ol>'; month = m; html += `<h2 class="tl-month">${LONG[+m.slice(5) - 1]} ${m.slice(0, 4)}</h2><ol class="tl-list">`; }
-        const key = id(s), on = hearts.has(key);
-        const title = s.wraps ? 'Client work' : esc(s.t);
-        const body = s.wraps ? `<p class="tl-line is-blur" aria-hidden="true">${esc(s.l)}</p><p class="tl-wraps">${LOCK}Under wraps until it launches</p>` : `<p class="tl-line">${esc(s.l)}</p>`;
-        const thumb = s.img && !s.wraps ? `<img class="tl-thumb" src="${esc(s.img)}" alt="" loading="lazy" decoding="async">` : '';
-        const open = s.href && !s.wraps ? `<a class="tl-open" href="${esc(s.href)}">Open<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 6h7M6.5 3l3 3-3 3"/></svg></a>` : '';
-        html += `<li class="tl-item${s.wraps ? ' is-wraps' : ''}" id="${key}">
-          <time datetime="${s.d}">${short(s.d)}</time>
-          <div class="tl-body"><p class="tl-project">${esc(s.p)}</p><h3>${title}</h3>${body}${open}</div>
-          ${thumb}
-          <button class="tl-heart${on ? ' is-on' : ''}" type="button" data-key="${key}" aria-pressed="${on}" aria-label="Like ${title}"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 13.6S2 10.1 2 6.1A3.1 3.1 0 0 1 8 4.6a3.1 3.1 0 0 1 6 1.5c0 4-6 7.5-6 7.5z"/></svg></button>
+    function render(focusId) {
+      const list = all.filter((s) => kind === 'all' || s.k === kind).slice().reverse(); // oldest left, newest right
+      track.innerHTML = list.map((s) => {
+        const key = id(s), on = hearts.has(key), title = s.wraps ? 'Client work' : esc(s.t);
+        const open = s.href && !s.wraps ? `<a class="st-open" href="${esc(s.href)}">Open<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 6h7M6.5 3l3 3-3 3"/></svg></a>` : '';
+        return `<li class="st-item${s.wraps ? ' is-wraps' : ''}" id="${key}">
+          <button class="st-hit" type="button" aria-expanded="false" aria-label="${title}, ${short(s.d)}"></button>
+          <time datetime="${s.d}">${when(s.d)}</time>
+          <span class="st-stand">${object(s)}</span>
+          <h2>${title}</h2>
+          <p class="st-p">${esc(s.wraps ? 'Under wraps' : s.p)}</p>
+          <div class="st-more">
+            <p${s.wraps ? ' class="is-blur" aria-hidden="true"' : ''}>${esc(s.l)}</p>
+            <div class="st-acts">${open}<button class="st-heart${on ? ' is-on' : ''}" type="button" data-key="${key}" aria-pressed="${on}" aria-label="Like ${title}"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 13.6S2 10.1 2 6.1A3.1 3.1 0 0 1 8 4.6a3.1 3.1 0 0 1 6 1.5c0 4-6 7.5-6 7.5z"/></svg></button></div>
+          </div>
         </li>`;
+      }).join('');
+      items = [...track.children];
+      // One tick per ship; the first of each month stands taller and carries its name.
+      let month = '';
+      let lastLabel = -9;
+      ticks.innerHTML = list.map((s, i) => {
+        const m = s.d.slice(0, 7), first = m !== month; month = m;
+        const label = first && i - lastLabel > 3; if (label) lastLabel = i;
+        return `<i class="st-tick${first ? ' is-month' : ''}">${label ? `<span>${MONTHS[+m.slice(5) - 1]}</span>` : ''}</i>`;
+      }).join('');
+      marks = [...ticks.children];
+      current = -1;
+      const target = focusId && items.find((el) => el.id === focusId);
+      requestAnimationFrame(() => {
+        if (target) { centre(target, false); select(target); }
+        else track.scrollLeft = track.scrollWidth;
+        onScroll();
       });
-      root.innerHTML = html + (month ? '</ol>' : '');
-      if (location.hash) document.getElementById(location.hash.slice(1))?.classList.add('is-target');
     }
-    root.addEventListener('click', (e) => {
-      const b = e.target.closest('.tl-heart');
-      if (!b) return;
-      const k = b.dataset.key, on = !hearts.has(k);
-      on ? hearts.add(k) : hearts.delete(k); save();
-      b.classList.toggle('is-on', on); b.setAttribute('aria-pressed', String(on));
-      if (on && !reduced) { b.classList.remove('is-pop'); void b.offsetWidth; b.classList.add('is-pop'); }
+
+    const centre = (el, smooth = true) => track.scrollTo({ left: el.offsetLeft + el.offsetWidth / 2 - track.clientWidth / 2, behavior: smooth && !reduced ? 'smooth' : 'auto' });
+    function select(el) {
+      const open = !el.classList.contains('is-open');
+      items.forEach((x) => { const on = x === el && open; x.classList.toggle('is-open', on); x.querySelector('.st-hit').setAttribute('aria-expanded', String(on)); });
+      track.classList.toggle('has-open', open);
+      history.replaceState(null, '', open ? `#${el.id}` : location.pathname);
+    }
+
+    // The ticks follow how far along the street you are; passing one makes the soft tick sound.
+    function onScroll() {
+      const max = track.scrollWidth - track.clientWidth;
+      const best = max > 0 ? Math.round(track.scrollLeft / max * (items.length - 1)) : items.length - 1;
+      if (best !== current) {
+        if (current !== -1) tick(marks[best]?.classList.contains('is-month') ? .75 : 1);
+        marks[current]?.classList.remove('is-on'); marks[best]?.classList.add('is-on'); current = best;
+      }
+    }
+    track.addEventListener('scroll', onScroll, { passive: true });
+
+    // A mouse wheel moves the street sideways.
+    track.addEventListener('wheel', (e) => {
+      if (Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
+      e.preventDefault(); track.scrollLeft += e.deltaY;
+    }, { passive: false });
+
+    // Drag the street with a mouse (touch scrolls on its own).
+    let drag = null;
+    track.addEventListener('pointerdown', (e) => {
+      if (e.pointerType !== 'mouse' || e.button !== 0 || e.target.closest('a, .st-heart')) return;
+      drag = { x: e.clientX, left: track.scrollLeft, moved: false };
     });
+    addEventListener('pointermove', (e) => {
+      if (!drag) return;
+      const dx = e.clientX - drag.x;
+      if (Math.abs(dx) > 4 && !drag.moved) { drag.moved = true; track.classList.add('is-dragging'); }
+      if (drag.moved) track.scrollLeft = drag.left - dx;
+    });
+    addEventListener('pointerup', () => {
+      if (!drag) return;
+      const moved = drag.moved; drag = null; track.classList.remove('is-dragging');
+      if (moved) { track.dataset.moved = '1'; setTimeout(() => delete track.dataset.moved, 0); }
+    });
+
+    track.addEventListener('click', (e) => {
+      if (track.dataset.moved) { e.preventDefault(); return; }
+      const heart = e.target.closest('.st-heart');
+      if (heart) {
+        const k = heart.dataset.key, on = !hearts.has(k);
+        on ? hearts.add(k) : hearts.delete(k); save();
+        heart.classList.toggle('is-on', on); heart.setAttribute('aria-pressed', String(on));
+        if (on && !reduced) { heart.classList.remove('is-pop'); void heart.offsetWidth; heart.classList.add('is-pop'); }
+        return;
+      }
+      const el = e.target.closest('.st-hit')?.parentElement;
+      if (el) { select(el); centre(el); }
+    });
+
+    // The scrubber: press or drag along the ticks.
+    let scrub = false;
+    const scrubTo = (x) => {
+      const r = ticks.getBoundingClientRect();
+      const p = Math.max(0, Math.min(1, (x - r.left) / r.width));
+      track.scrollLeft = p * (track.scrollWidth - track.clientWidth);
+    };
+    ticks.addEventListener('pointerdown', (e) => { scrub = true; ticks.setPointerCapture(e.pointerId); scrubTo(e.clientX); });
+    ticks.addEventListener('pointermove', (e) => { if (scrub) scrubTo(e.clientX); });
+    ticks.addEventListener('pointerup', () => { scrub = false; });
+
+    addEventListener('keydown', (e) => {
+      const step = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+      if (!step || e.target.closest('input, textarea')) return;
+      e.preventDefault();
+      centre(items[Math.max(0, Math.min(items.length - 1, current + step))]);
+    });
+
+    const filters = document.querySelector('[data-filters]');
     filters?.addEventListener('click', (e) => {
       const b = e.target.closest('[data-kind]');
       if (!b) return;
@@ -197,6 +208,6 @@
       filters.querySelectorAll('[data-kind]').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
       render();
     });
-    render();
+    render(decodeURIComponent(location.hash.slice(1)));
   }
 })();
