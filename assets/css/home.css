@@ -1,13 +1,16 @@
 /* The homepage. Loaded after site.css and sky.css, only on index.html.
-   The hero: the last thing I shipped stands on the horizon (shipped.js); click it for the whole street.
-   The work cards keep their glows, parallax and lit stroke (site.css). The lab bar (lab.js) switches
-   between the options below with data attributes on <body>. */
+   Hero: the headline, a line about me, and "Last shipped …" (shipped.js) into the Shipped street.
+   Work: a mosaic of colour tiles (after raylight.app), or the older glass cards (lab: Work).
+   The lab bar (lab.js) switches options with data attributes on <body>. */
+
+@font-face { font-family: 'Manrope'; src: url(../fonts/Manrope-600.ttf) format('truetype'); font-weight: 600; font-display: swap; }
+@font-face { font-family: 'Manrope'; src: url(../fonts/Manrope-800.ttf) format('truetype'); font-weight: 800; font-display: swap; }
 
 /* ───────── Hero ───────── */
 .home .hero { position: relative; height: auto; min-height: 0; overflow: clip; padding: 96px var(--gutter) 220px; text-align: center;
   -webkit-mask: linear-gradient(#000 calc(100% - 200px), transparent); mask: linear-gradient(#000 calc(100% - 200px), transparent); }
-.stage { position: relative; height: clamp(290px, 34svh, 340px); max-width: 1380px; margin: 0 auto; }
-.home .eclipse { left: calc(50% - 60vw); top: 80%; width: 120vw; }
+.stage { position: relative; height: 160px; max-width: 1380px; margin: 0 auto; }
+.home .eclipse { left: calc(50% - 60vw); top: 70%; width: 120vw; }
 .home .corona { opacity: .6; animation-duration: 180s; }
 .home .hero-copy { position: relative; z-index: 6; left: auto; top: auto; translate: none; width: min(100%, 720px); margin: 0 auto; padding: 8px 0 0; }
 .home .hero h1 { font-size: clamp(40px, 5.2vw, 76px); line-height: 1.05; }
@@ -17,151 +20,154 @@
 .last a:hover { text-decoration-color: var(--ink); }
 .last::before { content: ""; display: inline-block; width: 6px; height: 6px; margin: 0 7px 2px 1px; border-radius: 50%; background: #2fd67b; box-shadow: 0 0 0 3px color-mix(in srgb, #2fd67b 22%, transparent); }
 
-/* The latest thing, standing on the horizon like Peng's building. */
-.latest { position: absolute; z-index: 6; left: 50%; bottom: 20%; translate: -50% 0; display: flex; flex-direction: column; align-items: center; }
-.latest .obj { transform-origin: 50% 100%; transition: transform .6s var(--ease); }
-.latest .obj-icon { width: 168px; height: 168px; }
-.latest .obj-cutout { width: 240px; height: 240px; }
-.latest-cap { position: absolute; top: calc(100% + 12px); display: grid; gap: 2px; font-size: 13px; font-weight: 400; color: var(--ink-2); white-space: nowrap; opacity: 0; translate: 0 -4px; transition: opacity .3s var(--ease), translate .4s var(--ease); }
-.latest-cap span { color: var(--whisper); }
-@media (hover: hover) {
-  .latest:hover .obj { transform: translateY(-8px) scale(1.03); }
-  .latest:hover .latest-cap { opacity: 1; translate: 0 0; }
-}
-body[data-hero="words"] .latest { display: none; }
-body[data-hero="words"] .stage { height: 160px; }
-body[data-hero="words"] .home .eclipse, body[data-hero="words"] .eclipse { top: 70%; }
+/* ───────── Quit28, live (q28-card.js) ─────────
+   Built like the app: Manrope, the green #06fb06 logged days, the pink day 28, the blue breathing circle. */
+.q28-set, .q-live { --q-blue: #00a7fa; --q-green: #06fb06; --q-pink: #f41f7f; --q-ink: #111; --q-grey: #ececea; font-family: 'Manrope', var(--sans); color: var(--q-ink); }
+.q28-set { position: absolute; inset: 0; }
+:is(.q28-set, .q-live) > * { position: absolute; transition: transform 1.2s var(--ease); }
+.q28-phone { z-index: 2; aspect-ratio: 1206 / 2622; padding: 2.6%; border-radius: 15% / 7%; background: #0e0f12; box-shadow: 0 50px 70px rgba(0, 40, 90, .3), inset 0 0 0 1.5px rgba(255, 255, 255, .16); }
+.q28-screen { display: block; height: 100%; border-radius: 13% / 6%; overflow: hidden; }
+.q28-screen img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 0; }
+.q28-cal { z-index: 1; display: block; padding: 6% 6% 7%; border-radius: 9% / 11%; background: #fff; rotate: -6deg; box-shadow: 0 30px 50px rgba(0, 40, 90, .2); container-type: inline-size; }
+.q28-cal-head { display: flex; align-items: flex-start; gap: 5cqw; }
+.q28-cal-head svg { width: 9cqw; height: 9cqw; margin-top: 1cqw; flex: none; }
+.q28-cal-head b { display: block; font-size: 7.2cqw; font-weight: 800; letter-spacing: -.03em; line-height: 1.1; }
+.q28-cal-head small { display: block; margin-top: 1cqw; font-size: 4.6cqw; font-weight: 600; color: #555; }
+.q28-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1.4cqw; margin-top: 6cqw; }
+.q28-grid i { aspect-ratio: 1; display: grid; place-items: center; border-radius: 22%; font-size: 4cqw; font-style: normal; font-weight: 800; background: var(--q-grey); transition: background-color .3s var(--ease); }
+.q28-grid i.is-logged { background: var(--q-green); }
+.q28-grid i:last-child { background: var(--q-pink); }
+.q28-grid i.is-pop { animation: q28-pop .35s cubic-bezier(.2, .9, .3, 1.3); }
+@keyframes q28-pop { 50% { transform: scale(1.18); } }
+.q28-breath { z-index: 3; aspect-ratio: 1; display: grid; place-items: center; container-type: inline-size; }
+.q28-breath i { position: absolute; border-radius: 50%; transform: scale(.82); }
+.q28-outer { inset: 0; background: radial-gradient(closest-side, color-mix(in srgb, var(--q-blue) 45%, transparent) 60%, color-mix(in srgb, var(--q-blue) 12%, transparent) 85%, transparent); }
+.q28-inner { inset: 18%; background: var(--q-blue); }
+.is-running .q28-breath i { animation: q28-breathe 8s ease-in-out infinite; }
+@keyframes q28-breathe { 0%, 100% { transform: scale(.82); } 50% { transform: scale(1); } }
+.q28-words { position: relative; display: grid; justify-items: center; }
+.q28-words b { font-size: 11cqw; font-weight: 800; letter-spacing: -.035em; white-space: nowrap; }
+.q28-words small { font-size: 7cqw; font-weight: 600; font-variant-numeric: tabular-nums; color: rgba(17, 17, 17, .72); }
 
-/* ───────── Work ───────── */
-.home .work { margin-top: -150px; padding-top: 0; }
-
-/* Order: Quit28 can lead. */
-body[data-order="quit"] .t-quit { order: -1; }
-
-/* Quit28's card: the old picture, or the live one where the calendar ticks off and the craving timer runs. */
+/* In the mosaic tile: phone in the middle, calendar behind on the left, breathing circle on the right. */
+.q28-set .q28-phone { left: 32%; top: 9%; width: 36%; }
+.q28-set .q28-cal { left: 3%; top: 30%; width: 40%; }
+.q28-set .q28-breath { right: 1%; top: 18%; width: 34%; }
+/* In the old card: the same three, laid out for its wider media column. */
+.t-quit .media.q-now { display: block; }
 .t-quit .media.q-live { display: none; }
-body[data-q28^="live"] .t-quit .media.q-now { display: none; }
-body[data-q28^="live"] .t-quit .media.q-live { display: block; }
-.q-live { --q-blue: #00a7fa; --q-green: #06fb06; --q-pink: #ff2d87; --q-ink: #111; font-family: var(--sans); color: var(--q-ink); }
-.q-live > * { position: absolute; transition: transform 1.2s var(--ease); }
-.ql-cal { left: 0; top: 10%; width: 50%; padding: 22px 22px 24px; border-radius: 28px; background: #fff; transform: rotate(-6deg);
-  box-shadow: 0 30px 50px rgba(0, 60, 110, .16), 0 2px 6px rgba(0, 60, 110, .06); }
-.ql-h { font-size: 19px; font-weight: 500; letter-spacing: -.02em; }
-.ql-s { margin-top: 2px; font-size: 13px; color: #6b6b6b; }
-.ql-s b { font-weight: 500; color: var(--q-ink); font-variant-numeric: tabular-nums; }
-.ql-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-top: 16px; }
-.ql-grid i { position: relative; aspect-ratio: 1; display: grid; place-items: center; border-radius: 9px; font-size: 11px; font-style: normal; font-weight: 500; color: #555; background: #f1f1ee;
-  transition: background-color .35s var(--ease), color .35s var(--ease), transform .35s var(--ease); }
-.ql-grid i.is-done { background: var(--q-green); color: var(--q-ink); }
-.ql-grid i.is-today { box-shadow: inset 0 0 0 2px var(--q-ink); }
-.ql-grid i.is-pop { animation: ql-pop .5s var(--ease); }
-.ql-grid i:last-child { background: color-mix(in srgb, var(--q-pink) 16%, #fff); color: var(--q-pink); }
-.ql-grid i:last-child.is-done { background: var(--q-pink); color: #fff; }
-@keyframes ql-pop { 40% { transform: scale(1.22); } }
-
-.ql-timer { left: 8%; top: 56%; z-index: 3; width: 27%; aspect-ratio: 1; display: grid; place-items: center; transform: rotate(-4deg); }
-.ql-timer svg { position: absolute; inset: 0; width: 100%; height: 100%; rotate: -90deg; overflow: visible; }
-.ql-timer circle { fill: none; stroke: color-mix(in srgb, var(--q-blue) 18%, transparent); stroke-width: 5; }
-.ql-timer .ql-ring { stroke: var(--q-blue); stroke-linecap: round; stroke-dasharray: 100; stroke-dashoffset: var(--ql-left, 0); transition: stroke-dashoffset 1s linear; }
-.ql-breath { position: absolute; inset: 12%; border-radius: 50%; background: var(--q-blue); box-shadow: 0 20px 40px color-mix(in srgb, var(--q-blue) 40%, transparent); transform: scale(var(--ql-b, .82)); transition: transform 4s cubic-bezier(.45, 0, .55, 1); }
-.ql-time { position: relative; font-size: clamp(22px, 2.4vw, 34px); font-weight: 500; letter-spacing: -.03em; color: #fff; font-variant-numeric: tabular-nums; margin-top: -10px; }
-.ql-say { position: absolute; bottom: 30%; font-size: 12px; color: rgba(255, 255, 255, .85); transition: opacity .4s var(--ease); }
-
-.ql-phone { left: 46%; top: 5%; width: 38%; aspect-ratio: 9 / 19; padding: 9px; border-radius: 48px; background: #101114; z-index: 2;
-  box-shadow: 0 50px 70px rgba(0, 50, 90, .26), inset 0 0 0 1.5px rgba(255, 255, 255, .14); }
-.ql-screen { position: relative; height: 100%; border-radius: 40px; overflow: hidden; background: #f2f2ee; }
-.ql-screen::before { content: ""; position: absolute; z-index: 1; left: 50%; top: 9px; width: 30%; height: 22px; translate: -50% 0; border-radius: 999px; background: #101114; }
-.ql-screen img { width: 100%; height: auto; padding-top: 30px; background: #f2f2ee; }
-.item.is-hot .ql-cal { transform: rotate(-8deg) translate3d(-4%, -2%, 0); }
-.item.is-hot .ql-timer { transform: rotate(-6deg) scale(1.06) translate3d(-4%, 4%, 0); }
-@media (max-width: 700px) { .ql-cal { padding: 14px; border-radius: 20px; } .ql-grid { gap: 3px; margin-top: 10px; } .ql-grid i { border-radius: 5px; font-size: 8px; } .ql-h { font-size: 14px; } }
-
-/* Copy: Full (as it was) or Lean (title and one line; the picture does the rest). */
-body[data-copy="lean"] :is(.stats, .pilot, .card-btn:not(.is-primary)) { display: none; }
-body[data-copy="lean"] :is(.t-snapshot, .t-quit) .card { min-height: 640px; }
-body[data-copy="lean"] .t-jump .card { min-height: 600px; }
-body[data-copy="lean"] .card-copy { justify-content: flex-end; }
-
-/* Brain Dump can go; the Shipped card then takes the row. */
-body[data-brain="hide"] .t-brain { display: none; }
-body[data-brain="hide"] .t-shipped { grid-column: span 12; }
-
-/* Concepts: cards, or one quiet line. */
-body[data-concepts="cards"] .earlier { display: none; }
-body[data-concepts="line"] .t-small { display: none; }
-
-/* The Shipped card: a shelf of the latest objects standing on one line. */
-.t-shipped { grid-column: span 6; }
-.t-shipped .card { min-height: 620px; }
-.t-shipped .media { display: flex; align-items: flex-end; justify-content: center; padding: 0 20px 64px; }
-.shelf { display: flex; align-items: flex-end; justify-content: center; gap: 14px; width: 100%; padding-bottom: 14px; border-bottom: 1px solid var(--hair); }
-.shelf .obj { flex: none; transition: transform .7s var(--ease); }
-.shelf .obj-icon, .shelf .obj-tile { width: 78px; height: 78px; margin: 0; border-radius: 19px; }
-.shelf .obj-tile b { font-size: 36px; }
-.shelf .obj-cutout { width: 110px; height: 110px; }
-.shelf .obj-phone { width: 56px; height: 114px; padding: 3px; border-radius: 13px; }
-.shelf .obj-phone > span { border-radius: 10px; }
-.shelf .obj-screen { width: 130px; height: 88px; padding: 12px 3px 3px; border-radius: 9px; }
-.item.is-hot .shelf .obj:nth-child(odd) { transform: translateY(-6px); }
-.item.is-hot .shelf .obj:nth-child(even) { transform: translateY(-3px); }
-
-.earlier { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 22px; margin-top: 46px; font-size: 15px; font-weight: 400; color: var(--ink-2); }
-.earlier span { color: var(--whisper); }
-.earlier a { text-decoration: underline; text-decoration-color: var(--hair); text-underline-offset: 3px; transition: color .2s var(--ease), text-decoration-color .2s var(--ease); }
-.earlier a:hover { color: var(--ink); text-decoration-color: currentColor; }
-
-@media (max-width: 700px) {
-  .home .hero { padding-top: 92px; }
-  .stage { height: 320px; }
-  .home .eclipse { left: -45vw; width: 190vw; top: 78%; }
-  .latest .obj-icon { width: 136px; height: 136px; }
-  .t-shipped { grid-column: span 12; }
-  .t-shipped .card { min-height: 480px; }
-  .shelf { gap: 8px; }
-  .shelf .obj:nth-child(n+4) { display: none; }
-}
+body[data-q28="live"] .t-quit .media.q-now { display: none; }
+body[data-q28="live"] .t-quit .media.q-live { display: block; }
+.q-live .q28-phone { left: 44%; top: 4%; width: 34%; }
+.q-live .q28-cal { left: 2%; top: 14%; width: 46%; }
+.q-live .q28-breath { left: 20%; top: 52%; width: 30%; }
 
 /* ───────── Work as a mosaic (after raylight.app) ─────────
-   Big tiles of colour, the product huge and cropped, two words underneath. One hover: the art drifts
-   with the pointer and the tile lifts. */
+   Colour tiles, the product big, a name and a few words underneath. The tile never moves; on hover its
+   coloured shadow comes up and the art drifts a little with the pointer (lab: Hover). */
 body[data-work="mosaic"] .work { display: none; }
 body[data-work="cards"] .mosaic { display: none; }
-.mosaic { position: relative; z-index: 6; max-width: 1380px; margin: -150px auto 0; padding: 0 var(--gutter) 110px; display: grid; grid-template-columns: repeat(12, 1fr); gap: 34px 14px; }
-.tile { display: flex; flex-direction: column; gap: 14px; }
-.tile-art { position: relative; display: block; overflow: hidden; border-radius: 22px; corner-shape: squircle; height: 560px;
-  background: radial-gradient(120% 100% at 80% 100%, var(--bg2, #e9e9ec), transparent 60%), var(--bg1, #f2f2f4);
-  transition: translate .5s var(--ease), box-shadow .5s var(--ease); }
-.tile-art img { position: absolute; max-width: none; transition: transform 1s var(--ease); }
+.mosaic { position: relative; z-index: 6; max-width: 1380px; margin: -150px auto 0; padding: 0 var(--gutter) 110px; display: grid; grid-template-columns: repeat(12, 1fr); gap: 40px 16px; }
+.tile { --bg1: #eeeef1; --bg2: #e2e2e8; display: flex; flex-direction: column; gap: 14px; }
+.tile-art { position: relative; display: block; overflow: hidden; height: 540px; border-radius: 22px; corner-shape: squircle; isolation: isolate;
+  background:
+    radial-gradient(90% 80% at 92% 108%, color-mix(in oklab, var(--bg2) 92%, transparent), transparent 70%),
+    radial-gradient(70% 60% at 0% 0%, color-mix(in oklab, var(--bg1) 72%, white), transparent 65%),
+    linear-gradient(165deg, var(--bg1), color-mix(in oklab, var(--bg1) 82%, black));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .22); transition: box-shadow .5s var(--ease); }
+.tile-art img { position: absolute; max-width: none; transition: transform .8s var(--ease); }
 .tile-cap { display: flex; align-items: baseline; gap: 10px; padding: 0 4px; font-size: 15px; color: var(--whisper); }
 .tile-cap b { font-weight: 400; color: var(--ink); }
+.tile-art::after { content: ""; position: absolute; inset: 0; z-index: 9; border-radius: inherit; pointer-events: none; box-shadow: inset 0 0 0 2px var(--bg2, transparent); opacity: 0; transition: opacity .4s var(--ease); }
 @media (hover: hover) {
-  .tile:hover .tile-art { translate: 0 -4px; box-shadow: 0 30px 60px color-mix(in srgb, var(--bg1, #000) 30%, transparent); }
-  .tile:hover .tile-art img { transform: translate3d(var(--mx, 0), var(--my, 0), 0) scale(1.03); }
+  .tile:hover .tile-art { box-shadow: inset 0 1px 0 rgba(255, 255, 255, .22), 0 26px 60px -10px color-mix(in srgb, var(--bg1, #000) 45%, transparent); }
+  body:not([data-hover="still"]) .tile:hover .tile-art img { transform: translate3d(var(--mx, 0), var(--my, 0), 0); }
+  body[data-hover="stroke"] .tile:hover .tile-art::after { opacity: 1; }
 }
 .m-snap { grid-column: span 7; }
 .m-quit { grid-column: span 5; }
 .m-jump { grid-column: span 8; }
 .m-brain { grid-column: span 4; }
 .m-photo, .m-ship { grid-column: span 4; }
-.m-jump .tile-art, .m-brain .tile-art { height: 500px; }
-.m-photo .tile-art, .m-ship .tile-art { height: 400px; }
-/* The art, placed big and cropped. */
-.m-snap-res { width: 66%; left: -6%; top: 22%; rotate: -6deg; border-radius: 14px; box-shadow: 0 30px 60px rgba(20, 0, 80, .35); }
-.m-snap-phone { width: 42%; right: 6%; top: 8%; filter: drop-shadow(0 40px 50px rgba(20, 0, 80, .4)); }
-.m-quit-hand { width: 118%; left: 2%; bottom: -14%; filter: drop-shadow(0 40px 50px rgba(0, 50, 100, .3)); }
-.m-jump-a { width: 70%; left: 6%; top: 12%; rotate: -3deg; border-radius: 12px; box-shadow: 0 30px 60px rgba(0, 30, 20, .4); }
-.m-jump-b { width: 56%; right: -4%; top: 30%; rotate: 2deg; border-radius: 12px; box-shadow: 0 30px 60px rgba(0, 30, 20, .45); }
-.m-brain-phone { width: 62%; left: 19%; top: 12%; border-radius: 34px; box-shadow: 0 40px 60px rgba(30, 0, 80, .5), 0 0 0 7px #0b0b10; }
+.m-jump .tile-art, .m-brain .tile-art { height: 480px; }
+.m-photo .tile-art, .m-ship .tile-art { height: 380px; }
+/* The art, placed so you see the whole idea, not a close-up. */
+.m-snap-res { width: 54%; left: 4%; top: 26%; rotate: -6deg; border-radius: 12px; box-shadow: 0 30px 60px rgba(20, 0, 80, .35); }
+.m-snap-phone { width: 32%; right: 10%; top: 9%; filter: drop-shadow(0 40px 50px rgba(20, 0, 80, .4)); }
+.m-jump-a { width: 52%; left: 4%; top: 10%; rotate: -4deg; border-radius: 10px; box-shadow: 0 30px 60px rgba(0, 30, 20, .4); }
+.m-jump-b { width: 44%; left: 34%; top: 28%; rotate: 1.5deg; border-radius: 10px; box-shadow: 0 30px 60px rgba(0, 30, 20, .45); }
+.m-jump-c { width: 30%; right: 4%; top: 52%; rotate: 4deg; border-radius: 10px; box-shadow: 0 30px 60px rgba(0, 30, 20, .45); }
+.m-brain-phone { width: 52%; left: 24%; top: 10%; filter: drop-shadow(0 40px 50px rgba(30, 0, 80, .45)); }
 .m-photo .tile-art img { inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .m-ship .tile-art { display: flex; align-items: center; justify-content: center; background: color-mix(in srgb, var(--ink) 4%, var(--bg)); }
-.m-ship .shelf { border: 0; padding: 0; gap: 12px; }
+.m-ship .shelf { display: flex; align-items: flex-end; justify-content: center; gap: 14px; }
+.m-ship .shelf .obj { flex: none; }
+.m-ship .shelf .obj:nth-child(-n+2) { display: none; }
+.m-ship .tile-art .obj img { position: static; width: 100%; height: 100%; transform: none; }
+.m-ship .shelf .obj-icon, .m-ship .shelf .obj-tile { width: 92px; height: 92px; border-radius: 22px; }
+.m-ship .shelf .obj-cutout { width: 130px; height: 130px; }
+
+/* ───────── The older glass cards (lab: Work → Cards) ───────── */
+.home .work { margin-top: -150px; padding-top: 0; }
+body[data-copy="lean"] :is(.stats, .pilot, .card-btn:not(.is-primary)) { display: none; }
+body[data-copy="lean"] :is(.t-snapshot, .t-quit) .card { min-height: 640px; }
+body[data-copy="lean"] .t-jump .card { min-height: 600px; }
+body[data-copy="lean"] .card-copy { justify-content: flex-end; }
+body[data-brain="hide"] .t-brain { display: none; }
+body[data-brain="hide"] .t-shipped { grid-column: span 12; }
+.t-shipped { grid-column: span 6; }
+.t-shipped .card { min-height: 0; height: 100%; }
+.t-shipped .media { display: flex; align-items: flex-end; justify-content: center; padding: 0 20px 56px; }
+.t-shipped .shelf { display: flex; align-items: flex-end; justify-content: center; gap: 14px; width: 100%; }
+.t-shipped .shelf .obj { flex: none; }
+.t-shipped .shelf .obj-icon, .t-shipped .shelf .obj-tile { width: 78px; height: 78px; margin: 0; border-radius: 19px; }
+.t-shipped .shelf .obj-cutout { width: 110px; height: 110px; }
+.t-shipped .shelf .obj-phone { width: 56px; height: 114px; padding: 3px; border-radius: 13px; }
+.t-shipped .shelf .obj-screen { width: 130px; height: 88px; padding: 12px 3px 3px; border-radius: 9px; }
+.t-small .card { min-height: 0; }
+.t-small .media { aspect-ratio: 4 / 3; flex: none; }
+.earlier { display: none; }
+
 @media (max-width: 900px) {
-  .mosaic { gap: 26px 12px; }
+  .mosaic { gap: 30px 12px; }
   .m-snap, .m-quit, .m-jump, .m-brain, .m-photo, .m-ship { grid-column: span 12; }
   .tile-art, .m-jump .tile-art, .m-brain .tile-art { height: min(110vw, 460px); }
   .m-photo .tile-art, .m-ship .tile-art { height: min(80vw, 340px); }
 }
-.m-ship .tile-art .obj img { position: static; width: 100%; height: 100%; transform: none; }
-.m-ship .shelf .obj-icon, .m-ship .shelf .obj-tile { width: 92px; height: 92px; border-radius: 22px; }
-.m-ship .shelf { justify-content: center; width: auto; }
-.m-ship .shelf .obj:nth-child(-n+2) { display: none; }
+@media (max-width: 700px) {
+  .home .hero { padding-top: 92px; }
+  .home .eclipse { left: -45vw; width: 190vw; top: 72%; }
+  .t-shipped { grid-column: span 12; }
+  .t-shipped .shelf .obj:nth-child(n+4) { display: none; }
+  .q28-set .q28-phone { left: 30%; width: 40%; }
+}
+@media (prefers-reduced-motion: reduce) { .q28-breath i { animation: none !important; } }
+
+/* Quit28's circle needs a white halo to read on its blue tile. */
+.q28-set .q28-outer { background: radial-gradient(closest-side, rgba(255, 255, 255, .55) 60%, rgba(255, 255, 255, .18) 85%, transparent); }
+.q28-set .q28-breath { right: 0; top: 46%; width: 40%; }
+.q28-set .q28-cal { top: 22%; }
+
+/* ───────── Contact (lab: Contact) ─────────
+   Big: as it was, with LinkedIn and X underneath. Quiet: a smaller heading, the email as a plain link.
+   One line: a label, then the email and the profiles on one line. */
+.socials { display: flex; justify-content: center; gap: 26px; margin-top: 28px; font-size: 15px; font-weight: 400; }
+.socials a { display: inline-flex; align-items: center; gap: 8px; color: var(--ink-2); transition: color .3s var(--ease); }
+.socials a:hover { color: var(--ink); }
+.socials .mark { width: 15px; height: 15px; background: currentColor; -webkit-mask-size: contain; mask-size: contain; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; -webkit-mask-position: center; mask-position: center; }
+.socials .arr { width: 10px; height: 10px; transition: transform .3s var(--ease); }
+.socials a:hover .arr { transform: translate(2px, -2px); }
+body[data-contact="quiet"] .contact { padding: 120px var(--gutter) 110px; }
+body[data-contact="quiet"] .contact h2 { font-size: clamp(40px, 5vw, 64px); }
+body[data-contact="quiet"] .contact .sub { font-size: 16px; }
+body[data-contact="quiet"] .email { padding: 0; background: none; color: var(--ink); box-shadow: none; font-size: 18px; text-decoration: underline; text-decoration-color: var(--hair); text-underline-offset: 5px; }
+body[data-contact="quiet"] .email::before, body[data-contact="quiet"] .email-icon { display: none; }
+body[data-contact="quiet"] .copy { height: 34px; padding: 0 12px; font-size: 13px; }
+body[data-contact="quiet"] .cta { margin-top: 26px; gap: 14px; }
+body[data-contact="line"] .contact { padding: 90px var(--gutter) 80px; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 12px 28px; }
+body[data-contact="line"] .contact h2 { flex-basis: 100%; font-size: clamp(30px, 3vw, 40px); }
+body[data-contact="line"] .contact .sub { display: none; }
+body[data-contact="line"] .cta { margin: 0; }
+body[data-contact="line"] .email { padding: 0; background: none; color: var(--ink); box-shadow: none; font-size: 16px; }
+body[data-contact="line"] .email::before, body[data-contact="line"] .email-icon, body[data-contact="line"] .copy { display: none; }
+body[data-contact="line"] .socials { margin: 0; }

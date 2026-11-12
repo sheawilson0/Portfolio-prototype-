@@ -7,11 +7,11 @@
   const ROWS = street ? [
     ['wraps', 'Under wraps', [['frost', 'Frosted', 1], ['lock', 'Lock'], ['eye', 'Eye'], ['redact', 'Redacted']]],
   ] : [
-    ['hero', 'Hero', [['words', 'Just the line', 1], ['object', 'With the object']]],
     ['work', 'Work', [['mosaic', 'Mosaic', 1], ['cards', 'Cards']]],
-    ['q28', 'Quit28 card', [['now', 'As now'], ['live', 'Live', 1], ['live-hover', 'Live on hover']]],
-    ['copy', 'Card words', [['full', 'Full'], ['lean', 'Lean', 1]]],
-    ['brain', 'Brain Dump', [['show', 'Show', 1], ['hide', 'Hide']]],
+    ['hover', 'Hover', [['glow', 'Glow + drift', 1], ['stroke', 'Stroke + drift'], ['still', 'Glow only']]],
+    ['q28', 'Quit28 (cards)', [['now', 'As now'], ['live', 'Live', 1]]],
+    ['contact', 'Contact', [['big', 'Big', 1], ['quiet', 'Quiet'], ['line', 'One line']]],
+    ['copy', 'Card words (cards)', [['full', 'Full'], ['lean', 'Lean', 1]]],
   ];
   const KEY = street ? 'street-lab' : 'home-lab';
   const get = (k) => { try { return JSON.parse(localStorage.getItem(KEY) || '{}')[k]; } catch (e) { return null; } };
