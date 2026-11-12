@@ -6,16 +6,18 @@
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const CAL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4M7.5 14h3M13.5 14h3M7.5 17h3"/></svg>';
 
+  // The app's tiles sit a little crooked, each its own way. Fixed angles so it looks the same every visit.
+  const TILT = [-3, 2, -1, 3, -2, 1, -3, 2, -2, 1, 3, -1, 2, -3, 1, -2, 3, -1, -3, 2, 1, -2, 3, -1, 2, -3, 1, 2];
   document.querySelectorAll('[data-q28-live]').forEach((root) => {
     root.innerHTML = `
       <span class="q28-phone"><span class="q28-screen"><img src="assets/media/quit28/iphone-day-1-logged.webp" alt="Quit28 on an iPhone: Day 1 logged" loading="lazy" decoding="async"></span></span>
       <span class="q28-cal" aria-hidden="true">
         <span class="q28-cal-head">${CAL}<span><b>Your 28 days</b><small>Days 1 to 28</small></span></span>
-        <span class="q28-grid">${Array.from({ length: 28 }, (_, i) => `<i>${i + 1}</i>`).join('')}</span>
+        <span class="q28-grid">${Array.from({ length: 28 }, (_, i) => `<i style="--r:${TILT[i]}deg">${i + 1}</i>`).join('')}</span>
       </span>
-      <span class="q28-breath" aria-hidden="true"><i class="q28-outer"></i><i class="q28-inner"></i><span class="q28-words"><b>Breathe in</b><small>3:00</small></span></span>`;
+      <span class="q28-breath" aria-hidden="true"><b class="q28-sheet-title">Ride out a craving</b><span class="q28-circle"><i class="q28-track"></i><i class="q28-outer"></i><i class="q28-inner"></i><span class="q28-words"><b>Breathe in</b><small>3:00</small></span></span></span>`;
     const cells = [...root.querySelectorAll('.q28-grid i')];
-    const breath = root.querySelector('.q28-breath'), word = breath.querySelector('b'), time = breath.querySelector('small');
+    const breath = root.querySelector('.q28-breath'), word = breath.querySelector('.q28-words b'), time = breath.querySelector('.q28-words small');
     let day = 9, gone = 0, clock = null;
     const paint = () => cells.forEach((c, i) => c.classList.toggle('is-logged', i < day));
     paint();

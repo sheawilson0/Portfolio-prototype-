@@ -5,14 +5,15 @@
   if (live && !new URLSearchParams(location.search).has('lab')) return;
   const street = document.body.classList.contains('is-street');
   const ROWS = street ? [
-    ['wraps', 'Under wraps', [['frost', 'Frosted', 1], ['lock', 'Lock'], ['eye', 'Eye'], ['redact', 'Redacted']]],
   ] : [
     ['work', 'Work', [['mosaic', 'Mosaic', 1], ['cards', 'Cards']]],
-    ['hover', 'Hover', [['glow', 'Glow + drift', 1], ['stroke', 'Stroke + drift'], ['still', 'Glow only']]],
+    ['hover', 'Hover', [['glow', 'Glow + drift', 1], ['lift', 'Glow + drift + lift']]],
+    ['zoom', 'Pictures', [['wide', 'Wide', 1], ['close', 'Close']]],
     ['q28', 'Quit28 (cards)', [['now', 'As now'], ['live', 'Live', 1]]],
-    ['contact', 'Contact', [['big', 'Big', 1], ['quiet', 'Quiet'], ['line', 'One line']]],
+    ['contact', 'Contact', [['big', 'Big', 1], ['quiet', 'Quiet']]],
     ['copy', 'Card words (cards)', [['full', 'Full'], ['lean', 'Lean', 1]]],
   ];
+  if (!ROWS.length) return;
   const KEY = street ? 'street-lab' : 'home-lab';
   const get = (k) => { try { return JSON.parse(localStorage.getItem(KEY) || '{}')[k]; } catch (e) { return null; } };
   const set = (k, v) => { try { const o = JSON.parse(localStorage.getItem(KEY) || '{}'); o[k] = v; localStorage.setItem(KEY, JSON.stringify(o)); } catch (e) {} };

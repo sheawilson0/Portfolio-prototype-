@@ -28,31 +28,35 @@
 .q28-phone { z-index: 2; aspect-ratio: 1206 / 2622; padding: 2.6%; border-radius: 15% / 7%; background: #0e0f12; box-shadow: 0 50px 70px rgba(0, 40, 90, .3), inset 0 0 0 1.5px rgba(255, 255, 255, .16); }
 .q28-screen { display: block; height: 100%; border-radius: 13% / 6%; overflow: hidden; }
 .q28-screen img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 0; }
-.q28-cal { z-index: 1; display: block; padding: 6% 6% 7%; border-radius: 9% / 11%; background: #fff; rotate: -6deg; box-shadow: 0 30px 50px rgba(0, 40, 90, .2); container-type: inline-size; }
-.q28-cal-head { display: flex; align-items: flex-start; gap: 5cqw; }
-.q28-cal-head svg { width: 9cqw; height: 9cqw; margin-top: 1cqw; flex: none; }
-.q28-cal-head b { display: block; font-size: 7.2cqw; font-weight: 800; letter-spacing: -.03em; line-height: 1.1; }
-.q28-cal-head small { display: block; margin-top: 1cqw; font-size: 4.6cqw; font-weight: 600; color: #555; }
-.q28-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1.4cqw; margin-top: 6cqw; }
-.q28-grid i { aspect-ratio: 1; display: grid; place-items: center; border-radius: 22%; font-size: 4cqw; font-style: normal; font-weight: 800; background: var(--q-grey); transition: background-color .3s var(--ease); }
+.q28-cal { z-index: 1; display: block; padding: 7% 6% 6%; border-radius: 9% / 11%; background: #fff; rotate: -3deg; box-shadow: 0 30px 50px rgba(0, 40, 90, .2); container-type: inline-size; }
+.q28-cal-head { display: flex; align-items: flex-start; gap: 4cqw; padding-left: 1cqw; }
+.q28-cal-head svg { width: 8cqw; height: 8cqw; margin-top: 2.4cqw; flex: none; }
+.q28-cal-head b { display: block; font-size: 6.8cqw; font-weight: 800; letter-spacing: -.035em; line-height: 1.15; }
+.q28-cal-head small { display: block; margin-top: .6cqw; font-size: 4.4cqw; font-weight: 600; color: #4a4a4a; }
+.q28-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1.8cqw 1.5cqw; margin-top: 5cqw; }
+.q28-grid i { aspect-ratio: 1; display: grid; place-items: center; border-radius: 20%; rotate: var(--r, 0deg); font-size: 4.2cqw; font-style: normal; font-weight: 800; background: #ecece8; transition: background-color .3s var(--ease); }
 .q28-grid i.is-logged { background: var(--q-green); }
 .q28-grid i:last-child { background: var(--q-pink); }
 .q28-grid i.is-pop { animation: q28-pop .35s cubic-bezier(.2, .9, .3, 1.3); }
-@keyframes q28-pop { 50% { transform: scale(1.18); } }
-.q28-breath { z-index: 3; aspect-ratio: 1; display: grid; place-items: center; container-type: inline-size; }
-.q28-breath i { position: absolute; border-radius: 50%; transform: scale(.82); }
-.q28-outer { inset: 0; background: radial-gradient(closest-side, color-mix(in srgb, var(--q-blue) 45%, transparent) 60%, color-mix(in srgb, var(--q-blue) 12%, transparent) 85%, transparent); }
-.q28-inner { inset: 18%; background: var(--q-blue); }
-.is-running .q28-breath i { animation: q28-breathe 8s ease-in-out infinite; }
+@keyframes q28-pop { 50% { scale: 1.18; } }
+/* The craving timer sits on the app's own off-white sheet, so the blue reads on any background. */
+.q28-breath { z-index: 3; display: block; aspect-ratio: .9; padding: 9% 8%; border-radius: 12%; background: #f2f2ee; container-type: inline-size; box-shadow: 0 30px 50px rgba(0, 40, 90, .22); rotate: 3deg; }
+.q28-sheet-title { display: block; font-size: 8.6cqw; font-weight: 800; letter-spacing: -.035em; }
+.q28-circle { position: absolute; left: 50%; top: 58%; width: 84%; aspect-ratio: 1; translate: -50% -50%; display: grid; place-items: center; }
+.q28-circle i { position: absolute; border-radius: 50%; }
+.q28-track { inset: 0; box-shadow: inset 0 0 0 2px rgba(0, 0, 0, .04), 0 0 0 1px rgba(0, 0, 0, .02); }
+.q28-outer { inset: 12%; background: radial-gradient(closest-side, #8fd8ff 55%, rgba(143, 216, 255, .45) 78%, transparent); filter: blur(2px); transform: scale(.82); }
+.q28-inner { inset: 25%; background: var(--q-blue); transform: scale(.82); }
+.is-running .q28-outer, .is-running .q28-inner { animation: q28-breathe 8s ease-in-out infinite; }
 @keyframes q28-breathe { 0%, 100% { transform: scale(.82); } 50% { transform: scale(1); } }
 .q28-words { position: relative; display: grid; justify-items: center; }
-.q28-words b { font-size: 11cqw; font-weight: 800; letter-spacing: -.035em; white-space: nowrap; }
-.q28-words small { font-size: 7cqw; font-weight: 600; font-variant-numeric: tabular-nums; color: rgba(17, 17, 17, .72); }
+.q28-words b { font-size: 12cqw; font-weight: 800; letter-spacing: -.035em; white-space: nowrap; }
+.q28-words small { font-size: 7.5cqw; font-weight: 600; font-variant-numeric: tabular-nums; color: rgba(17, 17, 17, .75); }
 
 /* In the mosaic tile: phone in the middle, calendar behind on the left, breathing circle on the right. */
-.q28-set .q28-phone { left: 32%; top: 9%; width: 36%; }
-.q28-set .q28-cal { left: 3%; top: 30%; width: 40%; }
-.q28-set .q28-breath { right: 1%; top: 18%; width: 34%; }
+.q28-set .q28-phone { left: 32%; top: 8%; width: 36%; }
+.q28-set .q28-cal { left: 3%; top: 24%; width: 40%; }
+.q28-set .q28-breath { right: 3%; top: 40%; width: 33%; }
 /* In the old card: the same three, laid out for its wider media column. */
 .t-quit .media.q-now { display: block; }
 .t-quit .media.q-live { display: none; }
@@ -60,7 +64,7 @@ body[data-q28="live"] .t-quit .media.q-now { display: none; }
 body[data-q28="live"] .t-quit .media.q-live { display: block; }
 .q-live .q28-phone { left: 44%; top: 4%; width: 34%; }
 .q-live .q28-cal { left: 2%; top: 14%; width: 46%; }
-.q-live .q28-breath { left: 20%; top: 52%; width: 30%; }
+.q-live .q28-breath { left: 22%; top: 50%; width: 26%; }
 
 /* ───────── Work as a mosaic (after raylight.app) ─────────
    Colour tiles, the product big, a name and a few words underneath. The tile never moves; on hover its
@@ -74,15 +78,14 @@ body[data-work="cards"] .mosaic { display: none; }
     radial-gradient(90% 80% at 92% 108%, color-mix(in oklab, var(--bg2) 92%, transparent), transparent 70%),
     radial-gradient(70% 60% at 0% 0%, color-mix(in oklab, var(--bg1) 72%, white), transparent 65%),
     linear-gradient(165deg, var(--bg1), color-mix(in oklab, var(--bg1) 82%, black));
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .22); transition: box-shadow .5s var(--ease); }
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .22); transition: box-shadow .5s var(--ease), translate .5s var(--ease); }
 .tile-art img { position: absolute; max-width: none; transition: transform .8s var(--ease); }
 .tile-cap { display: flex; align-items: baseline; gap: 10px; padding: 0 4px; font-size: 15px; color: var(--whisper); }
 .tile-cap b { font-weight: 400; color: var(--ink); }
-.tile-art::after { content: ""; position: absolute; inset: 0; z-index: 9; border-radius: inherit; pointer-events: none; box-shadow: inset 0 0 0 2px var(--bg2, transparent); opacity: 0; transition: opacity .4s var(--ease); }
 @media (hover: hover) {
   .tile:hover .tile-art { box-shadow: inset 0 1px 0 rgba(255, 255, 255, .22), 0 26px 60px -10px color-mix(in srgb, var(--bg1, #000) 45%, transparent); }
-  body:not([data-hover="still"]) .tile:hover .tile-art img { transform: translate3d(var(--mx, 0), var(--my, 0), 0); }
-  body[data-hover="stroke"] .tile:hover .tile-art::after { opacity: 1; }
+  .tile:hover .tile-art img { transform: translate3d(var(--mx, 0), var(--my, 0), 0); }
+  body[data-hover="lift"] .tile:hover .tile-art { translate: 0 -6px; }
 }
 .m-snap { grid-column: span 7; }
 .m-quit { grid-column: span 5; }
@@ -141,22 +144,27 @@ body[data-brain="hide"] .t-shipped { grid-column: span 12; }
   .t-shipped .shelf .obj:nth-child(n+4) { display: none; }
   .q28-set .q28-phone { left: 30%; width: 40%; }
 }
-@media (prefers-reduced-motion: reduce) { .q28-breath i { animation: none !important; } }
+@media (prefers-reduced-motion: reduce) { .q28-circle i { animation: none !important; } }
 
-/* Quit28's circle needs a white halo to read on its blue tile. */
-.q28-set .q28-outer { background: radial-gradient(closest-side, rgba(255, 255, 255, .55) 60%, rgba(255, 255, 255, .18) 85%, transparent); }
-.q28-set .q28-breath { right: 0; top: 46%; width: 40%; }
-.q28-set .q28-cal { top: 22%; }
+/* Pictures: Close brings the products right up, cropped by the tile (lab). */
+body[data-zoom="close"] .m-snap-res { width: 66%; left: -6%; top: 22%; }
+body[data-zoom="close"] .m-snap-phone { width: 42%; right: 6%; top: 8%; }
+body[data-zoom="close"] .m-jump-a { width: 70%; left: 6%; top: 12%; }
+body[data-zoom="close"] .m-jump-b { width: 56%; left: auto; right: -4%; top: 30%; }
+body[data-zoom="close"] .m-jump-c { display: none; }
+body[data-zoom="close"] .m-brain-phone { width: 64%; left: 18%; top: 12%; }
+body[data-zoom="close"] .q28-set .q28-phone { left: 28%; top: 7%; width: 46%; }
+body[data-zoom="close"] .q28-set .q28-cal { left: -6%; top: 34%; width: 46%; }
+body[data-zoom="close"] .q28-set .q28-breath { right: -4%; top: 48%; width: 40%; }
+
 
 /* ───────── Contact (lab: Contact) ─────────
-   Big: as it was, with LinkedIn and X underneath. Quiet: a smaller heading, the email as a plain link.
-   One line: a label, then the email and the profiles on one line. */
-.socials { display: flex; justify-content: center; gap: 26px; margin-top: 28px; font-size: 15px; font-weight: 400; }
-.socials a { display: inline-flex; align-items: center; gap: 8px; color: var(--ink-2); transition: color .3s var(--ease); }
+   Big: as it was, with the LinkedIn and X logos underneath. Quiet: a smaller heading, the email as a plain link. */
+.socials { display: flex; justify-content: center; gap: 10px; margin-top: 26px; }
+.socials a { width: 44px; height: 44px; display: grid; place-items: center; border-radius: 50%; color: var(--ink-2); transition: color .3s var(--ease), background-color .3s var(--ease); }
+.socials a:hover { background: color-mix(in srgb, var(--ink) 6%, transparent); }
 .socials a:hover { color: var(--ink); }
-.socials .mark { width: 15px; height: 15px; background: currentColor; -webkit-mask-size: contain; mask-size: contain; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; -webkit-mask-position: center; mask-position: center; }
-.socials .arr { width: 10px; height: 10px; transition: transform .3s var(--ease); }
-.socials a:hover .arr { transform: translate(2px, -2px); }
+.socials .mark { width: 18px; height: 18px; background: currentColor; -webkit-mask-size: contain; mask-size: contain; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; -webkit-mask-position: center; mask-position: center; }
 body[data-contact="quiet"] .contact { padding: 120px var(--gutter) 110px; }
 body[data-contact="quiet"] .contact h2 { font-size: clamp(40px, 5vw, 64px); }
 body[data-contact="quiet"] .contact .sub { font-size: 16px; }
@@ -164,10 +172,3 @@ body[data-contact="quiet"] .email { padding: 0; background: none; color: var(--i
 body[data-contact="quiet"] .email::before, body[data-contact="quiet"] .email-icon { display: none; }
 body[data-contact="quiet"] .copy { height: 34px; padding: 0 12px; font-size: 13px; }
 body[data-contact="quiet"] .cta { margin-top: 26px; gap: 14px; }
-body[data-contact="line"] .contact { padding: 90px var(--gutter) 80px; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 12px 28px; }
-body[data-contact="line"] .contact h2 { flex-basis: 100%; font-size: clamp(30px, 3vw, 40px); }
-body[data-contact="line"] .contact .sub { display: none; }
-body[data-contact="line"] .cta { margin: 0; }
-body[data-contact="line"] .email { padding: 0; background: none; color: var(--ink); box-shadow: none; font-size: 16px; }
-body[data-contact="line"] .email::before, body[data-contact="line"] .email-icon, body[data-contact="line"] .copy { display: none; }
-body[data-contact="line"] .socials { margin: 0; }
