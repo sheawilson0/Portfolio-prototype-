@@ -13,29 +13,13 @@
 .film-frame { position: relative; overflow: hidden; border-radius: var(--radius-sm, 28px); background: #1a0680; aspect-ratio: 16 / 9; box-shadow: 0 30px 80px -30px rgba(30, 0, 90, .45); }
 .film.is-tall .film-frame { aspect-ratio: 4 / 5; }
 .film-frame video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; cursor: pointer; }
-.film-big { position: absolute; inset: 0; margin: auto; width: 84px; height: 84px; border-radius: 50%; border: 0; cursor: pointer;
-  background: rgba(255, 255, 255, .92); box-shadow: 0 14px 40px rgba(20, 0, 70, .35); transition: opacity .4s, transform .4s; }
-.film-big::before { content: ""; position: absolute; left: 34px; top: 27px; border-style: solid; border-width: 15px 0 15px 24px; border-color: transparent transparent transparent #1a0680; }
-.film.is-playing .film-big { opacity: 0; transform: scale(.8); pointer-events: none; }
-/* Controls like any video player: play, the scrubber, the time, and sound on or off. */
-.film-btn { flex: none; width: 36px; height: 36px; display: grid; place-items: center; border-radius: 50%; border: 0; cursor: pointer; color: var(--ink-2, rgba(10, 10, 10, .64)); background: color-mix(in srgb, var(--ink, #0a0a0a) 6%, transparent); transition: color .2s, background-color .2s; }
-.film-btn:hover { color: var(--ink, #0a0a0a); }
-.film-btn svg { width: 14px; height: 14px; }
-.film-btn .i-pause, .film-btn .i-muted { display: none; }
-.film.is-playing [data-play] .i-pause { display: block; }
-.film.is-playing [data-play] .i-play { display: none; }
-.film.is-muted [data-mute] .i-muted { display: block; }
-.film.is-muted [data-mute] .i-sound { display: none; }
-.film-btn:focus-visible, .film-big:focus-visible { outline: 2px solid #ed1652; outline-offset: 3px; }
-.film-scrub { display: flex; align-items: center; gap: 14px; margin-top: 14px; }
-.film-scrub input { flex: 1; -webkit-appearance: none; appearance: none; height: 22px; background: transparent; cursor: pointer; margin: 0; }
-.film-scrub input::-webkit-slider-runnable-track { height: 4px; border-radius: 2px; background: linear-gradient(90deg, #ed1652 var(--p, 0%), var(--hair, rgba(10, 10, 10, .12)) var(--p, 0%)); }
-.film-scrub input::-moz-range-track { height: 4px; border-radius: 2px; background: var(--hair, rgba(10, 10, 10, .12)); }
-.film-scrub input::-moz-range-progress { height: 4px; border-radius: 2px; background: #ed1652; }
-.film-scrub input::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; margin-top: -5px; border-radius: 50%; background: #ed1652; border: 0; box-shadow: 0 1px 4px rgba(0, 0, 0, .25); }
-.film-scrub input::-moz-range-thumb { width: 14px; height: 14px; border-radius: 50%; background: #ed1652; border: 0; }
-.film-scrub input:focus-visible { outline: 2px solid #ed1652; outline-offset: 4px; border-radius: 4px; }
-.film-time { font-size: 13px; font-variant-numeric: tabular-nums; color: var(--ink-2, rgba(10, 10, 10, .64)); min-width: 6.5em; text-align: right; }
+/* No player: the film loops on its own. Tap it, or the corner button, to turn the music on or off. */
+.film-sound { position: absolute; right: 16px; bottom: 16px; width: 40px; height: 40px; display: grid; place-items: center; border: 0; border-radius: 50%; cursor: pointer; color: #fff; background: rgba(10, 10, 10, .42); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); transition: background-color .2s, transform .2s; }
+.film-sound:hover { background: rgba(10, 10, 10, .6); transform: scale(1.06); }
+.film-sound svg { width: 16px; height: 16px; }
+.film-sound .i-muted, .film.is-muted .film-sound .i-sound { display: none; }
+.film.is-muted .film-sound .i-muted { display: block; }
+.film-sound:focus-visible { outline: 2px solid #ed1652; outline-offset: 3px; }
 
 .sn-film { padding-top: 100px; margin-top: 0; }
 .sn-case .film-frame { box-shadow: none; background: #0a0a0a; }

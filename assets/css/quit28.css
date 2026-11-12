@@ -1,4 +1,3 @@
 /* Quit28 reuses the current-product layout in snapshot.css. */
 .q28-case .sn-bar i { width: max(4px, calc(var(--v) / 173 * 100%)); }
-.q28-case .film-big::before { border-left-color: #0a0a0a; }
-.q28-case :is(.film-btn, .film-big, .film-scrub input):focus-visible { outline-color: var(--tone); }
+.q28-case .film-sound:focus-visible { outline-color: var(--tone); }
