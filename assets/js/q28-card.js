@@ -1,4 +1,4 @@
-/* Quit28, live, wherever there's a [data-q28-live]: the real Day 1 screen in an iPhone, the "Your 28 days"
+/* Quit28, live, wherever there's a [data-q28-live]: the real Day 1 screen in an iPhone mock-up, the "Your 28 days"
    calendar ticking off a day at a time, and the "Ride out a craving" circle breathing, floating on its own (4 seconds in, 4 out,
    three minutes). Each piece is built at the app's own sizes (Quit-Coach: journey.module.css miniCalendar,
    craving-timer.module.css) on a 520 × 540 stage, at the same scale as the phone screenshot, and the whole
@@ -10,7 +10,7 @@
   const RING = 2 * Math.PI * 131;
   document.querySelectorAll('[data-q28-live]').forEach((root) => {
     root.innerHTML = `<span class="art q28-stage">
-      <span class="q28-phone" style="--d:.4"><span class="q28-screen"><img src="assets/media/quit28/iphone-day-1-logged.webp" alt="Quit28 on an iPhone: Day 1 logged" loading="lazy" decoding="async"></span></span>
+      <img class="q28-phone" style="--d:.4" src="assets/media/home/quit28-iphone.webp" alt="Quit28 on an iPhone: Day 1 logged" loading="lazy" decoding="async">
       <span class="q28-float" style="--d:.7" aria-hidden="true">
         <span class="q28-breath"><svg class="q28-hug" viewBox="0 0 268 268"><circle cx="134" cy="134" r="131"/><circle class="q28-fill" cx="134" cy="134" r="131" stroke-dasharray="${RING}" stroke-dashoffset="${RING}"/></svg><i class="q28-outer"></i><i class="q28-inner"></i><span class="q28-words"><b>Breathe in</b><small>3:00</small></span></span>
       </span>

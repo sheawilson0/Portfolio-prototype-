@@ -29,16 +29,14 @@
 .q28-stage { --s: .64; --w: 520; --h: 500; height: 540px; }
 .q28-stage > * { transform-origin: 0 0; scale: var(--s); }
 /* iPhone 17 Pro: a 402 × 874 screen in a thin black bezel. */
-.q28-phone { left: 20px; top: 48px; width: 426px; height: 898px; padding: 12px; border-radius: 68px; background: #0b0c0e; box-shadow: inset 0 0 0 2px #3a3c40, 0 60px 90px rgba(0, 30, 70, .35); }
-.q28-screen { position: relative; display: block; height: 100%; border-radius: 56px; overflow: hidden; background: #f3f3ef; }
-.q28-screen::after { content: ""; position: absolute; left: 50%; top: 11px; width: 124px; height: 36px; translate: -50% 0; border-radius: 18px; background: #000; }
-.tile-art .q28-screen img, .q28-screen img { position: static; display: block; width: 100%; height: 100%; max-width: none; object-fit: cover; object-position: 50% 0; transform: none !important; }
-/* The craving timer's circles, floating on their own. Behind them (lab: Quit28 circle): a soft round frosted glow,
-   or the tile going pink in that corner. */
-.q28-float { right: 4px; left: auto; top: 36px; width: 360px; height: 360px; display: grid; place-items: center; transform-origin: 100% 0; }
-.q28-float::before { content: ""; position: absolute; inset: 2%; border-radius: 50%; pointer-events: none;
+/* The iPhone mock-up with the real Day 1 screen in it (assets/media/home/quit28-iphone.webp): a 402-wide screen. */
+.q28-phone { left: 14px; top: 44px; width: 438px; filter: drop-shadow(0 50px 50px rgba(0, 30, 70, .3)); }
+/* The craving timer's circles, floating on their own over the pink corner of the tile. Lab: Quit28 circle → White
+   glow puts a soft round white glow behind them. */
+.q28-float { right: 14px; left: auto; top: 262px; width: 360px; height: 360px; display: grid; place-items: center; transform-origin: 100% 0; }
+.q28-float::before { content: ""; position: absolute; inset: 2%; border-radius: 50%; pointer-events: none; display: none;
   background: radial-gradient(closest-side, rgba(255, 255, 255, .95) 52%, rgba(255, 255, 255, .5) 74%, rgba(255, 255, 255, 0)); }
-body[data-circle="pink"] .q28-float::before { inset: -45%; background: radial-gradient(closest-side, #ff4f9e, rgba(255, 79, 158, .55) 45%, rgba(255, 79, 158, 0)); }
+body[data-circle="glow"] .q28-float::before { display: block; }
 .q28-breath { position: relative; width: 256px; aspect-ratio: 1; display: grid; place-items: center; }
 .q28-breath > i { position: absolute; border-radius: 50%; scale: .82; }
 .q28-outer { inset: 0; background: color-mix(in srgb, var(--q-blue) 14%, #fff); }
@@ -51,7 +49,7 @@ body[data-circle="pink"] .q28-float::before { inset: -45%; background: radial-gr
 .q28-words b { font-size: 24px; font-weight: 800; letter-spacing: -.035em; line-height: 1.15; white-space: nowrap; }
 .q28-words small { font-size: 15px; font-weight: 700; font-variant-numeric: tabular-nums; color: rgba(10, 10, 10, .75); }
 /* "Your 28 days", with its pin. */
-.q28-cal { right: 22px; left: auto; top: 312px; width: 342px; padding: 22px 22px 18px; border-radius: 20px; background: #fff; rotate: 2.5deg; transform-origin: 100% 0; box-shadow: 0 2px 4px rgba(0, 0, 0, .05), 0 40px 70px rgba(0, 20, 60, .26); }
+.q28-cal { right: 22px; left: auto; top: 46px; width: 342px; padding: 22px 22px 18px; border-radius: 20px; background: #fff; rotate: 2.5deg; transform-origin: 100% 0; box-shadow: 0 2px 4px rgba(0, 0, 0, .05), 0 40px 70px rgba(0, 20, 60, .26); }
 .q28-pin { position: absolute; top: -14px; right: 26px; font-size: 30px; line-height: 1; rotate: 12deg; filter: drop-shadow(0 3px 2px rgba(0, 0, 0, .18)); }
 .q28-head { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
 .q28-head svg { width: 25px; height: 25px; flex: none; }
@@ -80,9 +78,9 @@ body[data-work="cards"] .mosaic { display: none; }
 .tile { --bg1: #eeeef1; --bg2: #e2e2e8; display: flex; flex-direction: column; gap: 14px; }
 .tile-art { position: relative; display: block; overflow: hidden; height: 540px; border-radius: 22px; corner-shape: squircle; isolation: isolate;
   background:
-    radial-gradient(90% 80% at 92% 108%, color-mix(in oklab, var(--bg2) 92%, transparent), transparent 70%),
-    radial-gradient(70% 60% at 0% 0%, color-mix(in oklab, var(--bg1) 72%, white), transparent 65%),
-    linear-gradient(165deg, var(--bg1), color-mix(in oklab, var(--bg1) 82%, black));
+    radial-gradient(90% 80% at var(--glow, 92% 108%), color-mix(in oklab, var(--bg2) 92%, transparent), transparent 70%),
+    radial-gradient(70% 60% at var(--light, 0% 0%), color-mix(in oklab, var(--bg1) 72%, white), transparent 65%),
+    linear-gradient(var(--fall, 165deg), var(--bg1), color-mix(in oklab, var(--bg1) 82%, black));
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, .22); transition: box-shadow .5s var(--ease), translate .5s var(--ease); }
 .tile-cap { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 10px; padding: 0 4px; font-size: 15px; color: var(--whisper); }
 .tile-cap b { font-weight: 400; color: var(--ink); white-space: nowrap; }
@@ -93,6 +91,12 @@ body[data-work="cards"] .mosaic { display: none; }
   .tile:hover .tile-art { box-shadow: inset 0 1px 0 rgba(255, 255, 255, .22), 0 26px 60px -10px color-mix(in srgb, var(--bg1, #000) 45%, transparent); }
   body[data-hover="tilt"] .tile-art > :is(.art, img, .shelf) { transform: perspective(1300px) rotateX(calc(var(--py, 0) * -6deg)) rotateY(calc(var(--px, 0) * 8deg)); }
 }
+/* Same gradient on every tile, but the second colour (--glow) and the light (--light) sit somewhere different. */
+.m-snap { --glow: 96% -8%; --light: 0% 100%; --fall: 20deg; }
+.m-quit { --glow: 104% 82%; --light: 0% 0%; }
+.m-jump { --glow: 6% 110%; --light: 100% 0%; --fall: 200deg; }
+.m-brain { --glow: 50% 112%; --light: 100% 0%; --fall: 190deg; }
+.m-ship { --glow: -6% -8%; --light: 100% 100%; --fall: 340deg; }
 .m-snap { grid-column: span 7; }
 .m-quit { grid-column: span 5; }
 .m-jump { grid-column: span 8; }
@@ -101,9 +105,13 @@ body[data-work="cards"] .mosaic { display: none; }
 .m-jump .tile-art, .m-brain .tile-art { height: 480px; }
 .m-photo .tile-art, .m-ship .tile-art { height: 380px; }
 /* Snapshot: the results card behind, the phone in front running off the bottom. */
+/* Snapshot: its own cards, the questions and three of the answers, not a phone (Quit28 next to it is one). */
 .m-snap .art { --w: 640; --h: 540; }
-.m-snap-res { width: 440px; left: -6px; top: 118px; rotate: -4deg; border-radius: 14px; box-shadow: 0 30px 60px rgba(20, 0, 80, .35); }
-.m-snap-phone { width: 250px; left: 396px; top: 52px; filter: drop-shadow(0 40px 50px rgba(20, 0, 80, .4)); }
+.m-snap .art > img { border-radius: 6px; box-shadow: 0 30px 60px rgba(20, 0, 80, .4); }
+.m-snap-ask { width: 290px; left: 30px; top: 54px; rotate: -4deg; }
+.m-snap-packs { width: 300px; left: 318px; top: 40px; rotate: 3deg; }
+.m-snap-num { width: 360px; left: 84px; top: 250px; rotate: -1.5deg; }
+.m-snap-money { width: 250px; left: 372px; top: 292px; rotate: 4deg; }
 /* JumpStart: the agency view, the client report and the export, fanned out. */
 .m-jump .art { --w: 840; --h: 480; }
 .m-jump-a { width: 437px; left: 34px; top: 48px; rotate: -4deg; border-radius: 10px; box-shadow: 0 30px 60px rgba(0, 30, 20, .4); }
@@ -116,8 +124,8 @@ body[data-work="cards"] .mosaic { display: none; }
 /* Cipher and Amp: one photo, a touch bigger than the tile so moving it never shows an edge. */
 .m-photo .tile-art img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; scale: 1.08; translate: calc(var(--px, 0) * -16px) calc(var(--py, 0) * -12px); }
 /* Shipped: the app icons from the latest ships, dropped on the tile. */
-.m-ship { --bg1: #1fb46a; --bg2: #43d9ff; }
-body[data-ship="yellow"] .m-ship { --bg1: #ffc928; --bg2: #ff8a3d; }
+.m-ship { --bg1: #ff7417; --bg2: #ff4a3d; }
+body[data-ship="green"] .m-ship { --bg1: #1fb46a; --bg2: #43d9ff; }
 .m-ship .tile-art { display: flex; align-items: center; justify-content: center; }
 .m-ship .shelf { display: flex; align-items: center; justify-content: center; }
 .m-ship .shelf > :not(.obj-icon) { display: none; }
@@ -154,8 +162,10 @@ body[data-brain="hide"] .t-shipped { grid-column: span 12; }
   /* Tighter stages, so the products fill a phone-width tile. */
   .m-snap .tile-art { height: min(96vw, 420px); }
   .m-snap .art { --w: 400; --h: 420; }
-  .m-snap-res { width: 300px; left: -14px; top: 150px; }
-  .m-snap-phone { width: 188px; left: 206px; top: 38px; }
+  .m-snap-ask { width: 220px; left: 6px; top: 28px; }
+  .m-snap-packs { width: 220px; left: 176px; top: 64px; }
+  .m-snap-num { width: 270px; left: 12px; top: 204px; }
+  .m-snap-money { width: 190px; left: 200px; top: 262px; }
   .m-jump .tile-art { height: auto; aspect-ratio: 840 / 560; }
 }
 @media (max-width: 700px) {
@@ -178,14 +188,16 @@ body[data-contact="quiet"] .contact .sub { font-size: 16px; }
 body[data-contact="quiet"] .email { padding: 0; background: none; color: var(--ink); box-shadow: none; font-size: 18px; text-decoration: underline; text-decoration-color: var(--hair); text-underline-offset: 5px; }
 body[data-contact="quiet"] .email::before { display: none; }
 body[data-contact="quiet"] .email-icon { width: 17px; height: 17px; }
-/* Quiet: email, LinkedIn and X as three equal links in one row. Big: the email button, logos underneath. */
-.socials .name { display: none; }
+/* Quiet: the email, then the one handle with the LinkedIn and X logos. Big: the email button, logos underneath. */
+.socials .handle { display: none; }
 body[data-contact="quiet"] :is(.cta, .socials) { display: inline-flex; vertical-align: middle; margin: 30px 0 0; }
-body[data-contact="quiet"] .socials { gap: 0; }
+body[data-contact="quiet"] .socials { align-items: center; gap: 0; margin-left: 10px; }
+body[data-contact="quiet"] .socials a { width: 38px; height: 38px; padding: 0; justify-content: center; }
+body[data-contact="quiet"] .socials .handle { display: inline; order: -1; margin-right: 4px; font-size: 17px; color: var(--ink-2); }
 body[data-contact="quiet"] :is(.email, .socials a) { display: inline-flex; align-items: center; gap: 9px; width: auto; height: auto; padding: 8px 14px; border-radius: 999px; font-size: 17px; color: var(--ink); text-decoration: none; transition: background-color .3s var(--ease); }
 body[data-contact="quiet"] :is(.email, .socials a):hover { background: color-mix(in srgb, var(--ink) 6%, transparent); }
 body[data-contact="quiet"] .socials .mark { width: 16px; height: 16px; }
-body[data-contact="quiet"] .socials .name { display: inline; }
+
 
 /* At night the tiles' colour is dimmed, so it sits in the dark page instead of glaring. Only the colour: the
    pictures on top paint over this layer and stay as they are. */
