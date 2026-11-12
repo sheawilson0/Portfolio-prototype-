@@ -46,10 +46,10 @@
 .st-h1 { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .street { position: relative; height: 100svh; display: grid; grid-template-rows: 1fr auto; padding-top: 72px; }
 
-.st-track { list-style: none; display: flex; align-items: center; gap: 8px; padding: 0 var(--gutter); overflow-x: auto; overflow-y: hidden; scrollbar-width: none;
-  cursor: grab; overscroll-behavior-x: contain; transition: filter .35s var(--ease); }
+.st-track { list-style: none; display: flex; align-items: center; gap: 8px; padding: 0 calc(50% - 120px); overflow-x: auto; overflow-y: hidden; scrollbar-width: none;
+  cursor: grab; -webkit-user-select: none; user-select: none; overscroll-behavior-x: contain; transition: filter .35s var(--ease); }
 .st-track::-webkit-scrollbar { display: none; }
-.st-track.is-dragging { cursor: grabbing; user-select: none; }
+.st-track.is-dragging { cursor: grabbing; }
 .st-item { --near: 1; position: relative; flex: none; width: 240px; height: 430px; display: flex; flex-direction: column; justify-content: flex-start; align-items: center; text-align: center; transition: opacity .35s var(--ease); }
 .st-hit { position: absolute; inset: 0; z-index: 2; border-radius: 20px; cursor: inherit; -webkit-tap-highlight-color: transparent; }
 .st-hit:focus-visible { outline: 2px solid var(--hi); outline-offset: 4px; }
@@ -95,16 +95,15 @@ body[data-small="small"] .st-item.is-minor .st-p { display: none; }
 /* ───────── The bar: filter and search bottom left, the scrubber in the middle ───────── */
 .st-bar { display: grid; grid-template-columns: 1fr auto 1fr; align-items: end; gap: 20px; padding: 0 24px 24px; transition: filter .35s var(--ease); }
 .st-tools { position: relative; justify-self: start; display: flex; z-index: 20; }
-/* Frosted split pills: round on the outside, nearly square where they meet. */
-.st-pill { height: 38px; display: inline-flex; align-items: center; gap: 3px; padding: 0 11px 0 15px; font-size: 16px; font-weight: 500; color: var(--st-nav);
+/* Frosted squircle buttons, the same shape as the menu and search panel. */
+.st-pill { height: 40px; display: inline-flex; align-items: center; gap: 3px; padding: 0 12px 0 16px; border-radius: 15px; corner-shape: squircle; font-size: 16px; font-weight: 500; color: var(--st-nav);
   background: var(--pill); -webkit-backdrop-filter: blur(14px) saturate(1.8) brightness(1.12); backdrop-filter: blur(14px) saturate(1.8) brightness(1.12);
   box-shadow: inset 0 0 0 .5px rgb(255 255 255 / .35); transition: background-color .2s var(--ease), scale .2s var(--ease); }
 .st-pill:hover { background: var(--pill-on); }
 .st-pill:active { scale: .96; }
 .st-pill:focus-visible { outline: 2px solid var(--hi); outline-offset: 2px; }
 .st-pill svg { width: 16px; height: 16px; transition: rotate .35s var(--ease); }
-.st-pill.is-l { border-radius: 19px 5px 5px 19px / 50% 5px 5px 50%; }
-.st-pill.is-r { width: 46px; justify-content: center; padding: 0; margin-left: 3px; border-radius: 5px 19px 19px 5px / 5px 50% 50% 5px; }
+.st-pill.is-r { width: 40px; justify-content: center; padding: 0; margin-left: 6px; }
 .st-pill.is-r svg { width: 17px; height: 17px; }
 .st-pill[aria-expanded="true"] svg { rotate: 180deg; }
 /* The menu grows out of the pill's corner, stretched and leaning at first, then settles with a little give. */
@@ -121,7 +120,7 @@ body[data-small="small"] .st-item.is-minor .st-p { display: none; }
 .st-mi { width: 18px; height: 18px; display: grid; place-items: center; flex: none; }
 .st-mi svg { width: 17px; height: 17px; }
 .st-mi img { width: 18px; height: 18px; border-radius: 5px; }
-@supports not (corner-shape: squircle) { .st-menu { border-radius: 24px; } }
+@supports not (corner-shape: squircle) { .st-menu { border-radius: 24px; } .st-pill { border-radius: 12px; } }
 
 /* ───────── Search: a frosted panel in the middle, everything else blurred behind it ───────── */
 .st-search { position: fixed; inset: 0; z-index: 70; display: grid; justify-items: center; align-content: start; padding: 16vh 16px 0;
@@ -153,7 +152,7 @@ body:has(.is-searching) .nav { filter: blur(10px); transition: filter .35s var(-
 .st-thumb.is-wraps svg { width: 16px; height: 16px; opacity: .7; }
 
 /* ───────── The scrubber ───────── */
-.st-ticks { display: flex; align-items: flex-end; gap: 5px; height: 38px; padding-top: 16px; cursor: ew-resize; touch-action: none; }
+.st-ticks { display: flex; align-items: flex-end; gap: 5px; height: 38px; padding-top: 16px; cursor: ew-resize; touch-action: none; -webkit-user-select: none; user-select: none; }
 .st-tick { --base: 8px; position: relative; width: 2px; height: calc(var(--base) + var(--lift, 0) * 12px); border-radius: 1px;
   background: color-mix(in srgb, var(--ink) calc(18% + var(--lift, 0) * 26%), transparent); transition: height .35s cubic-bezier(.3, 1.6, .5, 1), background-color .2s var(--ease); }
 .st-tick.is-month { --base: 13px; }
@@ -163,6 +162,7 @@ body:has(.is-searching) .nav { filter: blur(10px); transition: filter .35s var(-
 @media (max-width: 700px) {
   .street { padding-top: 64px; }
   .st-item { width: 200px; }
+  .st-track { padding: 0 calc(50% - 100px); }
   .st-bar { grid-template-columns: auto 1fr; gap: 14px; padding: 0 16px 18px; }
   .st-ticks { gap: 4px; justify-self: end; }
   .st-search { padding-top: 9vh; }

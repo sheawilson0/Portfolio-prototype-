@@ -120,9 +120,9 @@
   }
 
   /* ───────── /shipped/ ─────────
-     Like Peng's timeline: one row, oldest on the left, newest on the right where it opens. The "focus" is a line
-     that slides across the screen as you scroll (left edge at the start, right edge at the end), so whatever is
-     under it is the one in focus at both ends. Bottom left: a filter menu and search, in frosted split pills. */
+     Like Peng's timeline: one row, oldest on the left, newest on the right where it opens. The one in the middle
+     of the screen is the one in focus; the row has half a screen of room at each end so the first and last can
+     reach the middle. Bottom left: a filter menu and search, in frosted squircle buttons. */
   const ICON = {
     all: '<path d="M3 3h4v4H3zM9 3h4v4H9zM3 9h4v4H3zM9 9h4v4H9z" stroke-linejoin="round"/>',
     personal: '<path d="M8 2.5l1.4 3.6 3.6 1.4-3.6 1.4L8 12.5 6.6 8.9 3 7.5l3.6-1.4z" stroke-linejoin="round"/>',
@@ -243,17 +243,15 @@
       });
     }
 
-    // The focus line: at the left edge when scrolled to the start, the right edge at the end.
-    const span = () => Math.max(1, track.scrollWidth - track.clientWidth);
-    const line = () => track.scrollLeft * (1 + track.clientWidth / span());
+    // The focus line is the middle of the screen.
+    const line = () => track.scrollLeft + track.clientWidth / 2;
     const mid = (el) => el.offsetLeft + el.offsetWidth / 2;
     let opened = null, steer = null;
     // Going to something by click or key "steers": the open card waits until we arrive.
     const go = (el, smooth = true) => {
       if (!el) return;
       steer = smooth && !reduced ? el : null;
-      const left = Math.max(0, Math.min(span(), mid(el) / (1 + track.clientWidth / span())));
-      track.scrollTo({ left, behavior: steer ? 'smooth' : 'auto' });
+      track.scrollTo({ left: mid(el) - track.clientWidth / 2, behavior: steer ? 'smooth' : 'auto' });
     };
     function open(el) {
       if (opened === el) return;
