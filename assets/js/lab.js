@@ -8,14 +8,15 @@
     ['small', 'Small updates', [['hide', 'Hidden', 1], ['small', 'Smaller']]],
   ] : [
     ['work', 'Work', [['mosaic', 'Mosaic', 1], ['cards', 'Cards']]],
-    ['hover', 'Hover', [['glow', 'Layers', 1], ['tilt', 'Layers + tilt'], ['lift', 'Layers + lift']]],
-    ['zoom', 'Pictures', [['wide', 'Wide', 1], ['close', 'Close']]],
+    ['hover', 'Hover', [['glow', 'Layers', 1], ['tilt', 'Layers + tilt']]],
+    ['circle', 'Quit28 circle', [['glow', 'Frosted glow', 1], ['pink', 'Pink corner']]],
+    ['ship', 'Shipped', [['green', 'Green', 1], ['yellow', 'Yellow']]],
     ['q28', 'Quit28 (cards)', [['now', 'As now'], ['live', 'Live', 1]]],
-    ['contact', 'Contact', [['big', 'Big', 1], ['quiet', 'Quiet']]],
+    ['contact', 'Contact', [['big', 'Big'], ['quiet', 'Quiet', 1]]],
     ['copy', 'Card words (cards)', [['full', 'Full'], ['lean', 'Lean', 1]]],
   ];
   if (!ROWS.length) return;
-  const KEY = street ? 'street-lab' : 'home-lab';
+  const KEY = street ? 'street-lab' : 'home-lab-2'; // home-lab-2: picks changed 12 Nov, start everyone on them
   const get = (k) => { try { return JSON.parse(localStorage.getItem(KEY) || '{}')[k]; } catch (e) { return null; } };
   const set = (k, v) => { try { const o = JSON.parse(localStorage.getItem(KEY) || '{}'); o[k] = v; localStorage.setItem(KEY, JSON.stringify(o)); } catch (e) {} };
   const apply = (k, v) => { document.body.dataset[k] = v; };
