@@ -39,20 +39,27 @@
      Now it's one fixed click (made once), ticks queue a few ms apart instead of being dropped, and every
      press or key wakes the sound again if the browser has put it to sleep. */
   let ctx = null, clicks = null, nextAt = 0;
-  function makeClick(freq) {
-    const len = Math.round(ctx.sampleRate * .03), buf = ctx.createBuffer(1, len, ctx.sampleRate), d = buf.getChannelData(0);
-    let seed = 7;
+  // A soft detent, like a dial clicking past a notch: a low knock with a gentle click on top and a breath of
+  // texture, eased in over half a millisecond so it has no hard edge. Made once and played the same every time.
+  function makeClick(tone) {
+    const sr = ctx.sampleRate, len = Math.round(sr * .045), buf = ctx.createBuffer(1, len, sr), d = buf.getChannelData(0);
+    let seed = 7, grain = 0, peak = 0;
     for (let i = 0; i < len; i++) {
-      const t = i / ctx.sampleRate;
+      const t = i / sr;
       seed = (seed * 16807) % 2147483647;
-      const grit = (seed / 2147483647 * 2 - 1) * Math.exp(-t * 900) * .5; // a hair of noise for the edge
-      d[i] = (Math.sin(2 * Math.PI * freq * t) * Math.exp(-t * 260) + grit) * .16;
+      grain += ((seed / 2147483647) * 2 - 1 - grain) * .3; // softened noise, no hiss
+      const ease = t < .0006 ? .5 - .5 * Math.cos(Math.PI * t / .0006) : 1;
+      d[i] = ease * (Math.sin(2 * Math.PI * 470 * tone * t) * Math.exp(-t * 150)
+        + .5 * Math.sin(2 * Math.PI * 1750 * tone * t) * Math.exp(-t * 480)
+        + .35 * grain * Math.exp(-t * 900));
+      peak = Math.max(peak, Math.abs(d[i]));
     }
+    for (let i = 0; i < len; i++) d[i] *= .11 / peak;
     return buf;
   }
   function tick(times = 1, month = false) {
     if (!ctx || ctx.state !== 'running') return;
-    clicks = clicks || { plain: makeClick(2600), month: makeClick(1900) };
+    clicks = clicks || { plain: makeClick(1), month: makeClick(.86) };
     const now = ctx.currentTime;
     nextAt = Math.max(nextAt, now + .005);
     for (let i = 0; i < Math.min(times, 4); i++) {
@@ -60,7 +67,7 @@
       const src = ctx.createBufferSource();
       src.buffer = month && i === 0 ? clicks.month : clicks.plain;
       src.connect(ctx.destination); src.start(nextAt);
-      nextAt += .032;
+      nextAt += .038;
     }
   }
   // Browsers only allow sound after a press or key, and can put it back to sleep (a tab in the background,
@@ -133,6 +140,8 @@
         </li>`;
       }).join('');
       items = [...track.children];
+      // After the newest, an empty lot: the street carries on, so the newest in the middle isn't the end of the page.
+      items.at(-1)?.insertAdjacentHTML('beforeend', '<span class="st-next" aria-hidden="true"><time>Next</time><span class="st-stand"><span class="st-lot"></span></span><span class="st-p">In the works</span></span>');
       // One tick per ship; the first of each month stands taller and carries its name.
       let month = '';
       let lastLabel = -9;
@@ -291,7 +300,7 @@
       filters.querySelectorAll('[data-kind]').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
       render();
     });
-    new MutationObserver(() => render()).observe(document.body, { attributes: true, attributeFilter: ['data-newest', 'data-small', 'data-card'] });
+    new MutationObserver(() => render()).observe(document.body, { attributes: true, attributeFilter: ['data-newest', 'data-small'] });
     render(decodeURIComponent(location.hash.slice(1)));
   }
 })();
