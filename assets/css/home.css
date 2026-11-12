@@ -31,12 +31,8 @@
 /* iPhone 17 Pro: a 402 × 874 screen in a thin black bezel. */
 /* The iPhone mock-up with the real Day 1 screen in it (assets/media/home/quit28-iphone.webp): a 402-wide screen. */
 .q28-phone { left: 14px; top: 44px; width: 438px; filter: drop-shadow(0 50px 50px rgba(0, 30, 70, .3)); }
-/* The craving timer's circles, floating on their own over the pink corner of the tile. Lab: Quit28 circle → White
-   glow puts a soft round white glow behind them. */
+/* The craving timer's circles, floating on their own over the pink corner of the tile. */
 .q28-float { right: -22px; left: auto; top: 262px; width: 360px; height: 360px; display: grid; place-items: center; transform-origin: 100% 0; }
-.q28-float::before { content: ""; position: absolute; inset: 2%; border-radius: 50%; pointer-events: none; display: none;
-  background: radial-gradient(closest-side, rgba(255, 255, 255, .95) 52%, rgba(255, 255, 255, .5) 74%, rgba(255, 255, 255, 0)); }
-body[data-circle="glow"] .q28-float::before { display: block; }
 .q28-breath { position: relative; width: 256px; aspect-ratio: 1; display: grid; place-items: center; }
 .q28-breath > i { position: absolute; border-radius: 50%; scale: .82; }
 .q28-outer { inset: 0; background: color-mix(in srgb, var(--q-blue) 14%, #fff); }
@@ -74,11 +70,14 @@ body[data-q28="live"] .t-quit .media.q-live { display: block; }
 /* ───────── Work as a mosaic (after raylight.app) ─────────
    Colour tiles, the product big, a name and a few words underneath. The tile never moves. On hover its
    coloured shadow comes up and the pictures inside move apart in layers, the back ones against the pointer and
-   the front ones with it (--d, eased by q28-card.js). Lab: Hover → Layers + tilt is the old cards' way. */
+   the front ones with it (--d, eased by q28-card.js), and the whole picture tilts a little, like the old cards.
+   Lab: Mosaic tiles → Glass puts them in the old cards' smoky glass; Space between tiles → As before. */
 body[data-work="mosaic"] .work { display: none; }
 body[data-work="cards"] .mosaic { display: none; }
 .mosaic { position: relative; z-index: 6; max-width: 1380px; margin: -150px auto 0; padding: 0 var(--gutter) 110px; display: grid; grid-template-columns: repeat(12, 1fr); gap: 64px 24px; }
 .tile { --bg1: #eeeef1; --bg2: #e2e2e8; display: flex; flex-direction: column; gap: 16px; }
+body[data-gap="tight"] .mosaic { gap: 40px 16px; }
+body[data-gap="tight"] .tile { gap: 14px; }
 .tile-art { position: relative; display: block; overflow: hidden; height: 540px; border-radius: 22px; corner-shape: squircle; isolation: isolate;
   background:
     radial-gradient(90% 80% at var(--glow, 92% 108%), color-mix(in oklab, var(--bg2) 92%, transparent), transparent 70%),
@@ -92,7 +91,7 @@ body[data-work="cards"] .mosaic { display: none; }
 .art > * { position: absolute; display: block; max-width: none; translate: calc(var(--px, 0) * var(--d, 0) * 44px) calc(var(--py, 0) * var(--d, 0) * 32px); }
 @media (hover: hover) {
   .tile:hover .tile-art { box-shadow: inset 0 1px 0 rgba(255, 255, 255, .22), 0 26px 60px -10px color-mix(in srgb, var(--bg1, #000) 45%, transparent); }
-  body[data-hover="tilt"] .tile-art > :is(.art, img, .shelf) { transform: perspective(1300px) rotateX(calc(var(--py, 0) * -6deg)) rotateY(calc(var(--px, 0) * 8deg)); }
+  .tile-art > :is(.art, img, .shelf) { transform: perspective(1300px) rotateX(calc(var(--py, 0) * -6deg)) rotateY(calc(var(--px, 0) * 8deg)); }
 }
 /* Same gradient on every tile, but the second colour (--glow) and the light (--light) sit somewhere different. */
 .m-snap { --glow: 96% -8%; --light: 0% 100%; --fall: 20deg; }
@@ -108,10 +107,22 @@ body[data-work="cards"] .mosaic { display: none; }
 .m-jump .tile-art, .m-brain .tile-art { height: 480px; }
 .m-photo .tile-art, .m-ship .tile-art { height: 380px; }
 /* Snapshot: the results card behind, the phone in front running off the bottom. */
-/* Snapshot: the results card behind, the phone in front running off the bottom. */
 .m-snap .art { --w: 640; --h: 540; }
 .m-snap-res { width: 440px; left: -6px; top: 118px; rotate: -4deg; border-radius: 14px; box-shadow: 0 30px 60px rgba(20, 0, 80, .35); }
 .m-snap-phone { width: 250px; left: 396px; top: 52px; filter: drop-shadow(0 40px 50px rgba(20, 0, 80, .4)); }
+/* Snapshot's phone and Quit28's are different phones, so they shouldn't meet in the middle of the row. Lab: Two
+   phones flips one tile, its picture and its gradient.
+   Only side by side: on a phone the tiles stack. */
+@media (min-width: 901px) {
+  body[data-phones="snap"] .m-snap { --glow: 4% -8%; --light: 100% 100%; --fall: 340deg; }
+  body[data-phones="snap"] .m-snap-res { left: 206px; rotate: 4deg; }
+  body[data-phones="snap"] .m-snap-phone { left: -6px; }
+  body[data-phones="quit"] .m-quit { --glow: -4% 82%; --light: 100% 0%; --fall: 195deg; }
+  body[data-phones="quit"] .q28-phone { left: 226px; }
+  body[data-phones="quit"] .q28-float { left: -22px; right: auto; transform-origin: 0 0; }
+  body[data-phones="quit"] .q28-cal { left: 22px; right: auto; rotate: -6deg; transform-origin: 0 0; }
+  body[data-phones="quit"] .q28-pin { left: 26px; right: auto; rotate: -12deg; }
+}
 /* JumpStart: the agency view, the client report and the export, fanned out. */
 .m-jump .art { --w: 840; --h: 480; }
 .m-jump-a { width: 437px; left: 34px; top: 48px; rotate: -4deg; border-radius: 10px; box-shadow: 0 30px 60px rgba(0, 30, 20, .4); }
@@ -124,16 +135,15 @@ body[data-work="cards"] .mosaic { display: none; }
 /* Cipher and Amp: one photo, a touch bigger than the tile so moving it never shows an edge. */
 .m-photo .tile-art img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; scale: 1.08; translate: calc(var(--px, 0) * -16px) calc(var(--py, 0) * -12px); }
 /* Shipped: the app icons from the latest ships, dropped on the tile. */
-.m-ship { --bg1: #ffc21f; --bg2: #ff8a1f; }
-body[data-ship="orange"] .m-ship { --bg1: #ff7417; --bg2: #ff4a3d; }
-/* Yellow mixed with black goes olive, so this tile shades and dims towards a warm brown instead. */
-.m-ship { --shade: #c2410c; }
+/* Yellow mixed with black goes olive, so it shades and dims towards a warm brown instead. Lab: Shipped colour. */
+.m-ship { --bg1: #ffc21f; --bg2: #ff8a1f; --shade: #c2410c; }
 .m-ship .tile-art::before { background: #3a1200; }
 [data-theme="dark"] .m-ship .tile-art::before { opacity: .14; }
-/* The ship emoji is drawn cut off at its back end, so it sails in from the tile's right edge. */
-.ship-mark { position: absolute; right: -.04em; top: 50%; font-size: 230px; line-height: 1; filter: drop-shadow(0 26px 30px rgba(120, 50, 0, .35));
-  translate: calc(var(--px, 0) * -24px) calc(-50% + var(--py, 0) * 30px); }
-body[data-shipart="ship"] .m-ship .shelf, body[data-shipart="icons"] .ship-mark { display: none; }
+body[data-ship="red"] .m-ship { --bg1: #ff3d2e; --bg2: #ff8a65; --shade: #7a0d00; }
+body[data-ship="silver"] .m-ship { --bg1: #eceef2; --bg2: #c3c8d4; --shade: #5d6372; }
+body[data-ship="ink"] .m-ship { --bg1: #22252d; --bg2: #4b5263; --shade: #000; }
+[data-theme="dark"] body[data-ship="silver"] .m-ship .tile-art::before { background: #05070b; opacity: .45; }
+[data-theme="dark"] body[data-ship="ink"] .m-ship .tile-art::before { opacity: 0; }
 .m-ship .tile-art { display: flex; align-items: center; justify-content: center; }
 .m-ship .shelf { display: flex; align-items: center; justify-content: center; }
 .m-ship .shelf > :not(.obj-icon) { display: none; }
@@ -164,6 +174,7 @@ body[data-brain="hide"] .t-shipped { grid-column: span 12; }
 
 @media (max-width: 900px) {
   .mosaic { gap: 44px 12px; }
+  body[data-gap="tight"] .mosaic { gap: 30px 12px; }
   .m-snap, .m-quit, .m-jump, .m-brain, .m-photo, .m-ship { grid-column: span 12; }
   .tile-art, .m-jump .tile-art, .m-brain .tile-art { height: min(110vw, 460px); }
   .m-photo .tile-art, .m-ship .tile-art { height: min(80vw, 340px); }
@@ -204,6 +215,25 @@ body[data-contact="quiet"] :is(.email, .socials a) { display: inline-flex; align
 body[data-contact="quiet"] :is(.email, .socials a):hover { background: color-mix(in srgb, var(--ink) 6%, transparent); }
 body[data-contact="quiet"] .socials .mark { width: 16px; height: 16px; }
 
+
+/* ───────── Glass tiles (lab: Mosaic tiles → Glass) ─────────
+   The mosaic in the old cards' smoky glass: the page colour behind, each tile's two colours as soft light
+   showing through, and a border lit where the pointer is (--rx/--ry from q28-card.js). Hover turns the light up
+   and tints the border with the tile's colour. */
+@property --lit { syntax: '<number>'; inherits: true; initial-value: 0; }
+body[data-tiles="glass"] .tile-art { --rimc: var(--glass-edge); --lit: var(--bleed-rest); border: 1px solid transparent;
+  background:
+    radial-gradient(60% 55% at var(--glow, 92% 108%), color-mix(in srgb, var(--bg2) calc(var(--lit) * 70%), transparent), transparent) padding-box,
+    radial-gradient(65% 60% at var(--light, 0% 0%), color-mix(in srgb, var(--bg1) calc(var(--lit) * 62%), transparent), transparent) padding-box,
+    radial-gradient(50% 45% at 50% 55%, color-mix(in srgb, var(--bg1) calc(var(--lit) * 26%), transparent), transparent) padding-box,
+    linear-gradient(var(--glass), var(--glass)) padding-box,
+    linear-gradient(var(--bg), var(--bg)) padding-box,
+    radial-gradient(260px circle at var(--rx, 50%) var(--ry, -400px), var(--rimc), var(--glass-edge) 72%) border-box;
+  box-shadow: var(--shadow-rest); transition: box-shadow .9s var(--ease), --rimc .6s var(--ease), --lit 1s var(--ease); }
+body[data-tiles="glass"] .tile-art::before { display: none; }
+@media (hover: hover) {
+  body[data-tiles="glass"] .tile:hover .tile-art { --rimc: color-mix(in srgb, var(--bg1) 75%, white); --lit: var(--bleed-hover); box-shadow: var(--shadow-hover); }
+}
 
 /* At night the tiles' colour is dimmed, so it sits in the dark page instead of glaring. Only the colour: the
    pictures on top paint over this layer and stay as they are. */

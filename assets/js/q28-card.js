@@ -3,7 +3,8 @@
    three minutes). Each piece is built at the app's own sizes (Quit-Coach: journey.module.css miniCalendar,
    craving-timer.module.css) on a 520 × 540 stage, at the same scale as the phone screenshot, and the whole
    stage is scaled to the tile. Runs while it's on screen; still with reduced motion.
-   Also, for every mosaic tile: fits each stage to its tile, and eases the pointer into --px/--py for the layered hover. */
+   Also, for every mosaic tile: fits each stage to its tile, eases the pointer into --px/--py for the layered hover,
+   and gives the glass tiles' lit border the pointer's spot (--rx/--ry). */
 (() => {
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const PLAN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M7 3v4M17 3v4M3 10h18M7 14h2M13 14h2M7 17h2"/></svg>';
@@ -93,6 +94,7 @@
     t.el.addEventListener('pointermove', (e) => {
       const r = t.el.getBoundingClientRect();
       t.tx = (e.clientX - r.left) / r.width - .5; t.ty = (e.clientY - r.top) / r.height - .5;
+      t.el.style.setProperty('--rx', `${(e.clientX - r.left).toFixed(0)}px`); t.el.style.setProperty('--ry', `${(e.clientY - r.top).toFixed(0)}px`);
       raf ||= requestAnimationFrame(frame);
     });
     t.el.addEventListener('pointerleave', () => { t.tx = 0; t.ty = 0; raf ||= requestAnimationFrame(frame); });
