@@ -283,3 +283,61 @@ body[data-contact="quiet"] .socials .mark { width: 16px; height: 16px; }
 .tile-art::before { content: ""; position: absolute; inset: 0; background: #05070b; opacity: 0; pointer-events: none; transition: opacity .6s var(--ease); }
 [data-theme="dark"] .tile-art::before { opacity: .3; }
 [data-theme="dark"] .tile-art { box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .05); }
+
+/* Amp's card: the floating screens from its own page, no photo behind them, so it fills the card like the others. */
+body:is([data-copy="cap"], [data-copy="lean"]) .work .t-amp .media { inset: 0; border-radius: 0; overflow: visible; }
+.work .t-amp .media img { object-fit: contain; transform: scale(1.16); }
+.item.is-hot.t-amp .media img { transform: scale(1.22) rotate(-2deg); }
+
+/* ───────── Horizon (lab) ─────────
+   Other readings of the arc. All of them keep the same two layers, the ring (.corona) and the disc over it.
+   None. Wide horizon: a far bigger circle, so the curve is nearly flat, like the edge of the earth from high up.
+   Rim of light: only a thin lit line along that curve. Soft band: no edge at all, a blurred arc of light.
+   Sun and eclipse: a whole small circle above the headline, a pale sun by day and a black moon with its ring at night. */
+body[data-arc="none"] .eclipse { display: none; }
+body[data-arc="wide"] .eclipse { width: 340vw; left: calc(50% - 170vw); top: 78%; }
+body[data-arc="wide"] .corona { inset: -3.2%; opacity: .75; }
+body[data-arc="rim"] .eclipse { width: 220vw; left: calc(50% - 110vw); top: 74%; }
+body[data-arc="rim"] .corona { inset: -1.1%; opacity: 1; }
+body[data-arc="rim"] .disc { box-shadow: 0 -1px 0 rgb(255 255 255 / .75); }
+[data-theme="dark"] body[data-arc="rim"] .disc { box-shadow: 0 -1px 0 rgb(255 255 255 / .35); }
+body[data-arc="band"] .disc { display: none; }
+body[data-arc="band"] .eclipse { width: 150vw; left: calc(50% - 75vw); top: 40%; }
+body[data-arc="band"] .corona { inset: 0; opacity: .5;
+  -webkit-mask: radial-gradient(closest-side, transparent 70%, #000 86%, transparent 100%); mask: radial-gradient(closest-side, transparent 70%, #000 86%, transparent 100%); }
+[data-theme="dark"] body[data-arc="band"] .eclipse { opacity: .3; }
+body[data-arc="sun"] .eclipse { --d: 136px; width: var(--d); left: calc(50% - var(--d) / 2); top: 4px; }
+body[data-arc="sun"] .corona { inset: -22%; opacity: .6; }
+body.home[data-arc="sun"] .disc { background: radial-gradient(closest-side, #fff 62%, rgb(255 255 255 / .55) 82%, transparent 100%); }
+[data-theme="dark"] body.home[data-arc="sun"] .disc { background: #04060d; }
+[data-theme="dark"] body[data-arc="sun"] .corona { opacity: 1; }
+@media (max-width: 700px) {
+  body[data-arc="wide"] .eclipse { width: 420vw; left: calc(50% - 210vw); }
+  body[data-arc="rim"] .eclipse { width: 300vw; left: calc(50% - 150vw); }
+  body[data-arc="sun"] .eclipse { --d: 104px; top: 30px; }
+}
+/* Ring colour (lab): the brand rainbow, or the sky's own light: warm at sunrise, pearl white round the moon. */
+body[data-ring="sky"] .corona { background: conic-gradient(from 0deg, #ffd08a, #ff9d6e 60deg, #ffc9d8 120deg, #fff1d2 180deg, #ffb07c 240deg, #ffd9e4 300deg, #ffd08a); }
+[data-theme="dark"] body[data-ring="sky"] .corona { background: conic-gradient(from 0deg, #fff, #a9c1ff 70deg, #f3f6ff 140deg, #7f9cf0 210deg, #fff 280deg, #c9d6ff 330deg, #fff); }
+
+/* Words (lab). Airy: black at 64%. Sky ink: the Shipped street's navy, so the quieter words take the sky's tint
+   instead of going grey. Firmer: the same black, stronger. */
+body.home[data-words="navy"] { --ink: #18233a; --ink-2: rgb(24 35 58 / .78); --whisper: rgb(24 35 58 / .6); }
+[data-theme="dark"] body.home[data-words="navy"] { --ink: #edf2fa; --ink-2: rgb(237 242 250 / .78); --whisper: rgb(237 242 250 / .58); }
+body.home[data-words="firm"] { --ink-2: color-mix(in srgb, var(--ink) 84%, transparent); --whisper: color-mix(in srgb, var(--ink) 72%, transparent); }
+
+/* Nav (lab). Shape: the pill, or the Shipped street's frosted squircle with no stroke. Words: drop About, or leave
+   only my name. Theme button: hide it (D still switches). The pill narrows by whatever was taken out. */
+body[data-nav="tile"] .nav-pill { border: 0; border-radius: 19px; corner-shape: squircle; background: rgb(243 247 252 / .42); box-shadow: 0 12px 40px rgb(20 40 80 / .1);
+  -webkit-backdrop-filter: blur(16px) saturate(1.8) brightness(1.12); backdrop-filter: blur(16px) saturate(1.8) brightness(1.12); }
+[data-theme="dark"] body[data-nav="tile"] .nav-pill { background: rgb(40 60 105 / .38); }
+@supports not (corner-shape: squircle) { body[data-nav="tile"] .nav-pill { border-radius: 16px; } }
+body[data-navw="two"] .links a[href="#about"], body[data-navw="name"] .links a, body[data-tt="hide"] .theme-toggle { display: none; }
+@media (min-width: 701px) {
+  body[data-navw="two"] { --cut-w: 66px; } body[data-navw="name"] { --cut-w: 204px; } body[data-tt="hide"] { --cut-t: 62px; }
+  body[data-navw="name"][data-tt="hide"] { --cut-t: 120px; }
+  body.home .nav { --cut: calc(var(--cut-w, 0px) + var(--cut-t, 0px)); }
+  body.home .nav.is-scrolled .nav-pill { width: calc(var(--pill-w, 460px) - var(--cut)); }
+  body.home .nav.is-scrolled .logo { transform: translate3d(calc(var(--logo-shift, 0px) + var(--cut) / 2), 0, 0); }
+  body.home .nav.is-scrolled .links { transform: translate3d(calc(-1 * var(--links-shift, 0px) - var(--cut) / 2), 0, 0); }
+}
