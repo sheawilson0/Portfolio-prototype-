@@ -1,28 +1,34 @@
 /* sheawilson.uk/links
    One list of links. Visitors land on DEFAULT_STYLE; the others are easter eggs:
-     Eclipse → tap the coin in the footer, tap the name three times, or type the Konami code → Arcade
+     Sky → tap the coin in the footer, tap the name three times, or type the Konami code → Arcade
      Arcade → Game over → back to DEFAULT_STYLE
-   To change the front door, change DEFAULT_STYLE ('eclipse' or 'arcade'). Any style can also be linked
+   To change the front door, change DEFAULT_STYLE ('sky' or 'arcade'). Any style can also be linked
    directly with ?style=arcade. The lab bar only appears with ?lab on the live site. */
 (() => {
   const root = document.documentElement;
   const app = document.getElementById('app');
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const DEFAULT_STYLE = 'eclipse'; // or 'arcade'
+  const DEFAULT_STYLE = 'sky'; // or 'arcade'
+  // Tonight's moon, as the homepage draws it (site.js): how far the lit edge reaches across, on the right while it's waxing.
+  const MOON = (() => {
+    const syn = 29.530588853, age = ((Date.now() / 864e5 - 10962.76) % syn + syn) % syn, lit = (1 - Math.cos(2 * Math.PI * age / syn)) / 2;
+    return (age < syn / 2 ? -1 : 1) * Math.max(.14, lit);
+  })();
+  root.style.setProperty('--moon', MOON.toFixed(3));
 
   /* ───────── Links ─────────
      hidden: kept here, never shown (YouTube waits until there's something on it).
      extra: suggestions, switchable from the lab bar so they can be judged with and without. */
   const LINKS = [
-    { id: 'portfolio', label: 'Portfolio', short: 'Portfolio', sub: 'sheawilson.uk', href: 'https://sheawilson.uk', icon: 'ring', palette: 'portfolio', featured: true, status: 'Boarding' },
-    { id: 'linkedin', social: true, label: 'LinkedIn', short: 'LinkedIn', sub: 'in/sheawilson0', href: 'https://www.linkedin.com/in/sheawilson0/', icon: 'linkedin', palette: 'linkedin', tone: '#0a66c2', status: 'On time' },
-    { id: 'instagram', social: true, label: 'Instagram', short: 'Instagram', sub: '@sheawilson0', href: 'https://www.instagram.com/sheawilson0/', icon: 'instagram', palette: 'instagram', tone: '#e1306c', status: 'On time' },
-    { id: 'x', social: true, label: 'X', short: 'X', sub: '@sheawilson0', href: 'https://x.com/sheawilson0', icon: 'x', palette: 'x', tone: 'var(--ink)', status: 'On time' },
-    { id: 'github', social: true, label: 'GitHub', short: 'GitHub', sub: '@sheawilson0', href: 'https://github.com/sheawilson0', icon: 'github', palette: 'github', tone: 'var(--ink)', status: 'On time' },
-    { id: 'threads', label: 'Threads', short: 'Threads', sub: '@sheawilson0', href: 'https://www.threads.net/@sheawilson0', icon: 'threads', palette: 'x', tone: 'var(--ink)', status: 'Soon', hidden: true },
-    { id: 'youtube', label: 'YouTube', short: 'YouTube', sub: '@sheawilson0', href: 'https://www.youtube.com/@sheawilson0', icon: 'youtube', palette: 'youtube', tone: '#ff0033', status: 'Soon', hidden: true },
-    { id: 'email', label: 'Email me', short: 'Email', sub: 'design@sheawilson.uk', href: 'mailto:design@sheawilson.uk', icon: 'mail', palette: 'email', tone: '#ff6a1a', status: 'Open', extra: true },
-    { id: 'world', label: 'Walk through my work in 3D', tile: '3D walkthrough', short: 'In 3D', sub: 'sheawilson.uk/ar', href: 'https://sheawilson.uk/ar/world.html', icon: 'cube', palette: 'world', tone: '#8a3cff', status: 'Open', extra: true },
+    { id: 'portfolio', label: 'Portfolio', short: 'Portfolio', sub: 'sheawilson.uk', href: 'https://sheawilson.uk', icon: 'ring' },
+    { id: 'linkedin', social: true, label: 'LinkedIn', short: 'LinkedIn', sub: 'in/sheawilson0', href: 'https://www.linkedin.com/in/sheawilson0/', icon: 'linkedin', tone: '#0a66c2' },
+    { id: 'instagram', social: true, label: 'Instagram', short: 'Instagram', sub: '@sheawilson0', href: 'https://www.instagram.com/sheawilson0/', icon: 'instagram', tone: '#e1306c' },
+    { id: 'x', social: true, label: 'X', short: 'X', sub: '@sheawilson0', href: 'https://x.com/sheawilson0', icon: 'x', tone: 'var(--ink)' },
+    { id: 'github', social: true, label: 'GitHub', short: 'GitHub', sub: '@sheawilson0', href: 'https://github.com/sheawilson0', icon: 'github', tone: 'var(--ink)' },
+    { id: 'threads', label: 'Threads', short: 'Threads', sub: '@sheawilson0', href: 'https://www.threads.net/@sheawilson0', icon: 'threads', tone: 'var(--ink)', hidden: true },
+    { id: 'youtube', label: 'YouTube', short: 'YouTube', sub: '@sheawilson0', href: 'https://www.youtube.com/@sheawilson0', icon: 'youtube', tone: '#ff0033', hidden: true },
+    { id: 'email', label: 'Email me', short: 'Email', sub: 'design@sheawilson.uk', href: 'mailto:design@sheawilson.uk', icon: 'mail', tone: '#ff6a1a', extra: true },
+    { id: 'world', label: 'Walk through my work in 3D', tile: '3D walkthrough', short: 'In 3D', sub: 'sheawilson.uk/ar', href: 'https://sheawilson.uk/ar/world.html', icon: 'cube', tone: '#8a3cff', extra: true },
   ];
   const PHOTO = '/links/shea-320.webp';
 
@@ -42,12 +48,10 @@
   const attrs = (l) => `href="${esc(l.href)}"${/^https?:/.test(l.href) ? ' target="_blank" rel="noopener"' : ''}`;
   const icon = (name, cls = 'ico') => {
     const i = ICONS[name];
-    if (i.ring) return `<span class="${cls} ring-mark" aria-hidden="true"></span>`;
+    if (i.ring) return `<span class="${cls} sun-mark" aria-hidden="true"></span>`;
     if (i.stroke) return `<svg class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="${i.stroke}"/></svg>`;
     return `<svg class="${cls}" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="${i.fill}"/></svg>`;
   };
-  const ARROW = '<svg class="arr" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.5l5-5M4.5 3.5h4v4"/></svg>';
-  const pad2 = (n) => String(n).padStart(2, '0');
   // Recent work: the homepage's four "Recently" projects. Snapshot and JumpStart are the homepage's mockups
   // rebuilt in miniature (JumpStart swaps to its dark screens after dark); the other two are single images.
   const W = '/links/work/';
@@ -62,61 +66,20 @@
     { name: 'Brain Dump', note: 'In beta', href: 'https://sheawilson.uk/braindump.html', tone: '#8a3cff',
       art: `<span class="mk mk-one mk-tall"><img src="${W}brain.webp" alt="" loading="lazy"></span>` },
   ];
-  const RECENT = [['#ed1652', 'Smoking Snapshot'], ['#00a7fa', 'Quit28'], ['#4fae86', 'JumpStart'], ['#8a3cff', 'Brain Dump']];
 
-  /* ───────── Theme: follows the visitor's system setting ─────────
-     No toggle. The lab can switch to Sun (light by day, dark after dusk, same sunrise maths as assets/js/sky.js). */
-  const PLACES = {
-    'Europe/London': [53.5, -2.5], 'Europe/Dublin': [53.35, -6.26], 'Europe/Paris': [48.86, 2.35], 'Europe/Berlin': [52.52, 13.4],
-    'Europe/Madrid': [40.42, -3.7], 'Europe/Rome': [41.9, 12.5], 'Europe/Amsterdam': [52.37, 4.9], 'Europe/Stockholm': [59.33, 18.07],
-    'Europe/Lisbon': [38.72, -9.14], 'Europe/Warsaw': [52.23, 21.01], 'America/New_York': [40.71, -74], 'America/Chicago': [41.88, -87.63],
-    'America/Denver': [39.74, -104.99], 'America/Los_Angeles': [34.05, -118.24], 'America/Toronto': [43.65, -79.38], 'America/Vancouver': [49.28, -123.12],
-    'America/Sao_Paulo': [-23.55, -46.63], 'Asia/Tokyo': [35.68, 139.69], 'Asia/Singapore': [1.35, 103.82], 'Asia/Dubai': [25.2, 55.27],
-    'Asia/Kolkata': [19.08, 72.88], 'Asia/Shanghai': [31.23, 121.47], 'Australia/Sydney': [-33.87, 151.21], 'Australia/Melbourne': [-37.81, 144.96],
-    'Pacific/Auckland': [-36.85, 174.76], 'Africa/Johannesburg': [-26.2, 28.05],
-  };
-  const rad = Math.PI / 180;
-  function sunIsUp() {
-    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
-    const [lat, lon] = PLACES[tz] || [45, -new Date().getTimezoneOffset() / 4];
-    const wall = (ms) => {
-      const p = Object.fromEntries(new Intl.DateTimeFormat('en-GB', { timeZone: tz, hourCycle: 'h23', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })
-        .formatToParts(ms).map((x) => [x.type, x.value]));
-      return { min: +p.hour * 60 + +p.minute, y: +p.year, m: +p.month, d: +p.day };
-    };
-    const w = wall(Date.now());
-    const n = Math.ceil(Date.UTC(w.y, w.m - 1, w.d, 12) / 864e5 + 2440587.5 - 2451545 + .0008);
-    const J = n - lon / 360;
-    const M = (357.5291 + .98560028 * J) % 360;
-    const C = 1.9148 * Math.sin(M * rad) + .02 * Math.sin(2 * M * rad) + .0003 * Math.sin(3 * M * rad);
-    const L = (M + C + 180 + 102.9372) % 360;
-    const transit = 2451545 + J + .0053 * Math.sin(M * rad) - .0069 * Math.sin(2 * L * rad);
-    const dec = Math.asin(Math.sin(L * rad) * Math.sin(23.44 * rad));
-    const cosW = (Math.sin(-.833 * rad) - Math.sin(lat * rad) * Math.sin(dec)) / (Math.cos(lat * rad) * Math.cos(dec));
-    const h = Math.acos(Math.max(-1, Math.min(1, cosW))) / rad / 360;
-    const at = (jd) => wall((jd - 2440587.5) * 864e5).min;
-    // The portfolio's sky fades through twilight and turns dark about 20 minutes after sunset (and light
-    // about 20 minutes before sunrise), so the two pages agree when someone taps through.
-    const rise = at(transit - h) - 20, set = at(transit + h) + 20;
-    return rise <= set ? w.min >= rise && w.min < set : w.min >= rise || w.min < set;
-  }
-  const deviceDark = matchMedia('(prefers-color-scheme: dark)');
-  function isDark() {
-    if (state.theme === 'light') return false;
-    if (state.theme === 'dark') return true;
-    if (state.theme === 'device') return deviceDark.matches;
-    return !sunIsUp();
-  }
-  // Returns true when the theme changed, so styles that paint canvases can redraw.
-  function applyTheme() {
-    const dark = isDark(), was = root.dataset.theme === 'dark';
-    if (dark) root.dataset.theme = 'dark'; else delete root.dataset.theme;
-    return dark !== was;
+  /* ───────── Theme: the homepage's sky ─────────
+     assets/js/sky.js (in <head>) follows the sun where the visitor is and sets light or dark, the same as the
+     homepage; D and Shift+D, or the homepage's toggle, hold it. Its street colours paint this page's sky. */
+  function paintSky() {
+    const L = window.__sky?.street?.();
+    if (L) [['--sky-top', L.top], ['--sky-mid', L.mid], ['--sky-low', L.low], ['--sky-sun', L.glow], ['--sky-sun-a', L.ga.toFixed(2)]]
+      .forEach(([k, v]) => document.body.style.setProperty(k, v));
+    syncMeta();
   }
   function syncMeta() {
     const s = STYLES[state.style], dark = root.dataset.theme === 'dark';
-    const colour = s.themed ? (dark ? '#05070b' : '#ffffff') : typeof s.meta === 'function' ? s.meta(dark) : s.meta;
-    document.querySelector('meta[name="theme-color"]').setAttribute('content', colour);
+    const colour = s.meta ? s.meta(dark) : document.body.style.getPropertyValue('--sky-top') || '#9ec0e9';
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', colour);
   }
 
   /* ───────── Easter eggs ─────────
@@ -146,61 +109,45 @@
     if (konami === KONAMI.length) { konami = 0; if (state.style !== 'arcade') go('arcade'); }
   });
 
-  // Hovering a link borrows its colours for the ring (the homepage does this with its projects).
-  function wirePalette(scope, target) {
-    scope.querySelectorAll('[data-palette]').forEach((a) => {
-      const on = () => { target.dataset.palette = a.dataset.palette; };
-      const off = () => { delete target.dataset.palette; };
-      a.addEventListener('pointerenter', on); a.addEventListener('focus', on);
-      a.addEventListener('pointerleave', off); a.addEventListener('blur', off);
-    });
-  }
-
-  /* ═════════ 1. Eclipse: the portfolio, as a link page ═════════ */
-  /* Eclipse, settled 2026-09-30: the eclipse rises in the header, name first, the socials as a row of
-     brand-coloured icons, Portfolio across the width, Email and 3D as two tiles, then recent work. No arrows:
-     the whole card is the button. The lab still compares card finishes (none with hairlines) and work layouts. */
-  const eclipseRing = () => `<div class="ec-eclipse" aria-hidden="true"><div class="corona"></div><div class="disc"></div></div>`;
-  const linkAttrs = (l) => `${attrs(l)} data-id="${l.id}" data-palette="${l.palette}" style="--tone:${l.tone || '#ed1652'}"`;
-  const GRID_ICON = '<svg class="ec-label-ico" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><rect x="1.75" y="1.75" width="5" height="5" rx="1.6"/><rect x="9.25" y="1.75" width="5" height="5" rx="1.6"/><rect x="1.75" y="9.25" width="5" height="5" rx="1.6"/><rect x="9.25" y="9.25" width="5" height="5" rx="1.6"/></svg>';
+  /* ═════════ 1. Sky: the homepage, as a link page ═════════
+     Settled 2026-11-14 to match the homepage: its sky behind everything (sky.js, following the sun), the sun up
+     in it (tonight's moon after dark), frosted panes like the homepage's work cards, recent work as a peek row,
+     and the coin in the footer for Arcade. No arrows: the whole card is the button. */
+  const linkAttrs = (l) => `${attrs(l)} data-id="${l.id}" style="--tone:${l.tone || '#ed1652'}"`;
   const IG_GRADIENT = '<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="ig-grad" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#feda75"/><stop offset=".3" stop-color="#fa7e1e"/><stop offset=".6" stop-color="#d62976"/><stop offset="1" stop-color="#4f5bd5"/></linearGradient></defs></svg>';
-  const ecWork = () => `<section class="ec-work work-${state.work}" aria-labelledby="ec-work-title">
-    <div class="ec-label"><h2 id="ec-work-title">${GRID_ICON}Recent work</h2><a href="https://sheawilson.uk/#work" target="_blank" rel="noopener">All work</a></div>
-    <ul class="ec-rail">${WORK.map((w, i) => `<li style="--i:${i}"><a class="ec-shot" href="${w.href}" target="_blank" rel="noopener" style="--tone:${w.tone}">
-      <span class="ec-shot-img">${w.art}</span>
-      <span class="ec-shot-txt"><b>${w.name}</b><span>${w.note}</span></span></a></li>`).join('')}</ul></section>`;
+  const skWork = () => `<section class="sk-work" aria-labelledby="sk-work-title">
+    <div class="sk-label"><h2 id="sk-work-title">Recent work</h2><a href="https://sheawilson.uk/#work" target="_blank" rel="noopener">All work</a></div>
+    <ul class="sk-rail">${WORK.map((w, i) => `<li style="--i:${i}"><a class="sk-shot" href="${w.href}" target="_blank" rel="noopener" style="--tone:${w.tone}">
+      <span class="sk-shot-img pane">${w.art}</span>
+      <span class="sk-cap"><b>${w.name}</b><span>${w.note}</span></span></a></li>`).join('')}</ul></section>`;
 
-  const eclipse = {
-    name: 'Eclipse', themed: true,
+  const sky = {
+    name: 'Sky',
     render: (links) => {
       const socials = links.filter((l) => l.social);
       const [feat, ...after] = links.filter((l) => !l.social);
       return `${IG_GRADIENT}
-      <div class="ec-page cards-${state.cards}">
-        <div class="ec-band">
-          ${eclipseRing()}
-          <header class="ec-head">
-            <span class="ec-photo"><img src="${PHOTO}" srcset="/links/shea-160.webp 160w, /links/shea-320.webp 320w, /links/shea-480.webp 480w" sizes="120px" alt="Shea Wilson" width="240" height="240"></span>
-            <h1 data-egg>Shea Wilson</h1>
-            <p class="ec-role">Design engineer. Always making <em>something.</em></p>
-          </header>
-        </div>
-        <main class="ec">
-          <ul class="ec-icons">${socials.map((l, i) => `<li style="--i:${i}"><a class="ec-icon" ${linkAttrs(l)} aria-label="${esc(l.label)}, ${esc(l.sub)}" title="${esc(l.label)}">${icon(l.icon)}</a></li>`).join('')}</ul>
-          ${feat ? `<a class="ec-link is-featured" ${linkAttrs(feat)} style="--i:4"><span class="ec-ico">${icon(feat.icon)}</span><span class="ec-txt"><b>${esc(feat.label)}</b><span>${esc(feat.sub)}</span></span></a>` : ''}
-          <ul class="ec-grid">${after.map((l, i) => `<li style="--i:${i + 5}"><a class="ec-link ec-tile" ${linkAttrs(l)}>
-            <span class="ec-ico">${icon(l.icon)}</span><span class="ec-txt"><b>${esc(l.tile || l.label)}</b><span>${esc(l.sub)}</span></span></a></li>`).join('')}</ul>
-          ${ecWork()}
-          <footer class="ec-foot"><span>© ${new Date().getFullYear()} Shea Wilson</span><button class="coin" type="button" title="Insert coin" aria-label="Insert coin"><i></i></button></footer>
+      <div class="sk-page">
+        <span class="sk-orb" aria-hidden="true"></span>
+        <header class="sk-head">
+          <span class="sk-photo"><img src="${PHOTO}" srcset="/links/shea-160.webp 160w, /links/shea-320.webp 320w, /links/shea-480.webp 480w" sizes="120px" alt="Shea Wilson" width="240" height="240"></span>
+          <h1 data-egg>Shea Wilson</h1>
+          <p class="sk-role">Design engineer. Always making <em>something.</em></p>
+        </header>
+        <main class="sk">
+          <ul class="sk-icons">${socials.map((l, i) => `<li style="--i:${i}"><a class="sk-icon pane" ${linkAttrs(l)} aria-label="${esc(l.label)}, ${esc(l.sub)}" title="${esc(l.label)}">${icon(l.icon)}</a></li>`).join('')}</ul>
+          ${feat ? `<a class="sk-link pane is-featured" ${linkAttrs(feat)}><span class="sk-ico">${icon(feat.icon)}</span><span class="sk-txt"><b>${esc(feat.label)}</b><span>${esc(feat.sub)}</span></span></a>` : ''}
+          <ul class="sk-grid">${after.map((l, i) => `<li style="--i:${i + 5}"><a class="sk-link pane sk-tile" ${linkAttrs(l)}>
+            <span class="sk-ico">${icon(l.icon)}</span><span class="sk-txt"><b>${esc(l.tile || l.label)}</b><span>${esc(l.sub)}</span></span></a></li>`).join('')}</ul>
+          ${skWork()}
+          <footer class="sk-foot"><span>© ${new Date().getFullYear()} Shea Wilson</span><button class="coin" type="button" title="Insert coin" aria-label="Insert coin"><i></i></button></footer>
         </main>
       </div>`;
     },
-    // The page wrapper carries the hover palette, so the eclipse takes the colours of whatever link is under the pointer.
-    mount(el) { wirePalette(el, el.querySelector('.ec-page')); wireName(el); wireCoin(el); },
+    mount(el) { wireName(el); wireCoin(el); },
   };
 
   /* ═════════ 2. Arcade: a start menu ═════════ */
-  const SPECTRUM = ['#ed1652', '#ff6a1a', '#ffb22c', '#43d9ff', '#8a3cff', '#3a17e0'];
   const BAYER = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5].map((v) => (v + .5) / 16);
   const hex = (h) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16));
 
@@ -282,7 +229,7 @@
         store('links-arcade-sound', arcadeSound() ? 'off' : 'on'); syncSound(); wakeAudio();
         setTimeout(() => beep(SFX.on), 30);
       });
-      el.querySelector('.ar-coin').addEventListener('click', () => { wakeAudio(); setTimeout(() => beep(SFX.coin), 30); setTimeout(() => go(DEFAULT_STYLE === 'arcade' ? 'eclipse' : DEFAULT_STYLE), 380); });
+      el.querySelector('.ar-coin').addEventListener('click', () => { wakeAudio(); setTimeout(() => beep(SFX.coin), 30); setTimeout(() => go(DEFAULT_STYLE === 'arcade' ? 'sky' : DEFAULT_STYLE), 380); });
       const select = (i, focus) => {
         i = (i + items.length) % items.length;
         if (i !== sel) beep(SFX.move);
@@ -302,22 +249,21 @@
       };
       addEventListener('keydown', onKey);
 
-      // The eclipse again, at 48 pixels: a dithered corona round a disc (black by night, white by day), turning a notch at a time.
+      // The Sky page's sun at 48 pixels, its glow dithered and shimmering a notch at a time. By night, tonight's
+      // moon: lit where a copy of the disc shifted by MOON doesn't cover it, the way the homepage's inset shadow draws it.
       const sun = el.querySelector('.ar-sun'), sx = sun.getContext('2d');
-      const img = sx.createImageData(48, 48), cols = SPECTRUM.map(hex), disc = night ? [0, 0, 0] : [255, 255, 255];
+      const img = sx.createImageData(48, 48), cols = (night ? ['#c9d6ff', '#6f86d6'] : ['#ffd76a', '#ff9a2e']).map(hex);
+      const lit = night ? [241, 238, 227] : [255, 246, 214], unlit = [30, 27, 68], shift = MOON * 26;
       let turn = 0;
       const drawSun = () => {
         const d = img.data;
         for (let y = 0; y < 48; y++) for (let x = 0; x < 48; x++) {
           const dx = x - 23.5, dy = y - 23.5, r = Math.hypot(dx, dy), k = (y * 48 + x) * 4;
           let c = null;
-          if (r < 13) c = disc;
+          if (r < 13) c = !night || Math.hypot(dx - shift, dy) >= 13 ? lit : unlit;
           else if (r < 23.5) {
-            const glow = Math.pow(1 - (r - 13) / 10.5, 1.4);
-            if (glow > BAYER[(y % 4) * 4 + (x % 4)]) {
-              const a = ((Math.atan2(dy, dx) / (Math.PI * 2) + 1 + turn) % 1) * cols.length;
-              c = cols[Math.floor(a) % cols.length];
-            }
+            const glow = Math.pow(1 - (r - 13) / 10.5, night ? 2.2 : 1.4);
+            if (glow > BAYER[((y + turn) % 4) * 4 + (x % 4)]) c = glow > .45 ? cols[0] : cols[1];
           }
           if (c) { d[k] = c[0]; d[k + 1] = c[1]; d[k + 2] = c[2]; d[k + 3] = 255; } else d[k + 3] = 0;
         }
@@ -335,7 +281,7 @@
         skyW = innerWidth;
         sky.width = Math.ceil(innerWidth / 4); sky.height = Math.ceil(Math.max(innerHeight, screen.height) / 4);
         const W = sky.width, H = sky.height;
-        stars = Array.from({ length: Math.round(W * H / 260) }, () => ({ x: Math.random() * W | 0, y: Math.random() * H | 0, p: Math.random() * 6, c: Math.random() < .15 ? SPECTRUM[Math.random() * 6 | 0] : '#ffffff' }));
+        stars = Array.from({ length: Math.round(W * H / 260) }, () => ({ x: Math.random() * W | 0, y: Math.random() * H | 0, p: Math.random() * 6, c: Math.random() < .15 ? (Math.random() < .5 ? '#c9d6ff' : '#ffd76a') : '#ffffff' }));
         clouds = Array.from({ length: Math.max(4, Math.round(W / 40)) }, () => ({ x: Math.random() * W, y: 6 + Math.random() * H * .8 | 0, w: 14 + Math.random() * 22 | 0, v: .15 + Math.random() * .25 }));
       };
       const cloud = (c, W) => {
@@ -357,7 +303,7 @@
       const loop = (t) => {
         raf = requestAnimationFrame(loop);
         if (t - last < 110) return; // about nine frames a second: the steps are the point
-        last = t; turn = (turn + 1 / 48) % 1; drawSun(); drawSky(t);
+        last = t; turn = (turn + 1) % 4; drawSun(); drawSky(t);
       };
       drawSun(); drawSky(0);
       if (!reduced) raf = requestAnimationFrame(loop);
@@ -365,7 +311,7 @@
     },
   };
 
-  const STYLES = { eclipse, arcade };
+  const STYLES = { sky, arcade };
 
   /* ───────── State and the lab bar ───────── */
   const params = new URLSearchParams(location.search);
@@ -377,14 +323,11 @@
   // Options: [value, label].
   const OPTIONS = {
     style: Object.keys(STYLES).map((k) => [k, STYLES[k].name]),
-    cards: [['lifted', 'Lifted'], ['glow', 'Top light'], ['tinted', 'Tinted'], ['hairline', 'Hairline']],
-    work: [['rail', 'Peek row'], ['wide', 'One at a time'], ['grid', 'Two by two'], ['list', 'List']],
-    theme: [['device', 'System'], ['light', 'Light'], ['dark', 'Dark'], ['sun', 'Sun']],
   };
   // DEFAULTS is what visitors get; PICKS are my recommendations (the green dots in the lab).
-  const DEFAULTS = { style: DEFAULT_STYLE, cards: 'lifted', work: 'rail', theme: 'device', extras: '1' };
+  const DEFAULTS = { style: DEFAULT_STYLE, extras: '1' };
   const PICKS = { ...DEFAULTS };
-  const LABELS = { style: 'Style', cards: 'Cards', work: 'Recent work', theme: 'Theme' };
+  const LABELS = { style: 'Style' };
   const valid = (k, v) => OPTIONS[k].some(([o]) => o === v);
   let savedLab = {};
   try { savedLab = showLab ? JSON.parse(saved('links-lab') || '{}') : {}; } catch (e) {}
@@ -397,12 +340,12 @@
 
   function draw() {
     teardown?.(); teardown = null;
-    applyTheme();
+    drawnDark = root.dataset.theme === 'dark';
     const s = STYLES[state.style];
     document.body.dataset.style = state.style;
     app.innerHTML = s.render(LINKS.filter((l) => !l.hidden && (state.extras === '1' || !l.extra)));
     teardown = s.mount?.(app) || null;
-    syncMeta();
+    paintSky();
     syncLab();
   }
   const transition = (fn) => { if (!document.startViewTransition || reduced) fn(); else document.startViewTransition(fn); };
@@ -424,17 +367,17 @@
     transition(top);
   }
 
-  // The sun moves on without a reload; the device setting can change under us too.
-  const recheck = () => { if (applyTheme()) transition(draw); };
-  setInterval(recheck, 60000);
-  deviceDark.addEventListener('change', recheck);
-  addEventListener('visibilitychange', () => { if (!document.hidden) recheck(); });
+  // sky.js repaints as the sun moves (and on D); Arcade draws its day or night once, so it's redrawn when that flips.
+  let drawnDark = null;
+  document.addEventListener('sky:paint', () => {
+    paintSky();
+    if (state.style === 'arcade' && (root.dataset.theme === 'dark') !== drawnDark) transition(draw);
+  });
 
   let lab = null;
   function syncLab() {
     if (!lab) return;
     lab.querySelectorAll('button[data-k]').forEach((b) => b.setAttribute('aria-pressed', String(state[b.dataset.k] === b.dataset.v)));
-    lab.querySelectorAll('[data-only]').forEach((row) => { row.hidden = row.dataset.only !== state.style; });
   }
   if (showLab) {
     root.classList.add('has-lab');
@@ -442,10 +385,9 @@
     lab.className = 'lab';
     lab.setAttribute('role', 'toolbar');
     lab.setAttribute('aria-label', 'Try a style');
-    const ECLIPSE_ONLY = ['cards', 'work'];
-    const group = (k) => `<span class="lab-group"${ECLIPSE_ONLY.includes(k) ? ' data-only="eclipse"' : ''}><span class="lab-tag">${LABELS[k]}</span>${OPTIONS[k].map(([v, name], i) =>
+    const group = (k) => `<span class="lab-group"><span class="lab-tag">${LABELS[k]}</span>${OPTIONS[k].map(([v, name], i) =>
       `<button type="button" data-k="${k}" data-v="${v}"${v === PICKS[k] ? ' class="rec"' : ''}${k === 'style' ? ` title="${name} (${i + 1})"` : ''}>${name}</button>`).join('')}</span>`;
-    lab.innerHTML = `<div class="lab-row">${group('style')}</div><div class="lab-row is-sub">${group('cards')}</div><div class="lab-row is-sub">${group('work')}${group('theme')}</div>`;
+    lab.innerHTML = `<div class="lab-row">${group('style')}</div>`;
     document.body.append(lab);
     lab.addEventListener('click', (e) => {
       const b = e.target.closest('button[data-k]');
