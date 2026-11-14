@@ -138,11 +138,20 @@
     if (!reduce && 'IntersectionObserver' in window) {
       new IntersectionObserver(entries => {
         for (const e of entries) {
-          if (e.isIntersecting && e.intersectionRatio >= 0.5) { if (video.paused) play(); }
+          if (!document.hidden && e.isIntersecting && e.intersectionRatio >= 0.5) { if (video.paused) play(); }
           else if (!video.paused) video.pause();
         }
       }, { threshold: [0, 0.5] }).observe(root);
     }
+    let resume = false;
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) { resume = !video.paused; video.pause(); }
+      else if (resume) {
+        resume = false;
+        const r = root.getBoundingClientRect();
+        if (Math.min(r.bottom, innerHeight) - Math.max(r.top, 0) >= r.height * .5) play();
+      }
+    });
     root.film = { video, tracks, setSources, setSpeed, tall, drift, get restarts() { return restarts; } };
     setState();
     root.dispatchEvent(new CustomEvent('film:ready'));

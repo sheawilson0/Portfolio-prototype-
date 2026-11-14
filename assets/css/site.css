@@ -176,6 +176,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
           mask: radial-gradient(closest-side, #000 75%, rgba(0, 0, 0, .86) 79%, rgba(0, 0, 0, .58) 84%, rgba(0, 0, 0, .3) 89%, rgba(0, 0, 0, .11) 94%, transparent 100%); }
 .disc { position: absolute; z-index: 5; inset: 0; border-radius: 50%; background: var(--bg); will-change: transform; transition: background-color .6s var(--ease); }
 [data-theme="dark"] .corona { opacity: .92; }
+.motion-paused, .motion-paused::before { animation-play-state: paused !important; }
 @keyframes turn { to { transform: rotate(1turn); } }
 
 .hero-copy { position: absolute; z-index: 4; left: 50%; top: 36%; width: min(90vw, 940px); translate: -50% -50%; text-align: center; will-change: transform; }

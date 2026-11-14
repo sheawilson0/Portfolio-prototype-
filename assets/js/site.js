@@ -103,8 +103,8 @@
     else if (pill && hs.p < .78 && scrollY < geo.sceneTop + geo.sceneLen) setPill(false);
     if (!hs.inView) return moving;
 
-    const nx = fine && pointer.seen ? clamp(pointer.x / innerWidth * 2 - 1, -1, 1) : 0;
-    const ny = fine && pointer.seen ? clamp(pointer.y / innerHeight * 2 - 1, -1, 1) : 0;
+    const nx = fine && !reduced && pointer.seen ? clamp(pointer.x / innerWidth * 2 - 1, -1, 1) : 0;
+    const ny = fine && !reduced && pointer.seen ? clamp(pointer.y / innerHeight * 2 - 1, -1, 1) : 0;
     const px = lerp(hs.px, nx, .06), py = lerp(hs.py, ny, .06);
     if (Math.abs(px - hs.px) + Math.abs(py - hs.py) > .0005) moving = true;
     hs.px = px; hs.py = py;
@@ -159,10 +159,21 @@
   document.querySelectorAll('video[data-inview]').forEach((v) => {
     // Decorative loops (data-inview="ambient") just stay on their first frame.
     if (reduced) { if (v.dataset.inview !== 'ambient') v.controls = true; return; }
-    new IntersectionObserver(([en]) => {
-      if (en.isIntersecting) v.play().catch(() => {}); else v.pause();
-    }, { threshold: .2 }).observe(v);
+    let visible = false;
+    const sync = () => { if (visible && !document.hidden) v.play().catch(() => {}); else v.pause(); };
+    new IntersectionObserver(([en]) => { visible = en.isIntersecting; sync(); }, { threshold: .2 }).observe(v);
+    document.addEventListener('visibilitychange', sync);
   });
+
+  const loops = [...document.querySelectorAll('.corona, .ship-pip, .live')];
+  const visibleLoops = new Set();
+  const syncLoops = () => loops.forEach(el => el.classList.toggle('motion-paused', document.hidden || !visibleLoops.has(el)));
+  const loopObserver = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) visibleLoops.add(e.target); else visibleLoops.delete(e.target); });
+    syncLoops();
+  });
+  loops.forEach(el => loopObserver.observe(el));
+  document.addEventListener('visibilitychange', syncLoops);
 
   /* ── Reveal and count-up ── */
   const io = new IntersectionObserver((entries) => entries.forEach((en) => {
@@ -219,7 +230,7 @@
     el, card: el.querySelector('.card'), media: el.querySelector('.media'),
     blobs: [...el.querySelectorAll('.blob, .blob-img')],
     layers: [...el.querySelectorAll('[data-depth]')].map((l) => ({ el: l, d: +l.dataset.depth })),
-    tx: 0, ty: 0, x: 0, y: 0,
+    tx: 0, ty: 0, x: 0, y: 0, light: null,
   }));
   items.forEach((it) => {
     if (!fine || reduced || calm) return;
@@ -229,14 +240,19 @@
       const r = it.el.getBoundingClientRect();
       it.tx = clamp((e.clientX - r.left) / r.width - .5, -.5, .5);
       it.ty = clamp((e.clientY - r.top) / r.height - .5, -.5, .5);
-      it.el.style.setProperty('--rx', `${(e.clientX - r.left).toFixed(0)}px`);
-      it.el.style.setProperty('--ry', `${(e.clientY - r.top).toFixed(0)}px`);
+      it.light = [e.clientX - r.left, e.clientY - r.top];
+      wake();
     });
   });
 
   function cardsFrame() {
     let moving = false;
     items.forEach((it) => {
+      if (it.light) {
+        it.el.style.setProperty('--rx', `${it.light[0].toFixed(0)}px`);
+        it.el.style.setProperty('--ry', `${it.light[1].toFixed(0)}px`);
+        it.light = null;
+      }
       const nx = lerp(it.x, it.tx, .08), ny = lerp(it.y, it.ty, .08);
       if (Math.abs(nx - it.x) + Math.abs(ny - it.y) < .0004) { it.x = it.tx; it.y = it.ty; return; }
       it.x = nx; it.y = ny; moving = true;
@@ -253,8 +269,9 @@
   }
 
   /* ── One loop ── */
-  function wake() { if (!running) { running = true; requestAnimationFrame(frame); } }
+  function wake() { if (!document.hidden && !running) { running = true; requestAnimationFrame(frame); } }
   function frame() {
+    if (document.hidden) { running = false; return; }
     const a = heroFrame(), b = cardsFrame();
     let c = false;
     if (tipPos.on) {
@@ -264,6 +281,7 @@
     }
     if (a || b || c) requestAnimationFrame(frame); else running = false;
   }
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) wake(); });
   wake();
 
   /* ── Brain Dump runs through the app while it is on screen ── */
@@ -277,10 +295,13 @@
       steps.forEach((s, k) => s.classList.toggle('is-on', k === n));
       brain.classList.toggle('is-listening', shots[n].hasAttribute('data-listen'));
     };
-    new IntersectionObserver((en) => {
-      if (en[0].isIntersecting && !reduced) { if (!timer) timer = setInterval(() => { i = (i + 1) % shots.length; show(i); }, 2600); }
+    let visible = false;
+    const sync = () => {
+      if (visible && !document.hidden && !reduced) { if (!timer) timer = setInterval(() => { i = (i + 1) % shots.length; show(i); }, 2600); }
       else { clearInterval(timer); timer = null; }
-    }, { threshold: .35 }).observe(brain);
+    };
+    new IntersectionObserver(([en]) => { visible = en.isIntersecting; sync(); }, { threshold: .35 }).observe(brain);
+    document.addEventListener('visibilitychange', sync);
   }
 
   /* ── Contact: email opens the mail app, copy copies, a gentle pull on hover ── */
