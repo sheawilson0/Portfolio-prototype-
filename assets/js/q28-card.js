@@ -26,7 +26,7 @@
     const cells = [...root.querySelectorAll('.q28-days i')];
     const word = root.querySelector('.q28-words b'), time = root.querySelector('.q28-words small'), fill = root.querySelector('.q28-fill');
     let day = 14, gone = 3, hold = 0, clock = null;
-    const paint = () => cells.forEach((c, i) => c.classList.toggle('is-logged', i < day));
+    const paint = () => cells.forEach((c, i) => { c.classList.toggle('is-logged', i < day); if (!day) c.classList.remove('is-pop'); });
     const show = () => {
       const left = 180 - gone;
       time.textContent = `${Math.floor(left / 60)}:${String(left % 60).padStart(2, '0')}`;
@@ -45,15 +45,19 @@
       day++;
       paint();
       const c = cells[day - 1];
-      c.classList.remove('is-pop'); void c.offsetWidth; c.classList.add('is-pop');
+      c.classList.add('is-pop');
       if (day === 28) hold = 4;
     }
     if (reduced) return;
-    new IntersectionObserver(([e]) => {
-      root.classList.toggle('is-running', e.isIntersecting);
-      if (e.isIntersecting && !clock) clock = setInterval(step, 1000);
-      else if (!e.isIntersecting && clock) { clearInterval(clock); clock = null; }
-    }, { threshold: .25 }).observe(root);
+    let visible = false;
+    const sync = () => {
+      const on = visible && !document.hidden;
+      root.classList.toggle('is-running', on);
+      if (on && !clock) clock = setInterval(step, 1000);
+      else if (!on && clock) { clearInterval(clock); clock = null; }
+    };
+    new IntersectionObserver(([e]) => { visible = e.isIntersecting; sync(); }, { threshold: .25 }).observe(root);
+    document.addEventListener('visibilitychange', sync);
   });
 
   // Meridian's butterfly on the Shipped tile and card, awake and watching the pointer (meridian-line.js).
@@ -67,11 +71,16 @@
 
   // Hover, on the mosaic tiles and the cards: --px and --py (-.5 to .5) follow the pointer, eased, and ease back to 0.
   if (reduced || !matchMedia('(hover: hover) and (pointer: fine)').matches) return;
-  const tiles = [...document.querySelectorAll('.tile, .item')].map((el) => ({ el, x: 0, y: 0, tx: 0, ty: 0 }));
+  const tiles = [...document.querySelectorAll('.tile, .item')].map((el) => ({ el, x: 0, y: 0, tx: 0, ty: 0, light: null }));
   let raf = 0;
   const frame = () => {
     raf = 0;
     tiles.forEach((t) => {
+      if (t.light) {
+        t.el.style.setProperty('--rx', `${t.light[0].toFixed(0)}px`);
+        t.el.style.setProperty('--ry', `${t.light[1].toFixed(0)}px`);
+        t.light = null;
+      }
       if (t.x === t.tx && t.y === t.ty) return;
       t.x += (t.tx - t.x) * .08; t.y += (t.ty - t.y) * .08;
       if (Math.abs(t.tx - t.x) + Math.abs(t.ty - t.y) < .001) { t.x = t.tx; t.y = t.ty; } else raf ||= requestAnimationFrame(frame);
@@ -82,7 +91,7 @@
     t.el.addEventListener('pointermove', (e) => {
       const r = t.el.getBoundingClientRect();
       t.tx = (e.clientX - r.left) / r.width - .5; t.ty = (e.clientY - r.top) / r.height - .5;
-      t.el.style.setProperty('--rx', `${(e.clientX - r.left).toFixed(0)}px`); t.el.style.setProperty('--ry', `${(e.clientY - r.top).toFixed(0)}px`);
+      t.light = [e.clientX - r.left, e.clientY - r.top];
       raf ||= requestAnimationFrame(frame);
     });
     t.el.addEventListener('pointerleave', () => { t.tx = 0; t.ty = 0; raf ||= requestAnimationFrame(frame); });

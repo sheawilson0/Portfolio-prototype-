@@ -191,3 +191,5 @@
   .st-pill, .st-pill.is-r, .st-heart { min-width: 44px; min-height: 44px; }
   .st-open, .st-menu button { min-height: 44px; }
 }
+/* Only the stand uses proximity; its artwork need not inherit every scroll update. */
+@property --near { syntax: '<number>'; inherits: false; initial-value: 1; }

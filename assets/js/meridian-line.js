@@ -50,10 +50,9 @@ const Line = (() => {
   function place(X, Y, S, cx, cy, s) {
     const g = Y < MID ? S.top : S.bottom;
     X *= g; let y = (Y - MID) * g * (Y < MID ? (S.tall || 1) : 1);
-    const a = X < 0 ? S.flap : -S.flap;
-    let x = X * Math.cos(a), z = -X * Math.sin(a);
-    const x2 = x * Math.cos(S.yaw) + z * Math.sin(S.yaw); z = -x * Math.sin(S.yaw) + z * Math.cos(S.yaw); x = x2;
-    const y2 = y * Math.cos(S.pitch) + z * Math.sin(S.pitch); z = -y * Math.sin(S.pitch) + z * Math.cos(S.pitch); y = y2;
+    let x = X * S.cf, z = -X * (X < 0 ? S.sf : -S.sf);
+    const x2 = x * S.cyaw + z * S.syaw; z = -x * S.syaw + z * S.cyaw; x = x2;
+    const y2 = y * S.cp + z * S.sp; z = -y * S.sp + z * S.cp; y = y2;
     const p = 1 / (1 + z * .55);
     return [cx + x * p * s, cy + (MID + y) * p * s];
   }
@@ -71,8 +70,8 @@ const Line = (() => {
   // a point on the head, as if the head were a ball turning with the body: returns screen x, y and how much it faces you
   function onHead(lon, lat, S) {
     let x = Math.sin(lon) * Math.cos(lat), y = Math.sin(lat), z = -Math.cos(lon) * Math.cos(lat);
-    const x2 = x * Math.cos(S.yaw) + z * Math.sin(S.yaw); z = -x * Math.sin(S.yaw) + z * Math.cos(S.yaw); x = x2;
-    const y2 = y * Math.cos(S.pitch) + z * Math.sin(S.pitch); z = -y * Math.sin(S.pitch) + z * Math.cos(S.pitch); y = y2;
+    const x2 = x * S.cyaw + z * S.syaw; z = -x * S.syaw + z * S.cyaw; x = x2;
+    const y2 = y * S.cp + z * S.sp; z = -y * S.sp + z * S.cp; y = y2;
     return [x, y, -z];
   }
 
@@ -229,7 +228,7 @@ const Line = (() => {
     const txt = [0, 1].map(() => el('text', { fill: 'var(--eye, #121214)', 'text-anchor': 'middle', 'dominant-baseline': 'central', 'font-family': "'JetBrains Mono', ui-monospace, monospace", 'font-weight': 800, 'font-size': 7 }));
     g.append(wing, head, fill, shine, line, ...txt); m.svg.append(g);
     const px = [new Array(9).fill(0), new Array(9).fill(0)], kao = { cur: null, next: null, at: -9 };
-    const S = { flap: .45, yaw: 0, pitch: 0, top: 1, bottom: 1 };
+    const S = { flap: o.mood === 'still' ? 0 : .45, yaw: 0, pitch: 0, top: 1, bottom: 1 };
     const Q = { ...PEN_DIALS }, L = { ...LID_DIALS };
     let lift = 0, drop = 0, roll = 0, gr = o.grow ?? 1;
     return (t, now) => {
@@ -250,6 +249,10 @@ const Line = (() => {
       if (md.hardPitch) S.pitch = md.pitch;
       else { S.pitch = Math.atan2(Math.sin(S.pitch), Math.cos(S.pitch)); S.pitch = ease(S.pitch, md.pitch ?? tp, .1); }
       if (md.roll != null) roll = md.roll; else { roll = Math.atan2(Math.sin(roll), Math.cos(roll)); roll = ease(roll, 0, .15); }
+      // These angles are shared by all 601 points, the head and the eyes.
+      S.cf = Math.cos(S.flap); S.sf = Math.sin(S.flap);
+      S.cyaw = Math.cos(S.yaw); S.syaw = Math.sin(S.yaw);
+      S.cp = Math.cos(S.pitch); S.sp = Math.sin(S.pitch);
       const big = 1 + (1 - gr) * .6, size = 46, cy = 52 + Math.sin(t * 1.3) * (md.bob || 0) - lift * 4 + drop - (md.hop || 0);
       g.setAttribute('transform', `rotate(${f(roll * 180 / Math.PI)} 50 ${f(cy + MID * size)})`);
       wing.setAttribute('d', md.mdraw != null ? (md.mdraw > .002 ? mpath(S, 50, cy, size, md.mdraw) : '') : md.draw == null ? path(S, 50, cy, size) : md.draw > .002 ? path(S, 50, cy, size, md.draw) : ''); wing.setAttribute('stroke-width', o.weight ?? 5);
@@ -269,8 +272,8 @@ const Line = (() => {
           if (facing < .08) return;                          // round the back of the head
           E.push({ side, ex: hx + x * r, ey: hy + y * r + .5, sx: clamp(facing * 1.15, .15, 1) });
         } else {
-          const facing = Math.cos(S.yaw) * Math.cos(S.pitch); if (facing < .15) return;
-          E.push({ side, ex: hx + side * 4.6 * big * (.55 + .45 * facing) - Math.sin(S.yaw) * r * .3, ey: hy + .5, sx: .55 + .45 * facing });
+          const facing = S.cyaw * S.cp; if (facing < .15) return;
+          E.push({ side, ex: hx + side * 4.6 * big * (.55 + .45 * facing) - S.syaw * r * .3, ey: hy + .5, sx: .55 + .45 * facing });
         }
       });
       let fd = '', ld = '', sd = '';
@@ -316,16 +319,36 @@ const Line = (() => {
     };
   }
 
-  const io = new IntersectionObserver(es => es.forEach(e => { if (e.target._line) e.target._line.on = e.isIntersecting; }), { rootMargin: '100px' });
   const live = new Set();
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  (function frame(now) { live.forEach(m => { if (!m.host.isConnected) { live.delete(m); io.unobserve(m.host); return; } if (m.on) m.draw(reduce ? 1.2 : now / 1000, now); }); requestAnimationFrame(frame); })(performance.now());
+  let raf = 0;
+  function wake() { if (!raf && !document.hidden) raf = requestAnimationFrame(frame); }
+  function frame(now) {
+    raf = 0;
+    if (document.hidden) return;
+    let moving = false;
+    live.forEach(m => {
+      if (!m.host.isConnected) { live.delete(m); io.unobserve(m.host); return; }
+      if (!m.on) return;
+      if (!reduce || m.dirty) m.draw(reduce ? 1.2 : now / 1000, now);
+      m.dirty = false;
+      if (!reduce) moving = true;
+    });
+    if (moving) wake();
+  }
+  const io = new IntersectionObserver(es => {
+    es.forEach(e => { if (e.target._line) e.target._line.on = e.isIntersecting; });
+    wake();
+  }, { rootMargin: '100px' });
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) { cancelAnimationFrame(raf); raf = 0; } else wake();
+  });
 
   function mount(host, o = {}) {
     if (host._line) { live.delete(host._line); host.innerHTML = ''; }
     const svg = el('svg', { viewBox: o.zoom ? '31 29 38 38' : '0 0 100 100', role: 'img', 'aria-label': o.label || 'Meridian', style: `display:block;width:100%;height:100%;overflow:${o.zoom ? 'hidden' : 'visible'}` });
     host.appendChild(svg);
-    const m = { host, svg, o, st: { mood: o.mood || 'idle', hover: o.hover, eyeset: o.eyeset, work: o.work, done: o.done, eyes3d: o.eyes3d, grow: o.grow, follow: o.follow }, since: performance.now() / 1000, seed: Math.random() * 3, on: true };
+    const m = { host, svg, o, st: { mood: o.mood || 'idle', hover: o.hover, eyeset: o.eyeset, work: o.work, done: o.done, eyes3d: o.eyes3d, grow: o.grow, follow: o.follow }, since: performance.now() / 1000, seed: Math.random() * 3, on: false, dirty: true };
     m.draw = mascot(m);
     m.draw(1.2, -1e9);
     host._line = m; live.add(m); io.observe(host);
@@ -335,6 +358,7 @@ const Line = (() => {
     const m = host._line;
     if (st.mood && (st.mood !== m.st.mood || st.replay)) m.since = performance.now() / 1000;
     Object.assign(m.st, st);
+    m.dirty = true; wake();
   }
   return { mount, set };
 })();

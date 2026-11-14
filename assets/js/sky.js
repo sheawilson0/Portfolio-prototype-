@@ -651,7 +651,7 @@
     toggle.addEventListener('pointerenter', refreshHint);
     toggle.addEventListener('focus', refreshHint);
   });
-  setInterval(() => { if (!frozen) paint(); }, 10000);
+  setInterval(() => { if (!document.hidden && !frozen) paint(); }, 10000);
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && !frozen) paint(); });
   // Nothing to repaint in a hidden tab.
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') stopPlay(); });

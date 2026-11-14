@@ -229,7 +229,7 @@
     const hearts = read();
     const save = () => { try { localStorage.setItem('shipped-hearts', JSON.stringify([...hearts])); } catch (e) {} };
     const shown = () => all.filter((s) => !s.minor); // small updates stay hidden
-    let filter = 'all', items = [], marks = [], current = -1;
+    let filter = 'all', items = [], stands = [], marks = [], current = -1;
 
     // The filter menu: everything, personal or work, and the projects with more than one thing in them.
     function filters() {
@@ -265,6 +265,7 @@
       }).join('');
       items.forEach((el) => el.sprite?.stop());
       items = [...track.children];
+      stands = items.map(el => el.querySelector('.st-stand'));
       items.forEach((el) => { const o = el.querySelector('.obj-sprite'), f = el.querySelector('.obj-line > span'); el.sprite = o ? sprite(o) : f ? face(f) : null; });
       // One tick per ship; the first of each month stands taller and carries its name.
       let month = '', lastLabel = -9;
@@ -318,9 +319,9 @@
     function wave() {
       raf = 0;
       const at = line(), w = track.clientWidth * .6;
-      items.forEach((el) => {
-        const d = Math.min(1, Math.abs(mid(el) - at) / w);
-        el.style.setProperty('--near', (1 - d * d).toFixed(3));
+      const distances = items.map(el => Math.min(1, Math.abs(mid(el) - at) / w));
+      distances.forEach((d, i) => {
+        stands[i].style.setProperty('--near', (1 - d * d).toFixed(3));
       });
       const p = pointerTick ?? current;
       marks.forEach((m, i) => { const k = Math.abs(i - p); m.style.setProperty('--lift', (Math.exp(-(k * k) / 6)).toFixed(3)); });
