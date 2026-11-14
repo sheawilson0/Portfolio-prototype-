@@ -82,9 +82,11 @@ a.pane:hover, .sk-shot:hover .pane { background: var(--pane-hover); box-shadow: 
 /* ── Links ── */
 .sk-icons { display: flex; justify-content: center; gap: 12px; }
 .sk-icons li, .sk-grid li, .sk-rail li, .sk-link.is-featured { animation: rise .9s var(--ease) both; animation-delay: calc(.1s + var(--i, 4) * .05s); }
-.sk-icon { display: grid; place-items: center; width: 56px; height: 56px; border-radius: 50%; color: var(--brand, var(--ink)); }
-.sk-icon .ico { width: 22px; height: 22px; }
-.sk-icon[data-id="instagram"] svg { fill: url(#ig-grad); }
+/* The socials are in the ink until hovered, then take their brand colour */
+.sk-icon { display: grid; place-items: center; width: 56px; height: 56px; border-radius: 50%; color: var(--ink); }
+.sk-icon .ico { width: 22px; height: 22px; transition: color .3s var(--ease); }
+.sk-icon:is(:hover, :focus-visible) { color: var(--brand, var(--ink)); }
+.sk-icon[data-id="instagram"]:is(:hover, :focus-visible) svg { fill: url(#ig-grad); }
 .sk-link { display: grid; grid-template-columns: 46px 1fr; align-items: center; gap: 16px; padding: 12px 22px 12px 13px; border-radius: 24px; corner-shape: squircle; }
 @supports (corner-shape: squircle) { .sk-link { border-radius: 36px; } .sk-ico { border-radius: 22px !important; } }
 .sk-ico { width: 46px; height: 46px; display: grid; place-items: center; border-radius: 15px; corner-shape: squircle; color: var(--ink); background: var(--bubble); }
@@ -114,10 +116,7 @@ a.pane:hover, .sk-shot:hover .pane { background: var(--pane-hover); box-shadow: 
 
 /* ── Recent work: the homepage's cards in miniature, the name and a note under each ── */
 .sk-work { margin-top: 36px; }
-.sk-label { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 14px; padding: 0 4px; }
-.sk-label h2 { font-family: var(--serif); font-size: 22px; font-weight: 300; letter-spacing: -.02em; }
-.sk-label a { font-size: 13.5px; color: var(--whisper); transition: color .3s var(--ease); }
-.sk-label a:hover { color: var(--ink); }
+.sk-work h2 { margin-bottom: 14px; padding: 0 4px; font-family: var(--serif); font-size: 22px; font-weight: 300; letter-spacing: -.02em; }
 .sk-shot { display: grid; gap: 10px; }
 .sk-shot-img { position: relative; display: block; aspect-ratio: 4 / 3; border-radius: 22px; corner-shape: squircle; overflow: hidden;
   background: radial-gradient(120% 80% at 50% 115%, color-mix(in srgb, var(--tone) 26%, transparent), transparent 70%), var(--pane); }

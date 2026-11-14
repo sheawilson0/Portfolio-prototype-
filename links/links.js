@@ -116,7 +116,7 @@
   const linkAttrs = (l) => `${attrs(l)} data-id="${l.id}" style="--tone:${l.tone || '#ed1652'}"`;
   const IG_GRADIENT = '<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="ig-grad" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#feda75"/><stop offset=".3" stop-color="#fa7e1e"/><stop offset=".6" stop-color="#d62976"/><stop offset="1" stop-color="#4f5bd5"/></linearGradient></defs></svg>';
   const skWork = () => `<section class="sk-work" aria-labelledby="sk-work-title">
-    <div class="sk-label"><h2 id="sk-work-title">Recent work</h2><a href="https://sheawilson.uk/#work" target="_blank" rel="noopener">All work</a></div>
+    <h2 id="sk-work-title">Recent work</h2>
     <ul class="sk-rail">${WORK.map((w, i) => `<li style="--i:${i}"><a class="sk-shot" href="${w.href}" target="_blank" rel="noopener" style="--tone:${w.tone}">
       <span class="sk-shot-img pane">${w.art}</span>
       <span class="sk-cap"><b>${w.name}</b><span>${w.note}</span></span></a></li>`).join('')}</ul></section>`;
