@@ -1,2 +1,9 @@
+# Kept out of every deploy
+.env*
+.vercel
+.DS_Store
+CLAUDE.md
+ar/tools
+ar/README.md
 # Explorations that stay off the live site (old homepage directions, with a reference screenshot of another site).
 /lab
