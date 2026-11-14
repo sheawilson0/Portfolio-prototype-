@@ -25,9 +25,7 @@
   try { if (localStorage.getItem('theme') === 'dark') document.documentElement.dataset.theme = 'dark'; } catch (e) {}
 </script>
 <script src="assets/js/sky.js"></script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=Spectral:ital,wght@0,200;0,300;1,300;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/fonts/portfolio.css">
 <link rel="stylesheet" href="assets/css/site.css">
 <link rel="stylesheet" href="assets/css/sky.css">
 <link rel="stylesheet" href="assets/css/case.css">
@@ -69,7 +67,7 @@
       <span class="blob" style="--c:#c77dff; width:34%; left:30%; top:54%; rotate:-6deg; --ar:1.3"></span>
     </div>
     <div class="card"></div>
-    <div class="stage-media"><video muted loop playsinline preload="auto" data-inview aria-label="Brain Dump demo: a spoken note sorted into tasks"><source src="assets/media/braindump/braindump-demo.mp4" type="video/mp4"></video></div>
+    <div class="stage-media"><video muted loop playsinline preload="none" poster="assets/media/braindump/braindump-demo-poster.webp" data-inview aria-label="Brain Dump demo: a spoken note sorted into tasks"><source src="assets/media/braindump/braindump-demo.mp4" type="video/mp4"></video></div>
   </article>
 
   <section class="cs-intro reveal">
@@ -130,7 +128,7 @@
       <a class="card" href="cipher.html">
         <div class="card-top"><span class="label">Brand, web and app</span><span class="label">Concept</span></div>
         <div class="card-copy"><h2>Cipher</h2><p class="line">Brand guidelines, website and app for an AI-first bank.</p></div>
-        <div class="media"><img src="assets/media/home/cipher.webp" alt="Cipher website on a laptop resting on a ribbed wooden surface" width="1400" height="1050" loading="lazy" decoding="async"></div>
+        <div class="media"><img src="assets/media/home/cipher.webp" alt="Cipher website on a laptop resting on a ribbed wooden surface" width="1400" height="1050" loading="lazy" decoding="async" srcset="assets/media/home/cipher-480w.webp 480w, assets/media/home/cipher-800w.webp 800w, assets/media/home/cipher.webp 1400w" sizes="(max-width: 720px) 77.95vw, (max-width: 1512px) 43.58vw, 659px"></div>
       </a>
     </article>
   </section>

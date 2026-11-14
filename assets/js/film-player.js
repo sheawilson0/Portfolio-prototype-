@@ -60,14 +60,16 @@
     const load = async (t, url) => {
       if (!url || !ctx) return;
       const abs = new URL(url, location.href).href;
-      if (t.url === abs) return;
-      t.url = abs; t.buffer = null;
+      if (t.url !== abs) { t.url = abs; t.buffer = null; }
+      if (t.buffer || t.loading === abs || !t.on || ctx.state !== 'running') return;
+      t.loading = abs;
       // keep the old track playing until the new one is decoded, then swap in place
       try {
         const data = await (await fetch(abs)).arrayBuffer();
         const buf = await new Promise((ok, no) => ctx.decodeAudioData(data, ok, no));
         if (t.url === abs) { t.buffer = buf; if (anchor) startTrack(t); else if (!video.paused) start(); }
       } catch (e) {}
+      finally { if (t.loading === abs) t.loading = ''; }
     };
 
     const fade = t => { if (t.gain) t.gain.gain.setTargetAtTime(t.on ? 1 : 0, ctx.currentTime, 0.02); };
@@ -100,7 +102,11 @@
     video.addEventListener('ratechange', () => { if (!video.paused) start(); });
 
     const play = () => video.play().catch(() => {});
-    const unlock = () => { if (ctx && ctx.state !== 'running') ctx.resume().then(() => { if (!video.paused) start(); }).catch(() => {}); };
+    const unlock = () => {
+      if (!ctx) return;
+      const ready = () => { Object.values(tracks).filter(t => t.on).forEach(t => load(t, t.url)); if (!video.paused) start(); };
+      if (ctx.state !== 'running') ctx.resume().then(ready).catch(() => {}); else ready();
+    };
     // The first tap or key press anywhere lets the music start; the sound button mutes and unmutes.
     if (ctx) ctx.addEventListener('statechange', setState);
     const wake = (e) => { if (root.contains(e.target)) return; unlock(); removeEventListener('pointerdown', wake, true); removeEventListener('keydown', wake, true); };
