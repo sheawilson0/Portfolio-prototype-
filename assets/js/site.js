@@ -223,8 +223,12 @@
   /* ── Reveal and count-up ── */
   const io = new IntersectionObserver((entries) => entries.forEach((en) => {
     if (!en.isIntersecting) return;
-    en.target.classList.add('in'); io.unobserve(en.target);
-    en.target.querySelectorAll('[data-count]').forEach(countUp);
+    io.unobserve(en.target);
+    const show = () => { en.target.classList.add('in'); en.target.querySelectorAll('[data-count]').forEach(countUp); };
+    // A block waits for its own pictures (a second and a half at most), so they arrive with it, not after it.
+    const pics = [...en.target.querySelectorAll('img')].filter((i) => !i.complete && i.checkVisibility?.() !== false);
+    if (!pics.length) return show();
+    Promise.race([Promise.allSettled(pics.map((i) => i.decode())), new Promise((r) => setTimeout(r, 1500))]).then(show);
   }), { rootMargin: '0px 0px -8% 0px' });
   document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
 

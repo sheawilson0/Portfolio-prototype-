@@ -18,10 +18,24 @@
    case.js adds .past-top past halfway, so pulling past the bottom still shows the page colour. */
 :root[data-top="sky"]:not(.past-top) { background-color: var(--sky-top, var(--bg)); }
 
-/* The picture at the top stays hidden until it's drawn, then rises in (case.js adds .is-ready), so it never shows
-   up half loaded or as a black box. The title rises in meanwhile. */
-.js .case main > :first-child { transition: opacity 1s var(--ease), translate 1.1s var(--ease); }
-.js .case main > :first-child:not(.is-ready) { opacity: 0; translate: 0 30px; }
+/* ───────── Coming in ─────────
+   The picture at the top stays hidden until it's drawn (case.js adds .is-ready), then rises in, so it never shows
+   half loaded or as a black box. The nav and the title wait for it and follow: the title out of a blur, the line,
+   then the facts one at a time. Further down, each block waits for its own pictures before it rises (site.js). */
+.js .case main > :first-child { transition: opacity 1.1s var(--ease), translate 1.2s var(--ease), scale 1.4s var(--ease); }
+.js .case main > :first-child:not(.is-ready) { opacity: 0; translate: 0 40px; scale: .97; }
+.js .case main > :first-child:not(.is-ready) ~ .cs-hero .reveal { opacity: 0; translate: 0 30px; }
+.js .case main > .is-ready ~ .cs-hero .reveal { transition-delay: calc(var(--d, 0s) + .2s); }
+.js .case .cs-hero h1.reveal { transition-property: opacity, translate, filter; }
+.js .case .cs-hero h1.reveal:not(.in), .js .case main > :first-child:not(.is-ready) ~ .cs-hero h1 { filter: blur(12px); }
+.js .case .facts > div { transition: opacity .8s var(--ease), translate .9s var(--ease); }
+.js .case .facts:not(.in) > div, .js .case main > :first-child:not(.is-ready) ~ .cs-hero .facts > div { opacity: 0; translate: 0 14px; }
+.js .case .facts.in > div:nth-child(2) { transition-delay: .07s; }
+.js .case .facts.in > div:nth-child(3) { transition-delay: .14s; }
+.js .case .facts.in > div:nth-child(4) { transition-delay: .21s; }
+.js .case .facts.in > div:nth-child(5) { transition-delay: .28s; }
+.js .case .nav { transition: opacity .9s var(--ease) .3s; }
+.js .case:has(main > :first-child:not(.is-ready)) .nav { opacity: 0; }
 
 /* ───────── Hero ───────── */
 .cs-hero { display: grid; grid-template-columns: repeat(12, 1fr); column-gap: 22px; align-items: start; padding: clamp(150px, 22vh, 220px) 0 clamp(44px, 5vw, 64px); }
@@ -180,3 +194,4 @@
 @media (max-width: 700px) {
   .hero-shot { width: 100vw; margin-left: calc(50% - 50vw); }
 }
+@media (prefers-reduced-motion: reduce) { .js .case :is(main > *, .cs-hero .reveal, .facts > div) { translate: none !important; scale: none !important; filter: none !important; } }
