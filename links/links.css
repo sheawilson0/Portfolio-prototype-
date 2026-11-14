@@ -313,3 +313,4 @@ body[data-style="arcade"]::after { content: ""; position: fixed; left: 0; top: 0
   *, *::before, *::after { animation: none !important; }
   .ec-link { transition: none; }
 }
+::selection { background: rgb(64 140 255 / .26); }

@@ -52,7 +52,6 @@
 .is-street::before, .is-street::after { content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none; }
 .is-street::before { background: radial-gradient(80% 50% at 50% 108%, var(--sky-sun, transparent), transparent 70%); opacity: var(--sky-sun-a, 0); transition: opacity 2s linear; }
 .is-street::after { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); opacity: .07; mix-blend-mode: overlay; }
-.is-street ::selection { background: color-mix(in srgb, var(--hi) 26%, transparent); }
 .is-night .st-stand .obj { filter: brightness(.86) saturate(.92); }
 .st-h1 { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .street { position: relative; height: 100svh; display: grid; grid-template-rows: 1fr auto; padding-top: 72px; }
