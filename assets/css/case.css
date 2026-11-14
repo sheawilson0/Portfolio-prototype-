@@ -9,7 +9,8 @@
 
 /* The homepage's sky sits at the very top and is gone within the first
    screen, so opening a card doesn't jump from blue to a blank page. The colours come from sky.js. */
-:root[data-top="sky"] body.case { position: relative; background: none; }
+/* flow-root: without it the first picture's top margin pushes the body (and the sky) down, leaving a blank band behind the nav. */
+:root[data-top="sky"] body.case { position: relative; display: flow-root; background: none; }
 :root[data-top="sky"] body.case::before { content: ""; position: absolute; inset: 0 0 auto; height: min(88svh, 860px); z-index: -1; pointer-events: none;
   background: linear-gradient(var(--sky-top, transparent), color-mix(in srgb, var(--sky-mid, transparent) 62%, transparent) 38%, color-mix(in srgb, var(--sky-mid, transparent) 20%, transparent) 70%, transparent); }
 

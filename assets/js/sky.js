@@ -607,7 +607,7 @@
       const to = new URL(a.href);
       if (to.origin !== location.origin || (to.pathname === location.pathname && to.search === location.search)) return; // another site, or a jump within this page
       e.preventDefault(); going = true;
-      const item = a.closest('.work .item'), card = item?.querySelector('.card'), r = card?.getBoundingClientRect();
+      const item = a.closest('.work .item, .cs-next .item'), card = item?.querySelector('.card'), r = card?.getBoundingClientRect();
       try { sessionStorage.setItem('pg', JSON.stringify({ at: Date.now(), r: r && [r.left, r.top, r.width, r.height, parseFloat(getComputedStyle(card).borderRadius) || 0] })); } catch (err) {}
       item?.classList.add('is-going');
       root.classList.add('pg-out'); root.classList.toggle('pg-card', !!card);
