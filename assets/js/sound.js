@@ -42,39 +42,6 @@
     o.connect(g).connect(out); o.start(t); o.stop(t + len + .02);
   }
 
-  /* ── Cards: a soft tap as the pointer arrives, each card on its own note, and a faint brush of air while the
-     pointer moves over it that follows the pointer's speed and stops when it does. ── */
-  if (matchMedia('(hover: hover) and (pointer: fine)').matches) {
-    const NOTES = [392, 440, 494, 587, 659, 740, 880]; // an open, unhurried scale
-    let air = null, airG = null, airF = null, px = 0, py = 0, pt = 0, speed = 0, still = 0;
-    const brush = (e) => {
-      if (!live() || document.body.dataset.hover === 'calm') return; // lab: Calmer has no brush of air
-      const now = performance.now(), dt = Math.max(8, now - pt);
-      speed += (Math.hypot(e.clientX - px, e.clientY - py) / dt - speed) * .3; // pixels a millisecond, smoothed
-      px = e.clientX; py = e.clientY; pt = now;
-      if (!air) {
-        air = ctx.createBufferSource(); air.buffer = hiss; air.loop = true;
-        airF = ctx.createBiquadFilter(); airF.type = 'bandpass'; airF.Q.value = .9;
-        airG = ctx.createGain(); airG.gain.value = 0;
-        air.connect(airF).connect(airG).connect(out); air.start();
-      }
-      const k = Math.min(1, speed / 2.2);
-      airG.gain.setTargetAtTime(.05 * k, ctx.currentTime, .05);
-      airF.frequency.setTargetAtTime(700 + 1900 * k, ctx.currentTime, .06);
-      clearTimeout(still); still = setTimeout(hush, 70);
-    };
-    const hush = () => { speed = 0; if (airG) airG.gain.setTargetAtTime(0, ctx.currentTime, .06); };
-    document.querySelectorAll('.work .item, .mosaic .tile').forEach((el, i) => {
-      el.addEventListener('pointerenter', (e) => {
-        px = e.clientX; py = e.clientY; pt = performance.now();
-        if (!live()) return;
-        tone(NOTES[i % NOTES.length], .16, .05); puff(2600, .03, .05);
-      });
-      el.addEventListener('pointermove', brush, { passive: true });
-      el.addEventListener('pointerleave', hush);
-    });
-  }
-
   /* ── The time bar: it ticks as the day goes by, a click every twenty minutes of sky, higher the higher the sun
      is. Dragging slowly gives every click; fast, and they thin out and go lighter, like the Shipped street's dial.
      Played or stepped to a moment, it's quieter still. The moments have a note each, and the bar breathes in as

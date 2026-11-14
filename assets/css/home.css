@@ -326,7 +326,9 @@ body[data-about="line"] .about-line { display: block; max-width: 23em; margin: 0
 .about-line .in-photo { aspect-ratio: 1; border-radius: 50%; object-fit: cover; }
 .about-line .in-art { border-radius: .12em; rotate: -3deg; margin: 0 .1em; box-shadow: 0 .1em .3em rgb(0 0 0 / .3); transition: rotate .3s var(--ease), scale .3s var(--ease); }
 /* The painting in the sentence opens bigger: it flies out of the line into a pop-up (site.js) and back on any click or Esc. */
-.in-art-btn { display: inline; padding: 0; cursor: zoom-in; }
+/* The logos and the painting are small things in a line of text, so each takes clicks from a little way around it. */
+.about-line :is(.org-link, .in-art-btn) { position: relative; z-index: 1; padding: .3em .22em; margin: -.3em -.22em; }
+.in-art-btn { display: inline; cursor: zoom-in; }
 .in-art-btn:is(:hover, :focus-visible) .in-art { rotate: 0deg; scale: 1.12; }
 .in-art-btn:focus-visible { outline: none; }
 .in-art-btn:focus-visible .in-art { outline: 2px solid var(--ink); outline-offset: 3px; }
@@ -393,8 +395,7 @@ body[data-layout="peng"] .socials a::before { content: "·"; display: inline-blo
   .home .hero .intro { text-wrap: pretty; }
 }
 
-/* ───────── Hover on cards, the words under the headline (lab) ─────────
-   Calmer: the pictures still slide apart and the card still lights up, but the card stays flat, no label rides the
-   pointer and there's no brush of air (site.js, sound.js). Shorter: who I am is left to the About sentence. */
-body[data-hover="calm"] .tip { display: none; }
-body[data-intro="short"] .intro-who { display: none; }
+/* ───────── Menu when you scroll (lab) ─────────
+   Solid: the pill is the sky's pale colour all the way through, so nothing behind it can be read through it. */
+body.home[data-pill="solid"] { --nav-glass: #f4f7fb; }
+[data-theme="dark"] body.home[data-pill="solid"] { --nav-glass: #1b2d58; }

@@ -287,12 +287,7 @@
       const nx = lerp(it.x, it.tx, .08), ny = lerp(it.y, it.ty, .08);
       if (Math.abs(nx - it.x) + Math.abs(ny - it.y) < .0004) { it.x = it.tx; it.y = it.ty; return; }
       it.x = nx; it.y = ny; moving = true;
-      // With just a picture and a caption the picture fills the card, so the whole card tilts (Shipped's stays as it is).
-      const whole = it.card && (document.body.dataset.copy || 'full') !== 'full' && !it.el.classList.contains('t-shipped');
-      const tilt = `perspective(1300px) rotateX(${(-it.y * (whole ? 5 : 6)).toFixed(2)}deg) rotateY(${(it.x * (whole ? 6 : 8)).toFixed(2)}deg)`;
-      const flat = document.body.dataset.hover === 'calm'; // lab: Hover on cards → Calmer
-      if (whole) it.card.style.transform = flat ? '' : tilt;
-      if (it.media) it.media.style.transform = whole || flat ? '' : tilt;
+      // The card stays flat: the light on its edge and the layers sliding are enough.
       // Layers slide by their depth: back layers against the pointer, front layers with it.
       it.layers.forEach((l) => { l.el.style.translate = `${(it.x * 60 * l.d).toFixed(1)}px ${(it.y * 42 * l.d).toFixed(1)}px`; });
       it.blobs.forEach((b, i) => { const k = 50 + i * 22; b.style.transform = `translate3d(${(it.x * k).toFixed(1)}px, ${(it.y * k * .8).toFixed(1)}px, 0)`; });
