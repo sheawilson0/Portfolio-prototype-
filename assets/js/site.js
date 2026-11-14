@@ -239,7 +239,7 @@
         const doc = new DOMParser().parseFromString(html, 'text/html'), skip = root.dataset.theme === 'dark' ? '.img-light' : '.img-dark';
         doc.querySelectorAll(`main > :first-child img:not(${skip}), .work .item:nth-child(-n+2) img:not(${skip}), [data-wide-poster]`).forEach((el) => {
           const i = new Image();
-          if (el.dataset.widePoster) { i.src = new URL(el.dataset[innerWidth < innerHeight ? 'tallPoster' : 'widePoster'], url).href; return; }
+          if (el.dataset.widePoster) { i.src = new URL(el.dataset[matchMedia('(max-width: 720px), (max-aspect-ratio: 4/5)').matches ? 'tallPoster' : 'widePoster'], url).href; return; }
           if (el.srcset) { i.sizes = el.sizes; i.srcset = el.srcset.replace(/(^|,\s*)([^\s,]+)/g, (m, s, u) => s + new URL(u, url).href); }
           i.src = new URL(el.getAttribute('src'), url).href;
         });
