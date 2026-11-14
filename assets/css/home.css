@@ -342,6 +342,9 @@ body[data-about="line"] .about-line { display: block; max-width: 23em; margin: 0
 .about-line .org-mark.is-influential { width: 1.98em; vertical-align: .04em; }
 .about-line .org-mark.is-ulster { width: 1.45em; }
 .about-line .org-mark::before { opacity: .9; }
+/* The logos in the sentence link to Influential and Ulster; on hover the grey mark gives way to the colour one. */
+.org-link:is(:hover, :focus-visible) .org-mark::before { opacity: 0; }
+.org-link:is(:hover, :focus-visible) .org-mark::after { opacity: 1; }
 /* Sentence, big pictures: the photo and the painting grow into the line. */
 
 /* ───────── Horizon (lab) ─────────

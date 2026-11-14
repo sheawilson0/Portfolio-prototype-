@@ -468,3 +468,27 @@ footer a:hover { color: var(--ink); }
 @media (max-width: 1440px) {
   .case main, .home .work { overflow-x: clip; }
 }
+
+/* ───────── Cursor (lab: Cursor; cursor.js) ───────── */
+.cur { position: fixed; left: 0; top: 0; z-index: 99; pointer-events: none; opacity: 0; transition: opacity .25s var(--ease); }
+.cur.is-in { opacity: 1; }
+body:has(dialog[open]) .cur { opacity: 0; }
+.cur::before { content: ""; position: absolute; translate: -50% -50%; border-radius: 50%; transition: width .3s var(--ease), height .3s var(--ease), background-color .3s var(--ease), scale .15s var(--ease); }
+.cur.is-down::before { scale: .8; }
+.cur span { --at: 20px; position: absolute; left: var(--at); top: -12px; padding: 5px 11px; border-radius: 999px; font-size: 12px; font-weight: 500; line-height: 1.2; white-space: nowrap;
+  color: var(--ink); background: var(--glass-strong); border: 1px solid var(--glass-edge); box-shadow: 0 8px 24px rgb(0 0 0 / .12);
+  -webkit-backdrop-filter: blur(16px) saturate(1.6); backdrop-filter: blur(16px) saturate(1.6);
+  opacity: 0; scale: .9; transform-origin: 0 50%; transition: opacity .2s var(--ease), scale .3s var(--ease); }
+.cur.has-label span { opacity: 1; scale: 1; }
+body.has-cur:is([data-cur="dot"], [data-cur="glass"]):not(:has(dialog[open])),
+body.has-cur:is([data-cur="dot"], [data-cur="glass"]):not(:has(dialog[open])) * { cursor: none !important; }
+body[data-cur="dot"] .cur::before { width: 10px; height: 10px; background: var(--ink); border: 1.5px solid var(--ink); box-shadow: 0 0 0 1px color-mix(in srgb, var(--bg) 55%, transparent); }
+body[data-cur="dot"] .cur.is-link::before { width: 38px; height: 38px; background: transparent; }
+body[data-cur="dot"] .cur span { --at: 28px; background: var(--ink); color: var(--bg); border-color: transparent; }
+body[data-cur="glass"] .cur::before { width: 26px; height: 26px; background: var(--glass); border: 1px solid var(--glass-edge); box-shadow: 0 4px 14px rgb(0 0 0 / .14), inset 0 1px 0 var(--sheen);
+  -webkit-backdrop-filter: blur(4px) saturate(1.6); backdrop-filter: blur(4px) saturate(1.6); }
+body[data-cur="glass"] .cur.is-link::before { width: 50px; height: 50px; background: color-mix(in srgb, var(--glass) 25%, transparent); -webkit-backdrop-filter: none; backdrop-filter: none; }
+body[data-cur="glass"] .cur span { --at: 34px; }
+body[data-cur="halo"] .cur::before { width: 220px; height: 220px; background: radial-gradient(closest-side, color-mix(in srgb, var(--p4) 32%, transparent), transparent); filter: blur(10px); mix-blend-mode: multiply; }
+[data-theme="dark"] body[data-cur="halo"] .cur::before { mix-blend-mode: screen; }
+body[data-cur="halo"] .cur.is-link::before { width: 280px; height: 280px; }
