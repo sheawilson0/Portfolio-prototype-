@@ -400,3 +400,28 @@ body[data-layout="peng"] .socials a::before { content: "·"; display: inline-blo
 .work .media img:not(.is-loaded) { opacity: 0; }
 .work .media img.is-loaded { animation: arrive-fade .8s var(--ease); }
 @keyframes arrive-fade { from { opacity: 0; } }
+
+/* ───────── Intro (intro.js) ─────────
+   html.intro hides the first screen until it starts; .intro-go plays it; .intro-land brings the work in.
+   --intro-land is when the sun has settled. The stage stops clipping the sun; for Zoom out the hero does too, so it
+   can fill the screen. Sunrise comes up through the soft fade at the foot of the hero, as if over a horizon. */
+:root { --intro-land: 1.8s; }
+:root[data-intro="zoom"] { --intro-land: 1.3s; }
+:root[data-intro="breathe"] { --intro-land: 1.9s; }
+.intro:not(.intro-go) :is(.home .hero-copy, .home .eclipse, .nav), .intro:not(.intro-land) #work { opacity: 0; }
+.intro-go .home .stage, :root[data-intro="zoom"].intro-go .home .hero { overflow: visible; -webkit-mask: none; mask: none; }
+.intro-go .home .eclipse { z-index: 5; will-change: transform; animation: sun-rise 2.2s cubic-bezier(.4, 0, .2, 1) both; }
+:root[data-intro="zoom"].intro-go .home .eclipse { animation: sun-zoom 1.4s cubic-bezier(.6, 0, .2, 1) both; }
+:root[data-intro="breathe"].intro-go .home .eclipse { animation: sun-breathe 1.9s cubic-bezier(.45, 0, .2, 1) both; }
+@keyframes sun-rise { from { transform: translateY(max(520px, 62vh)) scale(3); } 45% { transform: translateY(120px) scale(2.2); } to { transform: none; } }
+@keyframes sun-zoom { from { transform: scale(12); } to { transform: none; } }
+@keyframes sun-breathe { from { transform: scale(0); opacity: 0; } 15% { opacity: 1; } 48% { transform: scale(2.8); } 76% { transform: scale(.94); } to { transform: none; } }
+/* The words: the first line rises out of a blur, then "something.", the line under it, and the nav. */
+.intro-go .home .hero :is(h1, h1 em, .intro) { animation: intro-in 1.1s var(--ease) calc(var(--intro-land) - .5s) both; }
+.intro-go .home .hero h1 em { animation-name: intro-blur; animation-delay: calc(var(--intro-land) - .25s); }
+.intro-go .home .hero .intro { animation-delay: calc(var(--intro-land) - .05s); }
+.intro-go .nav { animation: intro-blur .9s var(--ease) calc(var(--intro-land) + .1s) both; }
+.intro-land #work { animation: intro-rise 1.1s var(--ease) both; }
+@keyframes intro-in { from { opacity: 0; transform: translateY(26px); filter: blur(10px); } }
+@keyframes intro-rise { from { opacity: 0; transform: translateY(90px); } }
+@keyframes intro-blur { from { opacity: 0; filter: blur(10px); } }

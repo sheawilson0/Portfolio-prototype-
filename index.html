@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-intro="rise">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -23,6 +23,14 @@
 <script>
   document.documentElement.classList.add('js');
   try { if (localStorage.getItem('theme') === 'dark') document.documentElement.dataset.theme = 'dark'; } catch (e) {}
+  // The intro (intro.js): once a visit on the live site, every load on previews, never with reduced motion or a link to a section.
+  try {
+    const seen = /(^|\.)sheawilson\.uk$/.test(location.hostname) && sessionStorage.getItem('intro');
+    if (!seen && !location.hash && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      document.documentElement.classList.add('intro');
+      setTimeout(() => document.documentElement.classList.remove('intro', 'intro-go', 'intro-land'), 8000); // in case intro.js never runs
+    }
+  } catch (e) {}
 </script>
 <script src="assets/js/sky.js"></script>
 <link rel="stylesheet" href="/assets/fonts/portfolio.css">
@@ -310,5 +318,6 @@
 <script src="assets/js/meridian-line.js" defer></script>
 <script src="assets/js/q28-card.js" defer></script>
 <script src="assets/js/lab.js" defer></script>
+<script src="assets/js/intro.js" defer></script>
 </body>
 </html>

@@ -6,12 +6,15 @@
   if (live && !new URLSearchParams(location.search).has('lab')) return;
   // [attribute, label, options, the recommended one]
   const ROWS = [
+    ['intro', 'Intro (picking one replays it)', [['off', 'Off'], ['rise', 'Sunrise'], ['zoom', 'Zoom out'], ['breathe', 'Breathe']], 'rise'],
   ];
   if (!ROWS.length) return; // nothing open just now
-  const KEY = 'home-lab-9'; // home-lab-9: options changed 14 Nov, start everyone on the defaults
+  const KEY = 'home-lab-10'; // home-lab-10: options changed 14 Nov, start everyone on the defaults
   const get = (k) => { try { return JSON.parse(localStorage.getItem(KEY) || '{}')[k]; } catch (e) { return null; } };
   const set = (k, v) => { try { const o = JSON.parse(localStorage.getItem(KEY) || '{}'); o[k] = v; localStorage.setItem(KEY, JSON.stringify(o)); } catch (e) {} };
-  const apply = (k, v) => { document.body.dataset[k] = v; };
+  // A row lives wherever index.html put its default: on <html> (set before anything paints) or on <body>.
+  const el = (k) => (k in document.documentElement.dataset ? document.documentElement : document.body);
+  const apply = (k, v) => { el(k).dataset[k] = v; };
   // A saved choice that's no longer an option falls back to my pick.
   ROWS.forEach(([k, , opts]) => { const v = get(k); if (opts.some((o) => o[0] === v)) apply(k, v); });
 
@@ -27,7 +30,7 @@
   bar.className = 'lab'; bar.setAttribute('aria-label', 'Lab');
   bar.innerHTML = `<div class="lab-head"><b>Lab</b><button type="button" data-shut>Hide</button></div>` + ROWS.map(([k, label, opts, rec]) =>
     `<div class="lab-row"><p>${label}</p><div class="lab-opts">${opts.map(([v, name]) =>
-      `<button type="button" data-k="${k}" data-v="${v}" class="${v === rec ? 'is-pick' : ''}" aria-pressed="${document.body.dataset[k] === v}">${name}</button>`).join('')}</div></div>`).join('');
+      `<button type="button" data-k="${k}" data-v="${v}" class="${v === rec ? 'is-pick' : ''}" aria-pressed="${el(k).dataset[k] === v}">${name}</button>`).join('')}</div></div>`).join('');
   document.body.append(bar);
   bar.addEventListener('click', (e) => {
     if (e.target.closest('[data-shut]')) { bar.classList.toggle('is-shut'); e.target.textContent = bar.classList.contains('is-shut') ? 'Show' : 'Hide'; return; }
@@ -35,5 +38,6 @@
     if (!b) return;
     apply(b.dataset.k, b.dataset.v); set(b.dataset.k, b.dataset.v);
     bar.querySelectorAll(`[data-k="${b.dataset.k}"]`).forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+    if (b.dataset.k === 'intro') window.__intro?.();
   });
 })();
