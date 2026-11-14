@@ -71,6 +71,10 @@ body[data-style="sky"]::before { content: ""; position: fixed; left: 0; top: 0; 
 a.pane:hover, .sk-shot:hover .pane { background: var(--pane-hover); box-shadow: inset 0 0 0 1px var(--pane-edge), var(--lift-hover); }
 :is(.sk-link, .sk-icon, .sk-shot):focus-visible { outline: 2px solid color-mix(in srgb, var(--ink) 40%, transparent); outline-offset: 3px; }
 
+/* The work row reaches past the column for its shadows; on a phone that's past the screen, so the page clips it
+   (clip, not hidden: nothing here becomes a scroller). */
+.sk-page { overflow-x: clip; }
+
 /* ── Header ── */
 .sk-head { display: grid; justify-items: center; text-align: center; padding: clamp(84px, 14svh, 140px) 0 36px; animation: rise 1s var(--ease) both; }
 .sk-photo { position: relative; width: 96px; height: 96px; margin-bottom: 22px; }
