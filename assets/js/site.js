@@ -211,9 +211,9 @@
   const loaded = (img) => img.classList.add('is-loaded');
   document.addEventListener('load', (e) => { if (e.target.tagName === 'IMG') loaded(e.target); }, true);
   document.querySelectorAll('img').forEach((img) => { if (img.complete && img.naturalWidth) loaded(img); });
-  // data-preload="early": once the page is up, fetch the card pictures still waiting for the scroll (not the other theme's).
+  // Once the page is up, fetch the card pictures still waiting for the scroll (not the other theme's).
   addEventListener('load', () => {
-    if (document.body.dataset.preload === 'early') document.querySelectorAll('.work img[loading="lazy"]').forEach((i) => { if (i.checkVisibility?.() !== false) i.loading = 'eager'; });
+    document.querySelectorAll('.work img[loading="lazy"]').forEach((i) => { if (i.checkVisibility?.() !== false) i.loading = 'eager'; });
   });
 
   /* ── Reveal and count-up ── */

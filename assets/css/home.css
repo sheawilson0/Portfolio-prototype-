@@ -395,14 +395,8 @@ body[data-layout="peng"] .socials a::before { content: "·"; display: inline-blo
   .home .hero .intro { text-wrap: pretty; }
 }
 
-/* ───────── Card pictures arriving (lab: data-arrive) ─────────
-   site.js marks each picture .is-loaded when it's ready; until then it's hidden, so nothing pops in half drawn.
-   .is-held is the lab's slow-connection preview holding a picture back. */
-body:not([data-arrive="pop"]) .work .media img:not(.is-loaded), .work .media img.is-held { opacity: 0; }
-body[data-arrive="fade"] .work .media img.is-loaded:not(.is-held) { animation: arrive-fade .8s var(--ease); }
-body[data-arrive="blur"] .work .media img.is-loaded:not(.is-held) { animation: arrive-fade .5s var(--ease), arrive-sharpen 1.1s var(--ease); }
-body[data-arrive="rise"] .work .media img.is-loaded:not(.is-held) { animation: arrive-rise 1s var(--ease); }
+/* ───────── Card pictures arriving ─────────
+   site.js marks each picture .is-loaded when it's ready; until then it's hidden, so nothing pops in half drawn. */
+.work .media img:not(.is-loaded) { opacity: 0; }
+.work .media img.is-loaded { animation: arrive-fade .8s var(--ease); }
 @keyframes arrive-fade { from { opacity: 0; } }
-@keyframes arrive-sharpen { from { filter: blur(24px); } to { filter: blur(0); } }
-@keyframes arrive-rise { from { opacity: 0; scale: .94; } }
-@media (prefers-reduced-motion: reduce) { .work .media img.is-loaded { animation-name: arrive-fade !important; } }

@@ -6,9 +6,6 @@
   if (live && !new URLSearchParams(location.search).has('lab')) return;
   // [attribute, label, options, the recommended one]
   const ROWS = [
-    ['arrive', 'Card pictures arrive', [['pop', 'Pop in (now)'], ['fade', 'Fade'], ['blur', 'Blur to sharp'], ['rise', 'Fade and grow']], 'fade'],
-    ['preload', 'Card pictures load (reload to feel it)', [['scroll', 'As you scroll (now)'], ['early', 'Right after the page']], 'early'],
-    ['slow', 'Pretend the connection is slow', [['off', 'Off'], ['on', 'On']], ''],
   ];
   if (!ROWS.length) return; // nothing open just now
   const KEY = 'home-lab-9'; // home-lab-9: options changed 14 Nov, start everyone on the defaults
@@ -16,17 +13,8 @@
   const set = (k, v) => { try { const o = JSON.parse(localStorage.getItem(KEY) || '{}'); o[k] = v; localStorage.setItem(KEY, JSON.stringify(o)); } catch (e) {} };
   const apply = (k, v) => { document.body.dataset[k] = v; };
   // A saved choice that's no longer an option falls back to my pick.
-  ROWS.forEach(([k, , opts]) => { const v = get(k); if (opts.some((o) => o[0] === v)) apply(k, v); else if (!(k in document.body.dataset)) apply(k, opts[0][0]); });
+  ROWS.forEach(([k, , opts]) => { const v = get(k); if (opts.some((o) => o[0] === v)) apply(k, v); });
 
-  // The slow-connection preview: each card picture is held back for a moment every time it scrolls into view,
-  // so the arrivals can be watched on fast wifi. Scroll away and back to see one again.
-  const held = new IntersectionObserver((es) => es.forEach(({ target: img, isIntersecting: on }) => {
-    clearTimeout(img.labHold);
-    if (document.body.dataset.slow !== 'on') { img.classList.remove('is-held'); return; }
-    img.classList.add('is-held');
-    if (on) img.labHold = setTimeout(() => img.classList.remove('is-held'), 500 + Math.random() * 1300);
-  }));
-  const slow = () => document.querySelectorAll('.work .media img').forEach((img) => { held.unobserve(img); held.observe(img); });
 
   const css = document.createElement('style');
   css.textContent = `.lab{position:fixed;z-index:90;left:16px;bottom:16px;width:268px;max-height:calc(100svh - 32px);overflow:auto;padding:12px 12px 6px;border-radius:18px;font:400 12px/1.3 var(--sans);color:var(--ink);background:var(--glass-strong);border:1px solid var(--glass-line);box-shadow:0 20px 50px rgba(0,0,0,.18);-webkit-backdrop-filter:blur(18px) saturate(1.6);backdrop-filter:blur(18px) saturate(1.6)}
@@ -41,13 +29,11 @@
     `<div class="lab-row"><p>${label}</p><div class="lab-opts">${opts.map(([v, name]) =>
       `<button type="button" data-k="${k}" data-v="${v}" class="${v === rec ? 'is-pick' : ''}" aria-pressed="${document.body.dataset[k] === v}">${name}</button>`).join('')}</div></div>`).join('');
   document.body.append(bar);
-  if (document.body.dataset.slow === 'on') addEventListener('load', slow); // after Quit28's pictures are in
   bar.addEventListener('click', (e) => {
     if (e.target.closest('[data-shut]')) { bar.classList.toggle('is-shut'); e.target.textContent = bar.classList.contains('is-shut') ? 'Show' : 'Hide'; return; }
     const b = e.target.closest('[data-k]');
     if (!b) return;
     apply(b.dataset.k, b.dataset.v); set(b.dataset.k, b.dataset.v);
-    if (b.dataset.k === 'slow') slow();
     bar.querySelectorAll(`[data-k="${b.dataset.k}"]`).forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
   });
 })();
