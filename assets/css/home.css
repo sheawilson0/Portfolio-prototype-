@@ -300,13 +300,39 @@ body:is([data-copy="cap"], [data-copy="lean"]) .work .t-amp .media { inset: 0; b
 body[data-arc="none"] .eclipse { display: none; }
 body[data-arc="none"] .stage { height: 84px; }
 body:is([data-arc="none"], [data-arc="sun"]) :is(.sun, .corona) { display: none; }
-body[data-arc="sun"] .eclipse { --d: 124px; width: var(--d); left: calc(50% - var(--d) / 2); top: 10px; }
+/* The arc leans with the pointer (--lx, --ly from site.js). */
+.home .disc, .home .corona { translate: var(--lx, 0px) var(--ly, 0px); }
+/* The sun really sets: it sinks behind a soft horizon at the foot of the stage as sunset comes (--sink, 0 up to 1
+   gone, from site.js), and the moon comes up from the same line once it's dark, and goes down before dawn. */
+/* The stage reaches up to the top of the page here, so the horizon only cuts the glow at the bottom. */
+body[data-arc="sun"] .stage { height: 256px; margin-top: -96px; -webkit-mask: linear-gradient(#000 calc(100% - 30px), transparent); mask: linear-gradient(#000 calc(100% - 30px), transparent); }
+body[data-arc="sun"] .disc { translate: var(--lx, 0px) calc(var(--ly, 0px) + var(--sink, 0) * 180px); }
+[data-theme="dark"] body[data-arc="sun"] .disc { rotate: 22deg; }
+body[data-arc="sun"] .eclipse { --d: 124px; width: var(--d); left: calc(50% - var(--d) / 2); top: 106px; }
 body.home[data-arc="sun"] .disc { --sun: color-mix(in srgb, var(--sky-sun, #ff9a5c) calc(var(--sky-sun-a, 0) * 90%), #fffaf0);
   background: radial-gradient(circle at 50% 36%, color-mix(in srgb, var(--sun) 70%, #fff), var(--sun));
   box-shadow: 0 0 46px 6px color-mix(in srgb, var(--sun) 55%, transparent), 0 0 150px 50px color-mix(in srgb, var(--sun) 22%, transparent); }
 [data-theme="dark"] body.home[data-arc="sun"] .disc { background: none; box-shadow: inset calc(var(--moon, -.4) * var(--d)) 0 0 0 #f1eee3;
   filter: drop-shadow(0 0 18px rgb(206 220 255 / .45)); }
-@media (max-width: 700px) { body[data-arc="sun"] .eclipse { --d: 96px; top: 34px; } }
+@media (max-width: 700px) { body[data-arc="sun"] .eclipse { --d: 96px; top: 126px; } body[data-arc="sun"] .stage { height: 252px; margin-top: -92px; } }
 /* Ring colour: the sky's own light, warm at sunrise and pearl white at night (lab: the brand rainbow). */
 body[data-ring="sky"] .corona { background: conic-gradient(from 0deg, #ffd08a, #ff9d6e 60deg, #ffc9d8 120deg, #fff1d2 180deg, #ffb07c 240deg, #ffd9e4 300deg, #ffd08a); }
 [data-theme="dark"] body[data-ring="sky"] .corona { background: conic-gradient(from 0deg, #fff, #a9c1ff 70deg, #f3f6ff 140deg, #7f9cf0 210deg, #fff 280deg, #c9d6ff 330deg, #fff); }
+
+/* ───────── Contact layout (lab: Contact) ─────────
+   As now: heading, a line, the email and my handle with two logos. Three words: the heading and one row, the email,
+   LinkedIn and X as plain words. One sentence: no heading, just a line in the serif with the links in it.
+   Footer only: no section at all, the email joins the footer. */
+.socials .word, .contact-line, .foot-email { display: none; }
+body[data-layout="row"] .contact :is(.sub, .handle, .mark, .email-icon) { display: none; }
+body[data-layout="row"] .socials .word { display: inline; }
+body[data-layout="row"] .socials { margin-left: 0; gap: 2px; }
+body[data-layout="line"] .contact > :not(.contact-line) { display: none; }
+body[data-layout="line"] .contact { padding: 150px var(--gutter) 130px; }
+body[data-layout="line"] .contact-line { display: block; max-width: 22em; margin: 0 auto; font-family: var(--serif); font-weight: 300; font-size: clamp(30px, 3.6vw, 52px); line-height: 1.18; letter-spacing: var(--track-heading); text-wrap: balance; }
+.contact-line a, body[data-layout="foot"] .foot-email { text-decoration: underline; text-decoration-thickness: 1px; text-decoration-color: color-mix(in srgb, var(--ink) 25%, transparent); text-underline-offset: .14em; transition: text-decoration-color .2s var(--ease); }
+.contact-line a:hover, body[data-layout="foot"] .foot-email:hover { text-decoration-color: var(--ink); }
+.contact-line a[href^="mailto"] { font-style: italic; }
+body[data-layout="foot"] .contact { display: none; }
+body[data-layout="foot"] .foot-email { display: inline; color: var(--ink); }
+body[data-layout="foot"] .about { padding-bottom: 120px; }

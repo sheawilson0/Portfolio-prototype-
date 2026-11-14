@@ -132,14 +132,27 @@
     const nx = pointer.seen ? clamp(pointer.x / innerWidth * 2 - 1, -1, 1) : 0, ny = pointer.seen ? clamp(pointer.y / innerHeight * 2 - 1, -1, 1) : 0;
     const px = lerp(hs.px, nx, .06), py = lerp(hs.py, ny, .06), moving = Math.abs(px - hs.px) + Math.abs(py - hs.py) > .0005;
     hs.px = px; hs.py = py;
-    hDisc.style.translate = `${(-px * 12).toFixed(2)}px ${(-py * 8).toFixed(2)}px`;
-    hRing.style.translate = `${(px * 6).toFixed(2)}px ${(py * 4).toFixed(2)}px`;
+    hDisc.style.setProperty('--lx', `${(-px * 12).toFixed(2)}px`); hDisc.style.setProperty('--ly', `${(-py * 8).toFixed(2)}px`);
+    hRing.style.setProperty('--lx', `${(px * 6).toFixed(2)}px`); hRing.style.setProperty('--ly', `${(py * 4).toFixed(2)}px`);
     return moving;
   }
   // Tonight's moon (lab: Horizon, Sun and moon): how much of it is lit, on the right while it's waxing.
   if (hDisc) {
     const syn = 29.530588853, age = ((Date.now() / 864e5 - 10962.76) % syn + syn) % syn, lit = (1 - Math.cos(2 * Math.PI * age / syn)) / 2;
     hDisc.style.setProperty('--moon', ((age < syn / 2 ? -1 : 1) * Math.max(.14, lit)).toFixed(3));
+    // Setting and rising (lab: Sun and moon). The sun is down by sunset and the moon isn't up until half an hour
+    // after, so the page turns dark (15 to 30 minutes after sunset) while neither is showing.
+    const ramp = (x, a, b) => { const k = clamp((x - a) / (b - a), 0, 1); return k * k * (3 - 2 * k); };
+    const signed = (m) => ((m + 720) % 1440 + 1440) % 1440 - 720;
+    document.addEventListener('sky:paint', () => {
+      const n = window.__sky?.now?.(), s = n && window.__sky.sun(n.ymd);
+      let sink = 0;
+      if (s && root.dataset.mode === 'sky') {
+        const after = signed(n.min - s.set), before = signed(s.rise - n.min);
+        sink = root.dataset.theme === 'dark' ? 1 - Math.min(ramp(after, 30, 85), ramp(before, 30, 85)) : Math.max(ramp(after, -55, 4), ramp(before, -55, 4));
+      }
+      hDisc.style.setProperty('--sink', sink.toFixed(3));
+    });
   }
 
   /* ── Videos loop only while they are on screen; with reduced motion they wait for a press ── */
@@ -229,7 +242,7 @@
       it.x = nx; it.y = ny; moving = true;
       // With just a picture and a caption the picture fills the card, so the whole card tilts (Shipped's stays as it is).
       const whole = it.card && (document.body.dataset.copy || 'full') !== 'full' && !it.el.classList.contains('t-shipped');
-      const tilt = `perspective(1300px) rotateX(${(-it.y * 6).toFixed(2)}deg) rotateY(${(it.x * 8).toFixed(2)}deg)`;
+      const tilt = `perspective(1300px) rotateX(${(-it.y * (whole ? 5 : 6)).toFixed(2)}deg) rotateY(${(it.x * (whole ? 6 : 8)).toFixed(2)}deg)`;
       if (whole) it.card.style.transform = tilt;
       if (it.media) it.media.style.transform = whole ? '' : tilt;
       // Layers slide by their depth: back layers against the pointer, front layers with it.

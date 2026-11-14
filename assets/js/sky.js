@@ -541,6 +541,23 @@
     paint(true);
   });
 
+  /* ───────── From a card to its page and back ─────────
+     The card you click and the picture at the top of its page share a name, so the browser grows one into the
+     other (and back again when you return). Everything else on the page just fades (site.css). */
+  const TOP = '.hero-shot, .film-frame, .stage-media, main .card .media';
+  const named = (el) => { document.querySelectorAll('[style*="view-transition-name: project"]').forEach((x) => { x.style.viewTransitionName = ''; }); if (el) el.style.viewTransitionName = 'project'; };
+  document.addEventListener('click', (e) => {
+    const a = e.target.closest?.('.work a[href$=".html"], .cs-next a[href$=".html"]');
+    if (a && !e.metaKey && !e.ctrlKey && !e.shiftKey) named(a.closest('.item')?.querySelector('.card') || a);
+  });
+  addEventListener('pagereveal', (e) => {
+    if (!e.viewTransition) return;
+    const work = document.querySelector('.work'), from = window.navigation?.activation?.from?.url;
+    if (!work) return named(document.querySelector(TOP)); // a project page: its top picture
+    const file = from && new URL(from).pathname.split('/').pop();
+    named(file && work.querySelector(`a[href="${file}"]`)?.closest('.item')?.querySelector('.card'));
+  });
+
   /* ───────── Go ───────── */
   if (embed && params.has('sun')) root.classList.add('sun-on');
   paint();
