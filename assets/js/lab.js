@@ -6,7 +6,6 @@
   if (live && !new URLSearchParams(location.search).has('lab')) return;
   // [attribute, label, options, the recommended one]
   const ROWS = [
-    ['intro', 'Intro (picking one replays it)', [['off', 'Off'], ['rise', 'Sunrise'], ['zoom', 'Zoom out'], ['breathe', 'Breathe']], 'rise'],
   ];
   if (!ROWS.length) return; // nothing open just now
   const KEY = 'home-lab-10'; // home-lab-10: options changed 14 Nov, start everyone on the defaults
@@ -38,6 +37,5 @@
     if (!b) return;
     apply(b.dataset.k, b.dataset.v); set(b.dataset.k, b.dataset.v);
     bar.querySelectorAll(`[data-k="${b.dataset.k}"]`).forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
-    if (b.dataset.k === 'intro') window.__intro?.();
   });
 })();

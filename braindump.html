@@ -30,7 +30,7 @@
 <link rel="stylesheet" href="assets/css/sky.css">
 <link rel="stylesheet" href="assets/css/case.css">
 </head>
-<body class="case" style="--tone:#8a3cff">
+<body class="case cs-top" style="--tone:#8a3cff">
 
 <div class="tip" aria-hidden="true"><i></i><span class="tip-text"></span><svg class="tip-arrow" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5l5-5M4.5 3.5h4v4"/></svg></div>
 
@@ -50,17 +50,7 @@
 </header>
 
 <main>
-  <header class="cs-hero" id="top">
-    <h1 class="reveal">Brain Dump</h1>
-    <p class="lede reveal" style="--d:.06s">Type or speak freely. AI figures out the rest.</p>
-    <dl class="facts reveal" style="--d:.12s">
-      <div><dt>Type</dt><dd>Personal project</dd></div>
-      <div><dt>Status</dt><dd>In beta</dd></div>
-      <div><dt>Built with</dt><dd>Next.js, TypeScript, Tailwind CSS, Supabase, Claude API, Google Auth and Vercel</dd></div>
-    </dl>
-  </header>
-
-  <article class="item stage is-wide reveal" style="--d:.16s; --tone:#8a3cff; --a:#8a3cff; --b:#5b2bff; --c:#c77dff">
+  <article id="top" class="item stage is-wide reveal" style="--d:.16s; --tone:#8a3cff; --a:#8a3cff; --b:#5b2bff; --c:#c77dff">
     <div class="bleed" aria-hidden="true">
       <span class="blob" style="--c:#8a3cff; width:50%; left:4%; top:16%; rotate:-14deg"></span>
       <span class="blob" style="--c:#5b2bff; width:40%; left:52%; top:36%; rotate:20deg; --ar:1.8"></span>
@@ -69,6 +59,16 @@
     <div class="card"></div>
     <div class="stage-media"><video muted loop playsinline preload="none" poster="assets/media/braindump/braindump-demo-poster.webp" data-inview aria-label="Brain Dump demo: a spoken note sorted into tasks"><source src="assets/media/braindump/braindump-demo.mp4" type="video/mp4"></video></div>
   </article>
+
+  <header class="cs-hero">
+    <h1 class="reveal">Brain Dump</h1>
+    <p class="lede reveal" style="--d:.06s">Type or speak freely. AI figures out the rest.</p>
+    <dl class="facts reveal" style="--d:.12s">
+      <div><dt>Type</dt><dd>Personal project</dd></div>
+      <div><dt>Status</dt><dd>In beta</dd></div>
+      <div><dt>Built with</dt><dd>Next.js, TypeScript, Tailwind CSS, Supabase, Claude API, Google Auth and Vercel</dd></div>
+    </dl>
+  </header>
 
   <section class="cs-intro reveal">
     <p class="label">Overview</p>
@@ -119,7 +119,7 @@
 
   <section class="cs-next" aria-label="Next project">
     <p class="label">Next project</p>
-    <article class="item t-small t-next reveal" data-cursor="View case study" style="--tone:#0ec980; --a:#0ec980; --b:#1ab796; --c:#7cf0c0">
+    <article class="item t-small t-next reveal" style="--tone:#0ec980; --a:#0ec980; --b:#1ab796; --c:#7cf0c0">
       <div class="bleed" aria-hidden="true">
         <span class="blob" style="--c:#0ec980; width:56%; left:40%; top:12%; rotate:-12deg"></span>
         <span class="blob" style="--c:#1ab796; width:36%; left:62%; top:44%; rotate:18deg; --ar:1.7"></span>

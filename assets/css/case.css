@@ -10,12 +10,18 @@
 /* The homepage's sky sits at the very top and is gone within the first
    screen, so opening a card doesn't jump from blue to a blank page. The colours come from sky.js. */
 /* flow-root: without it the first picture's top margin pushes the body (and the sky) down, leaving a blank band behind the nav. */
-:root[data-top="sky"] body.case { position: relative; display: flow-root; background: none; }
+/* isolation: the sky band sits on the body's own page colour, so the colour behind the page only shows when you pull past an edge. */
+:root[data-top="sky"] body.case { position: relative; display: flow-root; isolation: isolate; }
 :root[data-top="sky"] body.case::before { content: ""; position: absolute; inset: 0 0 auto; height: min(88svh, 860px); z-index: -1; pointer-events: none;
   background: linear-gradient(var(--sky-top, transparent), color-mix(in srgb, var(--sky-mid, transparent) 62%, transparent) 38%, color-mix(in srgb, var(--sky-mid, transparent) 20%, transparent) 70%, transparent); }
 /* Pulling down past the top shows the colour behind the page: near the top that's the sky's, not the plain page's.
    case.js adds .past-top past halfway, so pulling past the bottom still shows the page colour. */
 :root[data-top="sky"]:not(.past-top) { background-color: var(--sky-top, var(--bg)); }
+
+/* The picture at the top stays hidden until it's drawn, then rises in (case.js adds .is-ready), so it never shows
+   up half loaded or as a black box. The title rises in meanwhile. */
+.js .case main > :first-child { transition: opacity 1s var(--ease), translate 1.1s var(--ease); }
+.js .case main > :first-child:not(.is-ready) { opacity: 0; translate: 0 30px; }
 
 /* ───────── Hero ───────── */
 .cs-hero { display: grid; grid-template-columns: repeat(12, 1fr); column-gap: 22px; align-items: start; padding: clamp(150px, 22vh, 220px) 0 clamp(44px, 5vw, 64px); }

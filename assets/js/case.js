@@ -4,6 +4,16 @@
   const pastTop = () => document.documentElement.classList.toggle('past-top', scrollY > (document.documentElement.scrollHeight - innerHeight) / 2);
   addEventListener('scroll', pastTop, { passive: true }); pastTop();
 
+  /* The picture at the top comes in once it's drawn (three seconds at most); case.css holds it back till then.
+     After the other scripts, so the film's poster is set. */
+  const top = document.querySelector('main > :first-child');
+  if (top) addEventListener('DOMContentLoaded', () => {
+    const pics = [...top.querySelectorAll('img')].filter((i) => i.checkVisibility?.() !== false).map((i) => i.decode()); // not the other theme's
+    top.querySelectorAll('video[poster]').forEach((v) => pics.push(Object.assign(new Image(), { src: v.poster }).decode()));
+    const ready = () => top.classList.add('is-ready');
+    Promise.race([Promise.allSettled(pics), new Promise((r) => setTimeout(r, 3000))]).then(ready);
+  });
+
   /* ── Squircle clip for live media ──
      A WebGL canvas or a playing video gets its own compositor layer, and while scrolling the compositor
      clips it with plain rounded corners instead of a squircle, so the corners flicker. The media sits
