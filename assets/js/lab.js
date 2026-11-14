@@ -7,6 +7,7 @@
   // [attribute, label, options, the recommended one]
   const ROWS = [
     ['work', 'Work', [['cards', 'Cards'], ['mosaic', 'Mosaic']], 'cards'],
+    ['about', 'About', [['long', 'Now'], ['short', 'Shorter'], ['art', 'Painting'], ['line', 'One sentence']], 'art'],
     ['arc', 'Horizon', [['arc', 'Arc'], ['none', 'None'], ['sun', 'Sun and moon']], 'sun'],
   ];
   const KEY = 'home-lab-8'; // home-lab-8: options changed 14 Nov, start everyone on the defaults
