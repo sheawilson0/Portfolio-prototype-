@@ -397,8 +397,8 @@ body[data-layout="peng"] .socials a::before { content: "·"; display: inline-blo
 
 /* ───────── Card pictures arriving ─────────
    site.js marks each picture .is-loaded when it's ready; until then it's hidden, so nothing pops in half drawn. */
-.work .media img:not(.is-loaded) { opacity: 0; }
-.work .media img.is-loaded { animation: arrive-fade .8s var(--ease); }
+:root:not(.hop) .work .media img:not(.is-loaded) { opacity: 0; }
+:root:not(.hop) .work .media img.is-loaded { animation: arrive-fade .8s var(--ease); }
 @keyframes arrive-fade { from { opacity: 0; } }
 
 /* ───────── Intro (intro.js) ─────────

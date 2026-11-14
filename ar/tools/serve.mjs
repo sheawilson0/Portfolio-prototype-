@@ -2,6 +2,8 @@
 //   node ar/tools/serve.mjs            port 4420, read only
 //   AR_SAVE=1 PORT=4421 node ar/tools/serve.mjs   also accepts POST /__save?path=ar/... (used by the build tools)
 // Safari needs byte ranges for video and the right type for .usdz, so both are handled here.
+// Browsers keep what they've fetched and only ask whether it changed (a tiny 304), so moving between pages doesn't
+// download everything again, but an edit still shows on the next load.
 import { createServer } from 'node:http';
 import { createReadStream, promises as fs } from 'node:fs';
 import path from 'node:path';
@@ -52,7 +54,9 @@ createServer(async (req, res) => {
     if (!stat) return res.writeHead(404, { 'content-type': 'text/plain' }).end('Not found');
 
     const type = TYPES[path.extname(file).toLowerCase()] || 'application/octet-stream';
-    const headers = { 'content-type': type, 'cache-control': 'no-store', 'accept-ranges': 'bytes' };
+    const etag = `"${stat.size.toString(36)}-${Math.round(stat.mtimeMs).toString(36)}"`;
+    const headers = { 'content-type': type, 'cache-control': 'no-cache', etag, 'accept-ranges': 'bytes' };
+    if (req.headers['if-none-match'] === etag) return res.writeHead(304, headers).end();
     const range = /bytes=(\d*)-(\d*)/.exec(req.headers.range || '');
     if (range) {
       const start = range[1] ? Number(range[1]) : Math.max(0, stat.size - Number(range[2]));

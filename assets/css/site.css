@@ -139,8 +139,8 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 /* Going from page to page: the old one fades, the new one fades in and settles up a little. The nav stays put. */
 @view-transition { navigation: auto; }
 .nav { view-transition-name: nav; }
-::view-transition-old(root) { animation: page-out .22s var(--ease) both; }
-::view-transition-new(root) { animation: page-in .5s .08s var(--ease) both; }
+::view-transition-old(root) { animation: page-out .18s var(--ease) both; }
+::view-transition-new(root) { animation: page-in .34s .04s var(--ease) both; }
 @keyframes page-out { to { opacity: 0; } }
 /* The card that grows into its page (named in sky.js): it travels and resizes on one slow, soft curve, and the
    two pictures keep their shape and cross-fade inside it rather than stretching. */

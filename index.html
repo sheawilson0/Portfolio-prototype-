@@ -22,11 +22,12 @@
 <meta name="twitter:card" content="summary_large_image">
 <script>
   document.documentElement.classList.add('js');
+  // Came from another page on the site (not a reload or a first visit): html.hop skips the long entrances.
+  try { const n = performance.getEntriesByType('navigation')[0]; if (n && n.type !== 'reload' && document.referrer.startsWith(location.origin + '/')) document.documentElement.classList.add('hop'); } catch (e) {}
   try { if (localStorage.getItem('theme') === 'dark') document.documentElement.dataset.theme = 'dark'; } catch (e) {}
-  // The intro (intro.js): once a visit on the live site, every load on previews, never with reduced motion or a link to a section.
+  // The intro (intro.js): on a first visit or a reload, never coming back from another page, with reduced motion or a link to a section.
   try {
-    const seen = /(^|\.)sheawilson\.uk$/.test(location.hostname) && sessionStorage.getItem('intro');
-    if (!seen && !location.hash && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    if (!document.documentElement.classList.contains('hop') && !location.hash && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
       document.documentElement.classList.add('intro');
       setTimeout(() => document.documentElement.classList.remove('intro', 'intro-go', 'intro-land'), 8000); // in case intro.js never runs
     }

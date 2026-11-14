@@ -36,6 +36,9 @@
 .js .case .facts.in > div:nth-child(5) { transition-delay: .28s; }
 .js .case .nav { transition: opacity .9s var(--ease) .3s; }
 .js .case:has(main > :first-child:not(.is-ready)) .nav { opacity: 0; }
+/* Coming from another page (html.hop): no build-up. The top picture, the title and the nav are simply there, so the
+   card you clicked grows straight into the picture and the crossfade lands on a finished page. */
+.hop .case :is(main > :first-child, .cs-hero .reveal, .facts > div, .nav) { opacity: 1 !important; translate: none !important; scale: none !important; filter: none !important; transition: none !important; }
 
 /* ───────── Hero ───────── */
 .cs-hero { display: grid; grid-template-columns: repeat(12, 1fr); column-gap: 22px; align-items: start; padding: clamp(150px, 22vh, 220px) 0 clamp(44px, 5vw, 64px); }

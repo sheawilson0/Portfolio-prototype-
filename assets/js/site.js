@@ -220,6 +220,35 @@
     pictures.forEach(i => { i.fetchPriority = 'low'; i.loading = 'eager'; });
   });
 
+  /* ── The next page, ready before the click ──
+     Chrome draws a page in the background while you rest on its link. Safari can't, so it fetches the page and the
+     pictures on its first screen instead, and the click finds them already here. */
+  const NEXT = 'a[href$=".html"], a[href="index.html"], a[href="/"], a[href^="shipped"], a[href^="/shipped"]';
+  if (HTMLScriptElement.supports?.('speculationrules')) {
+    const rules = document.createElement('script');
+    rules.type = 'speculationrules';
+    rules.textContent = JSON.stringify({ prerender: [{ where: { selector_matches: NEXT }, eagerness: 'moderate' }] });
+    document.head.append(rules);
+  } else {
+    const warmed = new Set([location.href.split('#')[0]]);
+    const warm = (e) => {
+      const a = e.target.closest?.(NEXT), url = a?.href.split('#')[0];
+      if (!a || a.target === '_blank' || a.origin !== location.origin || warmed.has(url)) return;
+      warmed.add(url);
+      fetch(url).then((r) => r.text()).then((html) => {
+        const doc = new DOMParser().parseFromString(html, 'text/html'), skip = root.dataset.theme === 'dark' ? '.img-light' : '.img-dark';
+        doc.querySelectorAll(`main > :first-child img:not(${skip}), .work .item:nth-child(-n+2) img:not(${skip}), [data-wide-poster]`).forEach((el) => {
+          const i = new Image();
+          if (el.dataset.widePoster) { i.src = new URL(el.dataset[innerWidth < innerHeight ? 'tallPoster' : 'widePoster'], url).href; return; }
+          if (el.srcset) { i.sizes = el.sizes; i.srcset = el.srcset.replace(/(^|,\s*)([^\s,]+)/g, (m, s, u) => s + new URL(u, url).href); }
+          i.src = new URL(el.getAttribute('src'), url).href;
+        });
+      }).catch(() => {});
+    };
+    document.addEventListener('pointerover', warm, { passive: true });
+    document.addEventListener('touchstart', warm, { passive: true });
+  }
+
   /* ── Reveal and count-up ── */
   const io = new IntersectionObserver((entries) => entries.forEach((en) => {
     if (!en.isIntersecting) return;

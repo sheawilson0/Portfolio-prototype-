@@ -596,6 +596,14 @@
     named(file && work.querySelector(`a[href="${file}"]`)?.closest('.item')?.querySelector('.card'));
   });
 
+  /* Coming from another page (html.hop, set in <head>): what's on the first screen is simply there, without rising in,
+     so the crossfade, or the card growing into place, lands on it. Further down still rises as you scroll. */
+  const settle = () => document.querySelectorAll('.reveal:not(.in)').forEach((el) => {
+    if (el.getBoundingClientRect().top > innerHeight) return;
+    el.classList.add('in', 'pg-now'); setTimeout(() => el.classList.remove('pg-now'), 100);
+  });
+  if (root.classList.contains('hop')) { addEventListener('pagereveal', settle); document.addEventListener('DOMContentLoaded', settle); }
+
   /* The same thing by hand, for browsers that can't yet carry one page into the next (Firefox, and so Zen). Leaving:
      everything but the card you clicked fades, then the page changes. Arriving: the picture at the top of the new
      page starts where the card was, cropped to its shape, and grows into place while the rest fades in. */

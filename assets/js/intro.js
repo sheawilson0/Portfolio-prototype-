@@ -7,7 +7,6 @@
   const end = () => {
     timers.forEach(clearTimeout); timers = []; stop?.abort(); stop = null;
     root.classList.remove('intro', 'intro-go', 'intro-land');
-    try { sessionStorage.setItem('intro', '1'); } catch (e) {}
   };
   function play() {
     if (!document.querySelector('.home .hero')) return end();
