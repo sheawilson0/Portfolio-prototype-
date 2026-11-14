@@ -324,7 +324,20 @@ body[data-about="line"] .about > :not(.about-line) { display: none; }
 body[data-about="line"] .about-line { display: block; max-width: 23em; margin: 0 auto; font-family: var(--serif); font-weight: 300; font-size: clamp(28px, 3.4vw, 50px); line-height: 1.26; letter-spacing: var(--track-heading); text-wrap: balance; }
 .about-line :is(.in-photo, .in-art) { display: inline-block; height: 1.05em; width: auto; vertical-align: -.2em; }
 .about-line .in-photo { aspect-ratio: 1; border-radius: 50%; object-fit: cover; }
-.about-line .in-art { border-radius: .12em; rotate: -3deg; margin: 0 .1em; box-shadow: 0 .1em .3em rgb(0 0 0 / .3); }
+.about-line .in-art { border-radius: .12em; rotate: -3deg; margin: 0 .1em; box-shadow: 0 .1em .3em rgb(0 0 0 / .3); transition: rotate .3s var(--ease), scale .3s var(--ease); }
+/* The painting in the sentence opens bigger: it flies out of the line into a pop-up (site.js) and back on any click or Esc. */
+.in-art-btn { display: inline; padding: 0; cursor: zoom-in; }
+.in-art-btn:is(:hover, :focus-visible) .in-art { rotate: 0deg; scale: 1.12; }
+.in-art-btn:focus-visible { outline: none; }
+.in-art-btn:focus-visible .in-art { outline: 2px solid var(--ink); outline-offset: 3px; }
+.art-zoom { width: 100vw; height: 100dvh; max-width: none; max-height: none; margin: 0; padding: 24px; border: 0; background: none; cursor: zoom-out; }
+.art-zoom[open] { display: grid; place-content: center; justify-items: center; gap: 16px; }
+.art-zoom::backdrop { background: rgb(8 8 12 / .78); opacity: 0; transition: opacity .35s var(--ease); }
+.art-zoom.is-open::backdrop { opacity: 1; }
+.art-zoom img { width: min(1200px, calc(100vw - 48px), (100dvh - 110px) * 1.63); height: auto; border-radius: 8px; box-shadow: 0 30px 80px -20px rgb(0 0 0 / .6); }
+.art-zoom p { font-size: 15px; color: rgb(255 255 255 / .7); opacity: 0; transition: opacity .3s var(--ease); }
+.art-zoom p b { font-weight: 400; font-style: italic; color: #fff; margin-right: 6px; }
+.art-zoom.is-open p { opacity: 1; transition-delay: .2s; }
 .about-line .org-mark { display: inline-block; height: .8em; vertical-align: -.08em; }
 .about-line .org-mark.is-influential { width: 1.98em; vertical-align: .04em; }
 .about-line .org-mark.is-ulster { width: 1.45em; }

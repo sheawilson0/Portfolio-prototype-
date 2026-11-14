@@ -346,3 +346,33 @@
     });
   }
 })();
+
+/* The Herring Net in the About sentence: click it and it grows out of the line into a pop-up; any click or Esc
+   sends it back to its spot. */
+(() => {
+  const btn = document.querySelector('.in-art-btn'), dlg = document.querySelector('.art-zoom');
+  if (!btn || !dlg) return;
+  const small = btn.querySelector('img'), big = dlg.querySelector('img');
+  const still = matchMedia('(prefers-reduced-motion: reduce)');
+  let busy = false;
+  const fly = (back) => {
+    big.getAnimations().forEach((a) => a.cancel());
+    const a = small.getBoundingClientRect(), b = big.getBoundingClientRect();
+    const from = `translate(${a.left + a.width / 2 - (b.left + b.width / 2)}px, ${a.top + a.height / 2 - (b.top + b.height / 2)}px) scale(${a.width / b.width}) rotate(-3deg)`;
+    const kf = [{ transform: from, borderRadius: '2px' }, { transform: 'none', borderRadius: '8px' }];
+    return big.animate(back ? kf.reverse() : kf, { duration: still.matches ? 0 : 480, easing: 'cubic-bezier(.2, .9, .25, 1)', fill: 'both' });
+  };
+  btn.addEventListener('click', () => {
+    dlg.showModal(); small.style.visibility = 'hidden';
+    requestAnimationFrame(() => dlg.classList.add('is-open'));
+    fly(false);
+  });
+  const close = async () => {
+    if (busy) return; busy = true;
+    dlg.classList.remove('is-open');
+    await fly(true).finished.catch(() => {});
+    dlg.close(); small.style.visibility = ''; busy = false;
+  };
+  dlg.addEventListener('click', close);
+  dlg.addEventListener('cancel', (e) => { e.preventDefault(); close(); });
+})();
