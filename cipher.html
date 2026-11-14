@@ -24,6 +24,8 @@
   document.documentElement.classList.add('js');
   try { if (localStorage.getItem('theme') === 'dark') document.documentElement.dataset.theme = 'dark'; } catch (e) {}
 </script>
+<link rel="preload" as="image" href="assets/media/cipher/cipher-scene-wide.webp" imagesrcset="assets/media/cipher/cipher-scene-wide-480w.webp 480w, assets/media/cipher/cipher-scene-wide-800w.webp 800w, assets/media/cipher/cipher-scene-wide-1200w.webp 1200w, assets/media/cipher/cipher-scene-wide-1600w.webp 1600w, assets/media/cipher/cipher-scene-wide.webp 2532w" imagesizes="(max-width: 1512px) 83.73vw, 1266px" media="(min-width: 721px)" fetchpriority="high">
+<link rel="preload" as="image" href="assets/media/cipher/cipher-scene-tall.webp" imagesrcset="assets/media/cipher/cipher-scene-tall-480w.webp 480w, assets/media/cipher/cipher-scene-tall-800w.webp 800w, assets/media/cipher/cipher-scene-tall.webp 1044w" imagesizes="89.23vw" media="(max-width: 720px)" fetchpriority="high">
 <script src="assets/js/sky.js"></script>
 <link rel="stylesheet" href="/assets/fonts/portfolio.css">
 <link rel="stylesheet" href="assets/css/site.css">
@@ -59,7 +61,7 @@
     </div>
     <div class="card"></div>
     <div class="stage-media">
-      <picture style="display:contents"><source media="(max-width:720px)" srcset="assets/media/cipher/cipher-scene-tall.webp"><img src="assets/media/cipher/cipher-scene-wide.webp" alt="3D render of the Cipher app on a phone, floating between green spheres" width="1600" height="899" decoding="async" fetchpriority="high"></picture>
+      <picture style="display:contents"><source media="(max-width:720px)" srcset="assets/media/cipher/cipher-scene-tall-480w.webp 480w, assets/media/cipher/cipher-scene-tall-800w.webp 800w, assets/media/cipher/cipher-scene-tall.webp 1044w" sizes="89.23vw"><img src="assets/media/cipher/cipher-scene-wide.webp" alt="3D render of the Cipher app on a phone, floating between green spheres" width="1600" height="899" decoding="async" fetchpriority="high" srcset="assets/media/cipher/cipher-scene-wide-480w.webp 480w, assets/media/cipher/cipher-scene-wide-800w.webp 800w, assets/media/cipher/cipher-scene-wide-1200w.webp 1200w, assets/media/cipher/cipher-scene-wide-1600w.webp 1600w, assets/media/cipher/cipher-scene-wide.webp 2532w" sizes="(max-width: 1512px) 83.73vw, 1266px"></picture>
       <spline-viewer style="position:absolute;inset:0;opacity:0" data-url="https://prod.spline.design/WyPjkwRYCWi9H8W9/scene.splinecode" loading-anim-type="spinner-small-dark" aria-label="3D render of the Cipher app on a phone, floating between green spheres"></spline-viewer>
     </div>
   </article>
