@@ -63,10 +63,13 @@
   const nav = document.querySelector('.nav');
   const navInner = nav.querySelector('.nav-inner');
   const measure = () => {
-    const w = navInner.clientWidth, pillW = Math.min(460, w);
+    // The pill hugs what's in it: "SW" (my name without its folds), a gap, the links, and the same room each side.
+    const logo = nav.querySelector('.logo'), links = nav.querySelector('.links');
+    const sw = logo.offsetWidth - [...logo.querySelectorAll('.fold')].reduce((t, f) => t + f.offsetWidth, 0);
+    const w = navInner.clientWidth, pad = 24, pillW = Math.min(w, pad + sw + 30 + links.offsetWidth + pad);
     nav.style.setProperty('--pill-w', `${pillW}px`);
-    nav.style.setProperty('--logo-shift', `${(w - pillW) / 2 + 20}px`);
-    nav.style.setProperty('--links-shift', `${(w - pillW) / 2 + 8}px`);
+    nav.style.setProperty('--logo-shift', `${(w - pillW) / 2 + pad}px`);
+    nav.style.setProperty('--links-shift', `${(w - pillW) / 2 + pad}px`);
     if (!hero) return;
     // Where the disc has to end up: centred on the screen and big enough to cover every corner.
     const H = hero.offsetHeight, W = innerWidth, R = disc.offsetWidth / 2;
@@ -90,7 +93,7 @@
 
   function heroFrame() {
     let moving = false;
-    if (!hero) { setPill(scrollY > 80); return false; }
+    if (!hero) { setPill(scrollY > 80); return lean(); }
     const p = lerp(hs.p, hs.target, .3);
     if (Math.abs(p - hs.target) > .0005) moving = true;
     hs.p = Math.abs(p - hs.target) < .0005 ? hs.target : p;
@@ -118,6 +121,19 @@
     // The words come towards you and fade, as if you were moving through them into the page.
     copy.style.transform = `translate3d(0, ${(-24 * e).toFixed(1)}px, 0) scale(${(1 + .22 * e).toFixed(4)})`;
     copy.style.opacity = String(clamp(1 - 1.15 * e, 0, 1));
+    return moving;
+  }
+
+  // The homepage's arc leans with the pointer, as the first site's did: the disc drifts against it and the ring
+  // with it, so the brighter side of the ring follows you.
+  const hDisc = document.querySelector('.home .disc'), hRing = document.querySelector('.home .corona');
+  function lean() {
+    if (!hDisc || !fine || reduced || scrollY > innerHeight) return false;
+    const nx = pointer.seen ? clamp(pointer.x / innerWidth * 2 - 1, -1, 1) : 0, ny = pointer.seen ? clamp(pointer.y / innerHeight * 2 - 1, -1, 1) : 0;
+    const px = lerp(hs.px, nx, .06), py = lerp(hs.py, ny, .06), moving = Math.abs(px - hs.px) + Math.abs(py - hs.py) > .0005;
+    hs.px = px; hs.py = py;
+    hDisc.style.translate = `${(-px * 12).toFixed(2)}px ${(-py * 8).toFixed(2)}px`;
+    hRing.style.translate = `${(px * 6).toFixed(2)}px ${(py * 4).toFixed(2)}px`;
     return moving;
   }
 

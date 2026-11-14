@@ -118,8 +118,8 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .fold > span { min-width: 0; overflow: hidden; padding-right: .08em; margin-right: -.08em; transition: opacity .45s var(--ease); }
 .nav.is-scrolled .fold { grid-template-columns: 0fr; }
 .nav.is-scrolled .fold > span { opacity: 0; }
-.nav.is-scrolled .logo:hover .fold, .nav.is-scrolled .logo:focus-visible .fold { grid-template-columns: 1fr; }
-.nav.is-scrolled .logo:hover .fold > span, .nav.is-scrolled .logo:focus-visible .fold > span { opacity: 1; }
+/* Just my name, Work and Contact. The theme button is hidden: press D for light or dark, Shift+D to follow the sky. */
+.links a[href$="#about"], .links .theme-toggle { display: none; }
 .links { display: flex; align-items: center; gap: 26px; font-size: 14px; font-weight: 400; }
 .links a { color: var(--ink-2); transition: color .3s var(--ease); }
 .links a:hover { color: var(--ink); }
@@ -408,7 +408,6 @@ footer a:hover { color: var(--ink); }
 @media (max-width: 700px) {
   :root { --radius: 38px; --radius-sm: 26px; }
   .links { gap: 16px; }
-  .links a:nth-child(2) { display: none; }
   .eclipse { left: -40vw; width: 180vw; top: 70%; }
   .hero-copy { top: 38%; }
   .hero .intro { font-size: 16px; }

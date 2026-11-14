@@ -366,8 +366,12 @@
     document.startViewTransition(apply).finished.finally(() => root.classList.remove('theme-switching'));
   }
   window.__skyToggle = (e) => { if (barOpen) closeBar(); setMode(nextMode(), e); };
-  // Press D to click through Sky, Light and Dark (for when the button is hidden).
-  addEventListener('keydown', (e) => { if (e.key === 'd' && !e.metaKey && !e.ctrlKey && !e.altKey && !e.target.closest('input, textarea, [contenteditable]')) window.__skyToggle(); });
+  // The theme button is hidden. D flips light and dark; Shift+D goes back to following the sky.
+  addEventListener('keydown', (e) => {
+    if (e.metaKey || e.ctrlKey || e.altKey || e.target.closest('input, textarea, [contenteditable]')) return;
+    if (e.key === 'd') setMode(root.dataset.theme === 'dark' ? 'light' : 'dark');
+    else if (e.key === 'D') setMode('sky');
+  });
 
   /* ───────── Favicon ───────── */
   // The eclipse, drawn in the page's colours: a white disc by day, dark after sunset, ring in the sky's colours.

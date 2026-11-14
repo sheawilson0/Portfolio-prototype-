@@ -5,20 +5,14 @@
   if (live && !new URLSearchParams(location.search).has('lab')) return;
   const ROWS = [
     ['work', 'Work', [['cards', 'Cards', 1], ['mosaic', 'Mosaic']]],
-    ['copy', 'Card words (cards)', [['cap', 'Just a caption', 1], ['lean', 'Lean, card sizes'], ['full', 'Full']]],
     ['gap', 'Space between', [['roomy', 'More', 1], ['tight', 'As before']]],
-    ['phones', 'Two phones (mosaic)', [['snap', 'Flip Snapshot', 1], ['quit', 'Flip Quit28'], ['side', 'Side by side']]],
     ['skylook', 'Page sky', [['street', 'Shipped street', 1], ['site', 'Site']]],
-    ['ship', 'Shipped colour', [['yellow', 'Yellow', 1], ['red', 'Red']]],
-    ['arc', 'Horizon', [['arc', 'Arc', 1], ['none', 'None'], ['wide', 'Wide horizon'], ['rim', 'Rim of light'], ['band', 'Soft band'], ['sun', 'Sun and eclipse']]],
-    ['ring', 'Ring colour', [['rainbow', 'Rainbow', 1], ['sky', 'Sunrise and pearl']]],
-    ['words', 'Words', [['airy', 'Airy', 1], ['navy', 'Sky ink'], ['firm', 'Firmer']]],
+    ['arc', 'Horizon', [['arc', 'Arc', 1], ['none', 'None'], ['sun', 'Sun and eclipse']]],
+    ['ring', 'Ring colour', [['sky', 'Sunrise and pearl', 1], ['rainbow', 'Rainbow']]],
+    ['words', 'Words', [['airy', 'Airy', 1], ['navy', 'Sky ink']]],
     ['nav', 'Nav shape', [['pill', 'Pill', 1], ['tile', 'Shipped tile']]],
-    ['navw', 'Nav words', [['all', 'All three', 1], ['two', 'No About'], ['name', 'Just my name']]],
-    ['tt', 'Theme button', [['show', 'Show', 1], ['hide', 'Hide (press D)']]],
-    ['q28', 'Quit28 card', [['hand-cal', 'Hand, calendar', 1], ['hand', 'Hand, calendar, circle'], ['hand-circle', 'Hand, circle'], ['live', 'iPhone']]],
   ];
-  const KEY = 'home-lab-6'; // home-lab-6: picks changed 12 Nov, start everyone on them
+  const KEY = 'home-lab-7'; // home-lab-7: picks changed 14 Nov, start everyone on them
   const get = (k) => { try { return JSON.parse(localStorage.getItem(KEY) || '{}')[k]; } catch (e) { return null; } };
   const set = (k, v) => { try { const o = JSON.parse(localStorage.getItem(KEY) || '{}'); o[k] = v; localStorage.setItem(KEY, JSON.stringify(o)); } catch (e) {} };
   const apply = (k, v) => { document.body.dataset[k] = v; };

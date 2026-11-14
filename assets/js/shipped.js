@@ -300,7 +300,9 @@
       track.classList.remove('has-open');
       const target = focusId && items.find((el) => el.id === focusId);
       requestAnimationFrame(() => {
-        if (target) { go(target, false); open(target); } else track.scrollLeft = track.scrollWidth;
+        // Opens on the newest thing I can show, not a locked one.
+        const newest = [...items].reverse().find((el) => !el.classList.contains('is-wraps'));
+        if (target) { go(target, false); open(target); } else if (newest) go(newest, false); else track.scrollLeft = track.scrollWidth;
         onScroll();
       });
     }
