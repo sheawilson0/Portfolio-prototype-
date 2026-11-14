@@ -304,18 +304,11 @@ body:is([data-copy="cap"], [data-copy="lean"]) .work :is(.t-amp, .t-cipher) .med
    Long: as it was. Short: the same, two paragraphs. Painting: the words on the right give way to The Herring Net,
    hung like a card with a caption. Sentence: one big sentence with my photo, the two logos and the painting in it. */
 .about-short, .about-art, .about-line { display: none; }
-body:is([data-about="short"], [data-about="art"], [data-about="lately"], [data-about="ask"], [data-about="off"]) .about-body { display: none; }
-/* Lately: four short lines. Ask me about: questions that open an email. Off the clock: a photo and a line.
+body:is([data-about="short"], [data-about="art"], [data-about="off"]) .about-body { display: none; }
+/* Photo and a line: a photo of something I do outside work, and one line about it.
    Anything in .is-gap is a placeholder for Shea's own words. */
-.about-lately, .about-ask, .about-off { display: none; }
-body[data-about="lately"] .about-lately, body[data-about="ask"] .about-ask, body[data-about="off"] .about-off { display: block; align-self: end; }
-.about-lately div { display: grid; grid-template-columns: 9em 1fr; gap: 16px; padding: 16px 0; border-top: 1px solid var(--hair); }
-.about-lately dt { font-size: 14px; color: var(--whisper); padding-top: 4px; }
-.about-lately dd { font-size: 20px; line-height: 1.4; color: var(--ink); }
-.about-ask p { font-size: 14px; color: var(--whisper); margin-bottom: 14px; }
-.about-ask ul { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; }
-.about-ask a { display: block; padding: 11px 18px; border-radius: 999px; font-size: 17px; color: var(--ink); background: color-mix(in srgb, var(--ink) 6%, transparent); transition: background-color .3s var(--ease); }
-.about-ask a:hover { background: color-mix(in srgb, var(--ink) 11%, transparent); }
+.about-off { display: none; }
+body[data-about="off"] .about-off { display: block; align-self: end; }
 .about-off-photo { display: grid; place-items: center; aspect-ratio: 4 / 3; border-radius: 6px; border: 1px dashed var(--whisper); color: var(--whisper); font-size: 14px; rotate: -1.2deg; }
 .about-off figcaption { margin-top: 20px; font-size: 20px; line-height: 1.5; color: var(--ink-2); max-width: 40ch; }
 .is-gap { color: var(--whisper); font-style: italic; }
@@ -326,9 +319,9 @@ body[data-about="art"] .about { align-items: end; }
 body[data-about="art"] .about-art { display: grid; gap: 16px; rotate: 1.2deg; }
 .about-art img { display: block; width: 100%; height: auto; border-radius: 6px; box-shadow: 0 1px 2px rgb(0 0 0 / .2), 0 30px 60px -20px rgb(0 0 0 / .45); }
 .about-art .tile-cap { rotate: -1.2deg; }
-body[data-about="line"] .about { display: block; padding-top: 120px; text-align: center; }
-body[data-about="line"] .about > :not(.about-line) { display: none; }
-body[data-about="line"] .about-line { display: block; max-width: 23em; margin: 0 auto; font-family: var(--serif); font-weight: 300; font-size: clamp(28px, 3.4vw, 50px); line-height: 1.26; letter-spacing: var(--track-heading); text-wrap: balance; }
+body:is([data-about="line"], [data-about="big"]) .about { display: block; padding-top: 120px; text-align: center; }
+body:is([data-about="line"], [data-about="big"]) .about > :not(.about-line) { display: none; }
+body:is([data-about="line"], [data-about="big"]) .about-line { display: block; max-width: 23em; margin: 0 auto; font-family: var(--serif); font-weight: 300; font-size: clamp(28px, 3.4vw, 50px); line-height: 1.26; letter-spacing: var(--track-heading); text-wrap: balance; }
 .about-line :is(.in-photo, .in-art) { display: inline-block; height: 1.05em; width: auto; vertical-align: -.2em; }
 .about-line .in-photo { aspect-ratio: 1; border-radius: 50%; object-fit: cover; }
 .about-line .in-art { border-radius: .12em; rotate: -3deg; margin: 0 .1em; box-shadow: 0 .1em .3em rgb(0 0 0 / .3); }
@@ -336,6 +329,11 @@ body[data-about="line"] .about-line { display: block; max-width: 23em; margin: 0
 .about-line .org-mark.is-influential { width: 1.98em; vertical-align: .04em; }
 .about-line .org-mark.is-ulster { width: 1.45em; }
 .about-line .org-mark::before { opacity: .9; }
+/* Sentence, big pictures: the photo and the painting grow into the line. */
+/* Every line is opened up the same amount, so the bigger pictures fit without covering words or making one line taller. */
+body[data-about="big"] .about-line { line-height: 1.75; }
+body[data-about="big"] .about-line .in-photo { height: 1.4em; vertical-align: middle; margin: -.1em .05em; }
+body[data-about="big"] .about-line .in-art { height: 1.8em; vertical-align: middle; margin: -.1em .15em; }
 
 /* ───────── Horizon (lab) ─────────
    Arc, none, or Sun and moon: a whole small circle above the headline. By day a pale sun with a clean edge and a
@@ -381,6 +379,15 @@ body[data-layout="line"] .contact-line { display: block; max-width: 22em; margin
 .contact-line a:hover, body[data-layout="foot"] .foot-email:hover { text-decoration-color: var(--ink); }
 .contact-line a[href^="mailto"] { font-style: italic; }
 body[data-layout="foot"] .contact { display: none; }
+/* Peng-style: the heading, then the email, LinkedIn and X as grey words with dots between. On hover a word goes
+   full ink and a thick underline fades in, breaking around g, y and p (after pengzhe.ng). */
+body[data-layout="peng"] .contact :is(.sub, .handle, .mark, .email-icon) { display: none; }
+body[data-layout="peng"] .socials .word { display: inline; }
+body[data-layout="peng"] .socials { margin-left: -.3em; gap: 0; } /* cancels the space after the email */
+body[data-layout="peng"] .contact :is(.email, .socials a) { display: inline-block; padding: 0; border-radius: 0; background: none; font-size: 20px; color: var(--ink-2);
+  text-decoration: underline transparent; text-decoration-thickness: .09em; text-underline-offset: .22em; text-decoration-skip-ink: auto; transition: color .15s ease, text-decoration-color .15s ease; }
+body[data-layout="peng"] .contact :is(.email, .socials a):is(:hover, :focus-visible) { background: none; color: var(--ink); text-decoration-color: currentColor; }
+body[data-layout="peng"] .socials a::before { content: "·"; display: inline-block; margin: 0 .55em; color: var(--whisper); }
 body[data-layout="foot"] .foot-email { display: inline; color: var(--ink); }
 body[data-layout="foot"] .about { padding-bottom: 120px; }
 
