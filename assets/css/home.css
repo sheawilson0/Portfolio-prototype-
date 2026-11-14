@@ -304,7 +304,21 @@ body:is([data-copy="cap"], [data-copy="lean"]) .work :is(.t-amp, .t-cipher) .med
    Long: as it was. Short: the same, two paragraphs. Painting: the words on the right give way to The Herring Net,
    hung like a card with a caption. Sentence: one big sentence with my photo, the two logos and the painting in it. */
 .about-short, .about-art, .about-line { display: none; }
-body:is([data-about="short"], [data-about="art"]) .about-body { display: none; }
+body:is([data-about="short"], [data-about="art"], [data-about="lately"], [data-about="ask"], [data-about="off"]) .about-body { display: none; }
+/* Lately: four short lines. Ask me about: questions that open an email. Off the clock: a photo and a line.
+   Anything in .is-gap is a placeholder for Shea's own words. */
+.about-lately, .about-ask, .about-off { display: none; }
+body[data-about="lately"] .about-lately, body[data-about="ask"] .about-ask, body[data-about="off"] .about-off { display: block; align-self: end; }
+.about-lately div { display: grid; grid-template-columns: 9em 1fr; gap: 16px; padding: 16px 0; border-top: 1px solid var(--hair); }
+.about-lately dt { font-size: 14px; color: var(--whisper); padding-top: 4px; }
+.about-lately dd { font-size: 20px; line-height: 1.4; color: var(--ink); }
+.about-ask p { font-size: 14px; color: var(--whisper); margin-bottom: 14px; }
+.about-ask ul { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; }
+.about-ask a { display: block; padding: 11px 18px; border-radius: 999px; font-size: 17px; color: var(--ink); background: color-mix(in srgb, var(--ink) 6%, transparent); transition: background-color .3s var(--ease); }
+.about-ask a:hover { background: color-mix(in srgb, var(--ink) 11%, transparent); }
+.about-off-photo { display: grid; place-items: center; aspect-ratio: 4 / 3; border-radius: 6px; border: 1px dashed var(--whisper); color: var(--whisper); font-size: 14px; rotate: -1.2deg; }
+.about-off figcaption { margin-top: 20px; font-size: 20px; line-height: 1.5; color: var(--ink-2); max-width: 40ch; }
+.is-gap { color: var(--whisper); font-style: italic; }
 body[data-about="short"] .about-short { display: block; align-self: end; }
 .about-short p { font-size: 20px; line-height: 1.55; color: var(--ink-2); max-width: 40ch; }
 .about-short p + p { margin-top: 18px; }
