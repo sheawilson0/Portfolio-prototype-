@@ -25,13 +25,11 @@
   try { if (localStorage.getItem('theme') === 'dark') document.documentElement.dataset.theme = 'dark'; } catch (e) {}
 </script>
 <script src="assets/js/sky.js"></script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=Spectral:ital,wght@0,200;0,300;1,300;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/fonts/portfolio.css">
 <link rel="stylesheet" href="assets/css/site.css">
 <link rel="stylesheet" href="assets/css/sky.css">
 <link rel="stylesheet" href="assets/css/case.css">
-<script type="module" src="https://unpkg.com/@splinetool/viewer@1.9.82/build/spline-viewer.js"></script>
+<script src="assets/js/media-embed.js" defer></script>
 </head>
 <body class="case cs-top" style="--tone:#0ec980">
 
@@ -61,7 +59,8 @@
     </div>
     <div class="card"></div>
     <div class="stage-media">
-      <spline-viewer url="https://prod.spline.design/WyPjkwRYCWi9H8W9/scene.splinecode" loading-anim-type="spinner-small-dark" aria-label="3D render of the Cipher app on a phone, floating between green spheres"></spline-viewer>
+      <picture style="display:contents"><source media="(max-width:720px)" srcset="assets/media/cipher/cipher-scene-tall.webp"><img src="assets/media/cipher/cipher-scene-wide.webp" alt="3D render of the Cipher app on a phone, floating between green spheres" width="1600" height="899" decoding="async" fetchpriority="high"></picture>
+      <spline-viewer style="position:absolute;inset:0;opacity:0" data-url="https://prod.spline.design/WyPjkwRYCWi9H8W9/scene.splinecode" loading-anim-type="spinner-small-dark" aria-label="3D render of the Cipher app on a phone, floating between green spheres"></spline-viewer>
     </div>
   </article>
 
@@ -89,7 +88,7 @@
       </div>
       <div class="browser reveal" style="--d:.08s">
         <div class="browser-bar" aria-hidden="true"><i></i><i></i><i></i><span>cipher.com</span></div>
-        <div class="browser-screen"><img class="browser-page" src="assets/media/cipher/cipher-website.webp" alt="The Cipher landing page, from the hero through Meet Ci to the download section" width="2000" height="6216" loading="lazy" decoding="async"></div>
+        <div class="browser-screen"><img class="browser-page" src="assets/media/cipher/cipher-website.webp" alt="The Cipher landing page, from the hero through Meet Ci to the download section" width="2000" height="6216" loading="lazy" decoding="async" srcset="assets/media/cipher/cipher-website-480w.webp 480w, assets/media/cipher/cipher-website-800w.webp 800w, assets/media/cipher/cipher-website-1200w.webp 1200w, assets/media/cipher/cipher-website.webp 2000w" sizes="(max-width: 720px) 89.74vw, (max-width: 1512px) 48.35vw, 731px"></div>
       </div>
     </div>
   </section>
@@ -99,7 +98,7 @@
       <h2>Ci handles the thinking</h2>
       <p>Dark, immersive, with a glass card at the centre. Ci lives inside the app to answer questions, flag subscriptions, and predict cashflow. It adapts to how you actually use money. Everything else is there too: crypto, savings goals, spending limits, instant transfers.</p>
     </div>
-    <figure class="shot reveal" style="--d:.08s"><img src="assets/media/cipher/cipher-app-hand.webp" alt="Cipher app screens spread around an iPhone held in one hand" width="2000" height="1500" loading="lazy" decoding="async"></figure>
+    <figure class="shot reveal" style="--d:.08s"><img src="assets/media/cipher/cipher-app-hand.webp" alt="Cipher app screens spread around an iPhone held in one hand" width="2000" height="1500" loading="lazy" decoding="async" srcset="assets/media/cipher/cipher-app-hand-480w.webp 480w, assets/media/cipher/cipher-app-hand-800w.webp 800w, assets/media/cipher/cipher-app-hand-1200w.webp 1200w, assets/media/cipher/cipher-app-hand.webp 2000w" sizes="(max-width: 720px) 89.74vw, (max-width: 1512px) 48.35vw, 731px"></figure>
   </section>
 
   <section class="cs-row">
@@ -107,7 +106,7 @@
       <h2>The mark comes from Ci</h2>
       <p>Raleway typeface, electric green on navy, and a tone that’s confident without being corporate.</p>
     </div>
-    <figure class="shot reveal" style="--d:.08s"><img src="assets/media/cipher/cipher-brand.webp" alt="Cipher brand collage: the logo, Raleway type, the glass card and the green palette" width="1088" height="1090" loading="lazy" decoding="async"></figure>
+    <figure class="shot reveal" style="--d:.08s"><img src="assets/media/cipher/cipher-brand.webp" alt="Cipher brand collage: the logo, Raleway type, the glass card and the green palette" width="1088" height="1090" loading="lazy" decoding="async" srcset="assets/media/cipher/cipher-brand-480w.webp 480w, assets/media/cipher/cipher-brand-800w.webp 800w, assets/media/cipher/cipher-brand.webp 1088w" sizes="(max-width: 720px) 89.74vw, (max-width: 1512px) 48.35vw, 731px"></figure>
   </section>
 
   <section class="cs-cta">
@@ -131,7 +130,7 @@
       <a class="card" href="amp.html">
         <div class="card-top"><span class="label">Mobile app</span><span class="label">Concept</span></div>
         <div class="card-copy"><h2>Amp</h2><p class="line">A music player built around smart playback and moving between devices.</p></div>
-        <div class="media"><img src="assets/media/home/amp.webp" alt="Amp music player on a phone standing on dark rock" width="1400" height="1050" loading="lazy" decoding="async"></div>
+        <div class="media"><img src="assets/media/home/amp.webp" alt="Amp music player on a phone standing on dark rock" width="1400" height="1050" loading="lazy" decoding="async" srcset="assets/media/home/amp-480w.webp 480w, assets/media/home/amp-800w.webp 800w, assets/media/home/amp-1200w.webp 1200w, assets/media/home/amp.webp 1400w" sizes="(max-width: 720px) 77.95vw, (max-width: 1512px) 43.58vw, 659px"></div>
       </a>
     </article>
   </section>
