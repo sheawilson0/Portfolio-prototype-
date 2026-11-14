@@ -289,8 +289,9 @@ body[data-contact="quiet"] .email:hover { box-shadow: none; }
 
 /* Amp's card: the floating screens from its own page, no photo behind them, so it fills the card like the others.
    It moves with the pointer like the other cards' layers (data-depth), and doesn't zoom. */
-body:is([data-copy="cap"], [data-copy="lean"]) .work .t-amp .media { inset: 0; border-radius: 0; overflow: visible; }
-.work .t-amp .media img, .item.is-hot.t-amp .media img { object-fit: contain; transform: scale(1.08); }
+body:is([data-copy="cap"], [data-copy="lean"]) .work :is(.t-amp, .t-cipher) .media { inset: 0; border-radius: 0; overflow: visible; }
+.work :is(.t-amp, .t-cipher) .media img, .item.is-hot:is(.t-amp, .t-cipher) .media img { object-fit: contain; transform: scale(1.08); }
+.work .t-cipher .media img, .item.is-hot.t-cipher .media img { transform: scale(.9); } /* a tall laptop: smaller, so it floats clear of the edge */
 
 /* ───────── About (lab: About) ─────────
    Long: as it was. Short: the same, two paragraphs. Painting: the words on the right give way to The Herring Net,

@@ -133,9 +133,7 @@
   const lum = (h) => hex(h).map((v) => { v /= 255; return v <= .04045 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4; }).reduce((a, v, i) => a + v * [.2126, .7152, .0722][i], 0);
 
   let frozen = params.get('t'), frozenDate = params.get('d');
-  let topSky = params.get('top');
-  try { topSky = topSky || JSON.parse(localStorage.getItem('home-lab-8') || '{}').top; } catch (e) {}
-  if (topSky === 'sky') root.dataset.top = 'sky';
+  root.dataset.top = 'sky'; // project pages open under the homepage's sky
   function now() {
     const w = wall(Date.now());
     const ymd = frozenDate || w.ymd;

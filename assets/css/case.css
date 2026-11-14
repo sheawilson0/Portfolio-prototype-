@@ -7,7 +7,7 @@
 
 .case main { max-width: 1380px; margin: 0 auto; padding: 0 var(--gutter); }
 
-/* Lab: Project page top → Sky (or ?top=sky). The homepage's sky sits at the very top and is gone within the first
+/* The homepage's sky sits at the very top and is gone within the first
    screen, so opening a card doesn't jump from blue to a blank page. The colours come from sky.js. */
 :root[data-top="sky"] body.case { position: relative; background: none; }
 :root[data-top="sky"] body.case::before { content: ""; position: absolute; inset: 0 0 auto; height: min(88svh, 860px); z-index: -1; pointer-events: none;
