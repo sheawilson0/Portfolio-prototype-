@@ -141,8 +141,15 @@ a.pane:hover, .sk-shot:hover .pane { background: var(--pane-hover); box-shadow: 
 .mk-one img { position: absolute; inset: 10% 8% 0; width: 84%; height: 90%; object-fit: contain; object-position: 50% 100%; }
 .mk-tall img { inset: 12% 8% -40%; height: 128%; object-position: 50% 0; }
 
-/* Peek row: sideways, the next card showing at the edge */
-.sk-rail { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; margin: 0 -16px; padding: 0 16px 8px; scroll-padding: 0 16px; }
+/* Peek row: sideways, the next card fading out at the column's right edge rather than cut off.
+   A scroller clips everything outside its box, hover shadows included, so the box reaches --bleed past the cards
+   on every side (padding, cancelled by the negative margin) to leave the shadows room. The fade is a mask across
+   it: the right side is gone by the column's edge, in line with the cards above; the left fades over the bleed,
+   so cards scrolled past soften away and the first card's shadow never meets an edge. */
+.sk-rail { --bleed: 28px; display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none;
+  margin: calc(var(--bleed) * -1) calc(var(--bleed) * -1) calc(var(--bleed) * -1.4); padding: var(--bleed) var(--bleed) calc(var(--bleed) * 1.4); scroll-padding: 0 var(--bleed);
+  -webkit-mask: linear-gradient(to right, transparent, #000 var(--bleed), #000 calc(100% - var(--bleed) - 56px), transparent calc(100% - var(--bleed)));
+          mask: linear-gradient(to right, transparent, #000 var(--bleed), #000 calc(100% - var(--bleed) - 56px), transparent calc(100% - var(--bleed))); }
 .sk-rail::-webkit-scrollbar { display: none; }
 .sk-rail li { flex: none; width: 74%; scroll-snap-align: start; }
 
