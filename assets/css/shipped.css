@@ -178,3 +178,16 @@
   .st-search { padding-top: 9vh; }
 }
 @media (prefers-reduced-motion: reduce) { .st-more, .st-menu, .st-menu.is-open, .st-search-panel, .is-searching .st-search-panel { transition: opacity .2s; transform: none; } }
+
+/* A short window needs a scrollable street, rather than clipping the dates and details. */
+@media (max-height: 800px) {
+  .is-street { height: auto; overflow-y: auto; }
+  .street { height: auto; min-height: 100svh; grid-template-rows: minmax(560px, 1fr) auto; }
+  .st-track { padding-block: 24px; }
+  .st-item { height: auto; min-height: 430px; }
+}
+@media (pointer: coarse) {
+  .st-bar { padding-bottom: max(18px, env(safe-area-inset-bottom)); padding-left: max(16px, env(safe-area-inset-left)); padding-right: max(16px, env(safe-area-inset-right)); }
+  .st-pill, .st-pill.is-r, .st-heart { min-width: 44px; min-height: 44px; }
+  .st-open, .st-menu button { min-height: 44px; }
+}
