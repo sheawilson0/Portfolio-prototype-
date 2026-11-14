@@ -149,9 +149,16 @@
 
     // play (silently) while on screen, rest when scrolled away
     if (!reduce && 'IntersectionObserver' in window) {
+      // On case pages, let the poster draw before the film competes for the connection.
+      const posterReady = document.body.classList.contains('case') && video.poster
+        ? Object.assign(new Image(), { src: video.poster }).decode().catch(() => {})
+            .then(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))))
+        : Promise.resolve();
+      let visible = false;
       new IntersectionObserver(entries => {
         for (const e of entries) {
-          if (!document.hidden && e.isIntersecting && e.intersectionRatio >= 0.5) { if (video.paused) play(); }
+          visible = e.isIntersecting && e.intersectionRatio >= 0.5;
+          if (visible) posterReady.then(() => { if (visible && !document.hidden && video.paused) play(); });
           else if (!video.paused) video.pause();
         }
       }, { threshold: [0, 0.5] }).observe(root);

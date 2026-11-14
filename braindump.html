@@ -26,6 +26,7 @@
   try { const n = performance.getEntriesByType('navigation')[0]; if (n && n.type !== 'reload' && document.referrer.startsWith(location.origin + '/')) document.documentElement.classList.add('hop'); } catch (e) {}
   try { if (localStorage.getItem('theme') === 'dark') document.documentElement.dataset.theme = 'dark'; } catch (e) {}
 </script>
+<link rel="preload" as="image" href="assets/media/braindump/braindump-demo-poster.webp" fetchpriority="high">
 <script src="assets/js/sky.js"></script>
 <link rel="stylesheet" href="/assets/fonts/portfolio.css">
 <link rel="stylesheet" href="assets/css/site.css">
