@@ -8,6 +8,8 @@
 
 /* ───────── Hero ───────── */
 .home .hero { position: relative; height: auto; min-height: 0; overflow: clip; padding: 96px var(--gutter) 220px; text-align: center;
+  /* Keep the masked horizon on its own layer while the page scrolls. */
+  transform: translateZ(0);
   -webkit-mask: linear-gradient(#000 calc(100% - 200px), transparent); mask: linear-gradient(#000 calc(100% - 200px), transparent); }
 .stage { position: relative; height: 160px; max-width: 1380px; margin: 0 auto; }
 .home .eclipse { left: calc(50% - 60vw); top: 70%; width: 120vw; }
@@ -247,13 +249,18 @@ body[data-copy="lean"] .work .screen-export { width: 25%; left: 63%; top: 44%; }
    The homepage under the street's sky (streetSky() in shipped.js, following the sun the same way): the gradient,
    the glow on the horizon at sunrise and sunset, the eclipse's disc in the sky's colour, and the glass cards
    frosted over it instead of sitting on white. */
-body.home[data-skylook="street"] { --pane: rgb(255 255 255 / .45); background: var(--sky-low, #f9ede2) linear-gradient(180deg, var(--sky-top, #9ec0e9) 0%, var(--sky-mid, #cdd9e9) 48%, var(--sky-low, #f9ede2) 92%) fixed; }
+/* A fixed body background repaints during scrolling in WebKit. Cache the same sky separately.
+   The old negative-z sun glow sat behind the opaque body background and was not visible. */
+body.home[data-skylook="street"] { --pane: rgb(255 255 255 / .45); background: transparent; }
 [data-theme="dark"] body.home[data-skylook="street"] { --pane: rgb(24 46 92 / .62); --nav-glass: rgb(40 60 105 / .38); }
 body.home[data-skylook="street"] { --nav-glass: rgb(243 247 252 / .42); }
-body.home[data-skylook="street"]::before { content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none; background: radial-gradient(80% 50% at 50% 108%, var(--sky-sun, transparent), transparent 70%); opacity: var(--sky-sun-a, 0); }
+body.home[data-skylook="street"]::before { content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none; transform: translateZ(0);
+  background: linear-gradient(180deg, var(--sky-top, #9ec0e9) 0%, var(--sky-mid, #cdd9e9) 48%, var(--sky-low, #f9ede2) 92%); }
 body.home[data-skylook="street"] .disc { background: var(--sky-top, var(--bg)); }
 body.home[data-skylook="street"] .work .card { -webkit-backdrop-filter: blur(22px) saturate(1.4); backdrop-filter: blur(22px) saturate(1.4);
   background: linear-gradient(var(--pane), var(--pane)) padding-box, radial-gradient(260px circle at var(--rx, 50%) var(--ry, -400px), var(--rimc), var(--glass-edge) 72%) border-box; }
+/* Cache the expensive soft phone shadows, rather than filtering them again on each scroll frame. */
+.home .work :is(.device, .q28-phone, .q28-hand, .shots) { will-change: filter; }
 
 /* ───────── Contact (lab: Contact) ─────────
    Big: as it was, with the LinkedIn and X logos underneath. Quiet: a smaller heading, the email as a plain link. */
