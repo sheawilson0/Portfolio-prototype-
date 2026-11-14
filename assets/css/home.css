@@ -374,3 +374,8 @@ body[data-layout="foot"] .about { padding-bottom: 120px; }
   .last { white-space: normal; }
   .home .hero .intro { text-wrap: pretty; }
 }
+
+/* Lab: the colour behind selected text. Ring is the sky ring's first colour (red by day). */
+body[data-sel="blue"] ::selection { background: rgb(64 140 255 / .26); }
+body[data-sel="grey"] ::selection { background: color-mix(in srgb, var(--ink) 14%, transparent); }
+body[data-sel="orange"] ::selection { background: rgb(242 100 25 / .26); }
