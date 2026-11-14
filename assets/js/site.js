@@ -250,6 +250,8 @@
   }
 
   /* ── Reveal and count-up ── */
+  // On a phone a block starts a little before it scrolls in and waits less for its pictures, so you never scroll into a blank.
+  const phone = matchMedia('(max-width: 700px)').matches;
   const io = new IntersectionObserver((entries) => entries.forEach((en) => {
     if (!en.isIntersecting) return;
     io.unobserve(en.target);
@@ -257,8 +259,8 @@
     // A block waits for its own pictures (a second and a half at most), so they arrive with it, not after it.
     const pics = [...en.target.querySelectorAll('img')].filter((i) => !i.complete && i.checkVisibility?.() !== false);
     if (!pics.length) return show();
-    Promise.race([Promise.allSettled(pics.map((i) => i.decode())), new Promise((r) => setTimeout(r, 1500))]).then(show);
-  }), { rootMargin: '0px 0px -8% 0px' });
+    Promise.race([Promise.allSettled(pics.map((i) => i.decode())), new Promise((r) => setTimeout(r, phone ? 400 : 1500))]).then(show);
+  }), { rootMargin: phone ? '0px 0px 12% 0px' : '0px 0px -8% 0px' });
   document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
 
   function countUp(el) {

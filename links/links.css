@@ -18,7 +18,8 @@
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
-html { touch-action: manipulation; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; overflow-x: clip; }
+/* No grey flash on tap: a phone has no hover, so nothing lights up under a thumb (hover styles are mouse-only). */
+html { -webkit-tap-highlight-color: transparent; touch-action: manipulation; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; overflow-x: clip; }
 html.boot body, html.boot body * { transition: none !important; }
 body { min-height: 100svh; overflow-x: clip; transition: background-color .6s var(--ease), color .6s var(--ease); }
 a { color: inherit; text-decoration: none; }
@@ -68,7 +69,7 @@ body[data-style="sky"]::before { content: ""; position: fixed; left: 0; top: 0; 
 .sk-head, .sk { position: relative; width: min(100% - 32px, 480px); margin: 0 auto; }
 .sk { padding-bottom: 56px; }
 .pane { background: var(--pane); box-shadow: inset 0 0 0 1px var(--pane-edge), var(--lift); transition: background-color .5s var(--ease), box-shadow .5s var(--ease); }
-a.pane:hover, .sk-shot:hover .pane { background: var(--pane-hover); box-shadow: inset 0 0 0 1px var(--pane-edge), var(--lift-hover); }
+@media (hover: hover) { a.pane:hover, .sk-shot:hover .pane { background: var(--pane-hover); box-shadow: inset 0 0 0 1px var(--pane-edge), var(--lift-hover); } }
 :is(.sk-link, .sk-icon, .sk-shot):focus-visible { outline: 2px solid color-mix(in srgb, var(--ink) 40%, transparent); outline-offset: 3px; }
 
 /* The work row reaches past the column for its shadows; on a phone that's past the screen, so the page clips it
@@ -89,8 +90,12 @@ a.pane:hover, .sk-shot:hover .pane { background: var(--pane-hover); box-shadow: 
 /* The socials are in the ink until hovered, then take their brand colour */
 .sk-icon { display: grid; place-items: center; width: 56px; height: 56px; border-radius: 50%; color: var(--ink); }
 .sk-icon .ico { width: 22px; height: 22px; transition: color .3s var(--ease); }
-.sk-icon:is(:hover, :focus-visible) { color: var(--brand, var(--ink)); }
-.sk-icon[data-id="instagram"]:is(:hover, :focus-visible) svg { fill: url(#ig-grad); }
+.sk-icon:focus-visible { color: var(--brand, var(--ink)); }
+.sk-icon[data-id="instagram"]:focus-visible svg { fill: url(#ig-grad); }
+@media (hover: hover) {
+  .sk-icon:hover { color: var(--brand, var(--ink)); }
+  .sk-icon[data-id="instagram"]:hover svg { fill: url(#ig-grad); }
+}
 .sk-link { display: grid; grid-template-columns: 46px 1fr; align-items: center; gap: 16px; padding: 12px 22px 12px 13px; border-radius: 24px; corner-shape: squircle; }
 @supports (corner-shape: squircle) { .sk-link { border-radius: 36px; } .sk-ico { border-radius: 22px !important; } }
 .sk-ico { width: 46px; height: 46px; display: grid; place-items: center; border-radius: 15px; corner-shape: squircle; color: var(--ink); background: var(--bubble); }
@@ -125,12 +130,12 @@ a.pane:hover, .sk-shot:hover .pane { background: var(--pane-hover); box-shadow: 
 .sk-shot-img { position: relative; display: block; aspect-ratio: 4 / 3; border-radius: 22px; corner-shape: squircle; overflow: hidden;
   background: radial-gradient(120% 80% at 50% 115%, color-mix(in srgb, var(--tone) 26%, transparent), transparent 70%), var(--pane); }
 @supports (corner-shape: squircle) { .sk-shot-img { border-radius: 34px; } }
-.sk-shot:hover .sk-shot-img { background: radial-gradient(120% 80% at 50% 115%, color-mix(in srgb, var(--tone) 32%, transparent), transparent 70%), var(--pane-hover); }
+@media (hover: hover) { .sk-shot:hover .sk-shot-img { background: radial-gradient(120% 80% at 50% 115%, color-mix(in srgb, var(--tone) 32%, transparent), transparent 70%), var(--pane-hover); } }
 .sk-cap { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 8px; padding: 0 4px; font-size: 14px; color: var(--whisper); }
 .sk-cap b { font-weight: 400; font-size: 15px; color: var(--ink); white-space: nowrap; }
 /* The mockups, laid out in percentages so they fit any tile shape */
 .mk { position: absolute; inset: 0; transition: scale 1s var(--ease); }
-.sk-shot:hover .mk { scale: 1.035; }
+@media (hover: hover) { .sk-shot:hover .mk { scale: 1.035; } }
 .mk-screen { position: absolute; display: block; border-radius: 7px; overflow: hidden; background: #fff; box-shadow: 0 10px 26px rgba(10, 10, 30, .22); }
 [data-theme="dark"] .mk-screen { background: #131314; box-shadow: 0 0 0 1px rgba(255, 255, 255, .08), 0 12px 30px rgba(0, 0, 0, .5); }
 .mk-screen img { display: block; width: 100%; height: auto; }
@@ -143,6 +148,8 @@ a.pane:hover, .sk-shot:hover .pane { background: var(--pane-hover); box-shadow: 
 .mk-jump .j2 { width: 50%; left: 32%; top: 27%; rotate: 1.5deg; }
 .mk-jump .j3 { width: 35%; left: 60%; top: 57%; rotate: 4deg; }
 .mk-one img { position: absolute; inset: 10% 8% 0; width: 84%; height: 90%; object-fit: contain; object-position: 50% 100%; }
+/* Quit28: the homepage card's calendar and circle on the left, the phone in hand on the right, running off the bottom */
+.mk-q28 img { position: absolute; left: 50%; top: 7%; height: 118%; width: auto; max-width: none; translate: -42% 0; }
 .mk-tall img { inset: 12% 8% -40%; height: 128%; object-position: 50% 0; }
 
 /* Recent work, one card at a time: a card the width of the column, swiped or picked with the dots.
@@ -158,7 +165,7 @@ a.pane:hover, .sk-shot:hover .pane { background: var(--pane-hover); box-shadow: 
 .sk-dots { display: flex; justify-content: center; margin-top: 2px; }
 .sk-dots button { display: grid; place-items: center; width: 26px; height: 26px; }
 .sk-dots button::before { content: ""; width: 6px; height: 6px; border-radius: 3px; background: var(--ink); opacity: .2; transition: width .4s var(--ease), opacity .4s var(--ease); }
-.sk-dots button:hover::before { opacity: .4; }
+@media (hover: hover) { .sk-dots button:hover::before { opacity: .4; } }
 .sk-dots button[aria-current="true"]::before { width: 18px; opacity: .65; }
 
 .sk-foot { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 34px; font-size: 13px; color: var(--whisper); animation: rise 1s var(--ease) .6s both; }
@@ -169,7 +176,8 @@ a.pane:hover, .sk-shot:hover .pane { background: var(--pane-hover); box-shadow: 
 .coin i { position: absolute; inset: 0; image-rendering: pixelated; animation: coin-turn 4s steps(1) infinite;
   background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10' shape-rendering='crispEdges'%3E%3Cpath fill='%238a5a00' d='M2 0h6v1H2zM1 1h1v1H1zM8 1h1v1H8zM0 2h1v6H0zM9 2h1v6H9zM1 8h1v1H1zM8 8h1v1H8zM2 9h6v1H2z'/%3E%3Cpath fill='%23ffb22c' d='M2 1h6v8H2zM1 2h8v6H1z'/%3E%3Cpath fill='%23fff3b0' d='M2 2h1v3H2zM3 2h1v1H3z'/%3E%3Cpath fill='%23d98a00' d='M4 3h2v4H4z'/%3E%3C/svg%3E") center / contain no-repeat; }
 @keyframes coin-turn { 0%, 80% { transform: none; } 83% { transform: scaleX(.6); } 86% { transform: scaleX(.2); } 89% { transform: scaleX(.6); } 92% { transform: translateY(-2px); } 95% { transform: none; } }
-.coin:hover i, .coin:focus-visible i { animation-duration: .9s; }
+.coin:focus-visible i { animation-duration: .9s; }
+@media (hover: hover) { .coin:hover i { animation-duration: .9s; } }
 .coin.is-spent i { animation: coin-spent .4s steps(4) forwards; }
 @keyframes coin-spent { to { transform: translateY(-22px); opacity: 0; } }
 
@@ -204,7 +212,7 @@ body[data-style="arcade"]::after { content: ""; position: fixed; left: 0; top: 0
 @media (hover: none) { .ar-keys { display: none; } }
 @keyframes blink { 50% { opacity: 0; } }
 .ar-foot { display: flex; justify-content: center; gap: 22px; margin-top: 28px; font-size: 14px; text-transform: uppercase; letter-spacing: .06em; color: #7d79c9; }
-.ar-foot a:hover, .ar-sound:hover { color: #fff; }
+@media (hover: hover) { .ar-foot a:hover, .ar-sound:hover { color: #fff; } }
 .ar-sound, .ar-coin { text-transform: uppercase; letter-spacing: .06em; }
 .ar-coin { color: var(--ar-hi); animation: blink 1.6s steps(1) infinite; }
 

@@ -53,14 +53,15 @@
     return `<svg class="${cls}" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="${i.fill}"/></svg>`;
   };
   // Recent work: the homepage's four "Recently" projects. Snapshot and JumpStart are the homepage's mockups
-  // rebuilt in miniature (JumpStart swaps to its dark screens after dark); the other two are single images.
+  // rebuilt in miniature (JumpStart swaps to its dark screens after dark); Quit28 is a still of the homepage card's
+  // calendar, breathing circle and phone in hand, and Brain Dump is a single image.
   const W = '/links/work/';
   const jumpScreen = (cls, name) => `<span class="mk-screen ${cls}"><img class="img-light" src="${W}${name}.webp" alt="" loading="lazy"><img class="img-dark" src="${W}${name}-dark.webp" alt="" loading="lazy"></span>`;
   const WORK = [
     { name: 'Smoking Snapshot', note: '1,000+ uses', href: 'https://sheawilson.uk/snapshot.html', tone: '#ed1652',
       art: `<span class="mk mk-snap"><span class="mk-screen s1"><img src="${W}snapshot-results.webp" alt="" loading="lazy"></span><img class="mk-phone" src="${W}snapshot-phone.webp" alt="" loading="lazy"></span>` },
     { name: 'Quit28', note: 'Live now', href: 'https://sheawilson.uk/quit28.html', tone: '#00a7fa',
-      art: `<span class="mk mk-one"><img src="${W}quit28.webp" alt="" loading="lazy"></span>` },
+      art: `<span class="mk mk-q28"><img src="${W}quit28-set.webp" alt="" loading="lazy"></span>` },
     { name: 'JumpStart', note: 'In pilot', href: 'https://sheawilson.uk/jumpstart.html', tone: '#4fae86',
       art: `<span class="mk mk-jump">${jumpScreen('j1', 'jumpstart-agency')}${jumpScreen('j2', 'jumpstart-report')}${jumpScreen('j3', 'jumpstart-export')}</span>` },
     { name: 'Brain Dump', note: 'In beta', href: 'https://sheawilson.uk/braindump.html', tone: '#8a3cff',
@@ -252,7 +253,7 @@
         if (focus) items[sel].focus();
       };
       items.forEach((a, i) => {
-        a.addEventListener('pointerenter', () => select(i));
+        a.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse') select(i); }); // a thumb scrolling past doesn't pick
         a.addEventListener('focus', () => select(i));
         a.addEventListener('click', () => beep(SFX.pick));
       });
