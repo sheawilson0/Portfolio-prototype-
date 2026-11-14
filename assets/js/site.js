@@ -211,9 +211,13 @@
   const loaded = (img) => img.classList.add('is-loaded');
   document.addEventListener('load', (e) => { if (e.target.tagName === 'IMG') loaded(e.target); }, true);
   document.querySelectorAll('img').forEach((img) => { if (img.complete && img.naturalWidth) loaded(img); });
-  // Once the page is up, fetch the card pictures still waiting for the scroll (not the other theme's).
-  addEventListener('load', () => {
-    document.querySelectorAll('.work img[loading="lazy"]').forEach((i) => { if (i.checkVisibility?.() !== false) i.loading = 'eager'; });
+  // Start the remaining card pictures after the DOM is ready, behind the first card.
+  document.addEventListener('DOMContentLoaded', () => {
+    const work = document.querySelector('.work');
+    if (!work || getComputedStyle(work).display === 'none') return;
+    // Only exclude CSS-hidden alternatives; offscreen cards still need their pictures.
+    const pictures = [...work.querySelectorAll('img[loading="lazy"]')].filter(i => getComputedStyle(i).display !== 'none');
+    pictures.forEach(i => { i.fetchPriority = 'low'; i.loading = 'eager'; });
   });
 
   /* ── Reveal and count-up ── */
@@ -359,6 +363,11 @@
   const btn = document.querySelector('.in-art-btn'), dlg = document.querySelector('.art-zoom');
   if (!btn || !dlg) return;
   const small = btn.querySelector('img'), big = dlg.querySelector('img');
+  // Warm the full painting as About approaches, so opening it doesn't wait on the network.
+  const artObserver = new IntersectionObserver(([entry]) => {
+    if (entry.isIntersecting) { big.loading = 'eager'; artObserver.disconnect(); }
+  }, { rootMargin: '600px' });
+  artObserver.observe(btn);
   const still = matchMedia('(prefers-reduced-motion: reduce)');
   let busy = false;
   const fly = (back) => {
