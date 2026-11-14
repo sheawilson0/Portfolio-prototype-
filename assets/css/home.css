@@ -3,8 +3,8 @@
    Work: a mosaic of colour tiles (after raylight.app), or the older glass cards (lab: Work).
    The lab bar (lab.js) switches options with data attributes on <body>. */
 
-@font-face { font-family: 'Manrope'; src: url(../fonts/Manrope-600.ttf) format('truetype'); font-weight: 600; font-display: swap; }
-@font-face { font-family: 'Manrope'; src: url(../fonts/Manrope-800.ttf) format('truetype'); font-weight: 800; font-display: swap; }
+@font-face { font-family: 'Manrope'; src: url(../fonts/Manrope-600.woff2) format('woff2'); font-weight: 600; font-display: swap; }
+@font-face { font-family: 'Manrope'; src: url(../fonts/Manrope-800.woff2) format('woff2'); font-weight: 800; font-display: swap; }
 
 /* ───────── Hero ───────── */
 .home .hero { position: relative; height: auto; min-height: 0; overflow: clip; padding: 96px var(--gutter) 220px; text-align: center;
