@@ -160,3 +160,7 @@
 }
 @media (max-width: 900px) { .cs-top .facts { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 @media (max-width: 600px) { .cs-top main > .stage:first-child { margin-top: 92px; } .cs-top .facts { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px 18px; } }
+
+@media (max-width: 700px) {
+  .hero-shot { width: 100vw; margin-left: calc(50% - 50vw); }
+}
