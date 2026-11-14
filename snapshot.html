@@ -24,6 +24,9 @@
   document.documentElement.classList.add('js');
   try { if (localStorage.getItem('theme') === 'dark') document.documentElement.dataset.theme = 'dark'; } catch (e) {}
 </script>
+<link rel="preload" as="image" href="assets/media/snapshot/film/snapshot-film-tall.webp" media="(max-width: 720px), (max-aspect-ratio: 4/5)" fetchpriority="high">
+<link rel="preload" as="image" href="assets/media/snapshot/film/snapshot-film-wide.webp" media="(width > 720px) and (aspect-ratio > 4/5)" fetchpriority="high">
+<link rel="preload" as="font" type="font/woff2" href="assets/fonts/rP2Hp2ywxg089UriCZOIHTWEBlw.woff2" crossorigin>
 <script src="assets/js/sky.js"></script>
 <link rel="stylesheet" href="/assets/fonts/portfolio.css">
 <link rel="stylesheet" href="assets/css/site.css">
