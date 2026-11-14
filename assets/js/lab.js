@@ -1,23 +1,21 @@
 /* The lab bar, on the homepage. Only on preview hosts, or with ?lab on the live site.
-   Each row sets a data attribute on <body>; home.css does the rest. The dot marks my pick. */
+   Each row sets a data attribute on <body>; home.css does the rest. A row starts on whatever index.html sets on
+   <body> (the site as it would go live). The green dot is Claude's recommendation, which may be something else. */
 (() => {
   const live = /(^|\.)sheawilson\.uk$|\.vercel\.app$/.test(location.hostname);
   if (live && !new URLSearchParams(location.search).has('lab')) return;
+  // [attribute, label, options, the recommended one]
   const ROWS = [
-    ['work', 'Work', [['cards', 'Cards', 1], ['mosaic', 'Mosaic']]],
-    ['gap', 'Space between', [['roomy', 'More', 1], ['tight', 'As before']]],
-    ['skylook', 'Page sky', [['street', 'Shipped street', 1], ['site', 'Site']]],
-    ['arc', 'Horizon', [['arc', 'Arc', 1], ['none', 'None'], ['sun', 'Sun and eclipse']]],
-    ['ring', 'Ring colour', [['sky', 'Sunrise and pearl', 1], ['rainbow', 'Rainbow']]],
-    ['words', 'Words', [['airy', 'Airy', 1], ['navy', 'Sky ink']]],
-    ['nav', 'Nav shape', [['pill', 'Pill', 1], ['tile', 'Shipped tile']]],
+    ['work', 'Work', [['cards', 'Cards'], ['mosaic', 'Mosaic']], 'cards'],
+    ['arc', 'Horizon', [['arc', 'Arc'], ['none', 'None'], ['sun', 'Sun and moon']], 'sun'],
+    ['ring', 'Ring colour (arc)', [['sky', 'Sunrise and pearl'], ['rainbow', 'Rainbow']], 'sky'],
   ];
-  const KEY = 'home-lab-7'; // home-lab-7: picks changed 14 Nov, start everyone on them
+  const KEY = 'home-lab-8'; // home-lab-8: options changed 14 Nov, start everyone on the defaults
   const get = (k) => { try { return JSON.parse(localStorage.getItem(KEY) || '{}')[k]; } catch (e) { return null; } };
   const set = (k, v) => { try { const o = JSON.parse(localStorage.getItem(KEY) || '{}'); o[k] = v; localStorage.setItem(KEY, JSON.stringify(o)); } catch (e) {} };
   const apply = (k, v) => { document.body.dataset[k] = v; };
   // A saved choice that's no longer an option falls back to my pick.
-  ROWS.forEach(([k, , opts]) => { const v = get(k); apply(k, opts.some((o) => o[0] === v) ? v : (opts.find((o) => o[2]) || opts[0])[0]); });
+  ROWS.forEach(([k, , opts]) => { const v = get(k); if (opts.some((o) => o[0] === v)) apply(k, v); });
 
   const css = document.createElement('style');
   css.textContent = `.lab{position:fixed;z-index:90;left:16px;bottom:16px;width:268px;max-height:calc(100svh - 32px);overflow:auto;padding:12px 12px 6px;border-radius:18px;font:400 12px/1.3 var(--sans);color:var(--ink);background:var(--glass-strong);border:1px solid var(--glass-line);box-shadow:0 20px 50px rgba(0,0,0,.18);-webkit-backdrop-filter:blur(18px) saturate(1.6);backdrop-filter:blur(18px) saturate(1.6)}
@@ -28,9 +26,9 @@
   document.head.append(css);
   const bar = document.createElement('aside');
   bar.className = 'lab'; bar.setAttribute('aria-label', 'Lab');
-  bar.innerHTML = `<div class="lab-head"><b>Lab</b><button type="button" data-shut>Hide</button></div>` + ROWS.map(([k, label, opts]) =>
-    `<div class="lab-row"><p>${label}</p><div class="lab-opts">${opts.map(([v, name, pick]) =>
-      `<button type="button" data-k="${k}" data-v="${v}" class="${pick ? 'is-pick' : ''}" aria-pressed="${document.body.dataset[k] === v}">${name}</button>`).join('')}</div></div>`).join('');
+  bar.innerHTML = `<div class="lab-head"><b>Lab</b><button type="button" data-shut>Hide</button></div>` + ROWS.map(([k, label, opts, rec]) =>
+    `<div class="lab-row"><p>${label}</p><div class="lab-opts">${opts.map(([v, name]) =>
+      `<button type="button" data-k="${k}" data-v="${v}" class="${v === rec ? 'is-pick' : ''}" aria-pressed="${document.body.dataset[k] === v}">${name}</button>`).join('')}</div></div>`).join('');
   document.body.append(bar);
   bar.addEventListener('click', (e) => {
     if (e.target.closest('[data-shut]')) { bar.classList.toggle('is-shut'); e.target.textContent = bar.classList.contains('is-shut') ? 'Show' : 'Hide'; return; }

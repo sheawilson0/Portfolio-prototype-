@@ -105,11 +105,12 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
    so nothing in the bar reflows while it shrinks or grows. */
 .nav { position: fixed; inset: 0 0 auto; z-index: 50; padding: 18px var(--gutter); pointer-events: none; }
 .nav-inner { position: relative; pointer-events: auto; margin: 0 auto; max-width: 1380px; height: 52px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
-.nav-pill { position: absolute; left: 50%; top: 0; bottom: 0; width: 100%; translate: -50% 0; border-radius: 999px; pointer-events: none; opacity: 0;
-  background: var(--nav-glass); border: 1px solid var(--nav-edge); box-shadow: 0 8px 32px rgba(0, 0, 0, .06);
-  -webkit-backdrop-filter: blur(24px) saturate(1.8); backdrop-filter: blur(24px) saturate(1.8);
+.nav-pill { position: absolute; left: 50%; top: 0; bottom: 0; width: 100%; translate: -50% 0; border-radius: 19px; corner-shape: squircle; pointer-events: none; opacity: 0;
+  background: var(--nav-glass); box-shadow: 0 12px 40px rgb(20 40 80 / .1);
+  -webkit-backdrop-filter: blur(16px) saturate(1.8) brightness(1.12); backdrop-filter: blur(16px) saturate(1.8) brightness(1.12);
   transition: width .8s var(--ease), opacity .45s var(--ease); }
 .nav.is-scrolled .nav-pill { width: var(--pill-w, 460px); opacity: 1; }
+@supports not (corner-shape: squircle) { .nav-pill { border-radius: 16px; } }
 .logo, .links { position: relative; z-index: 1; transition: transform .8s var(--ease); }
 .nav.is-scrolled .logo { transform: translate3d(var(--logo-shift, 0px), 0, 0); }
 .nav.is-scrolled .links { transform: translate3d(calc(-1 * var(--links-shift, 0px)), 0, 0); }

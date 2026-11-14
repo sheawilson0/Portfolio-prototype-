@@ -43,7 +43,7 @@
    at half strength, so they always sit in the sky's tint. One highlight, the ring's orange; pink for hearts. */
 .is-street { height: 100svh; overflow: hidden; --hi: #f26419;
   --ink: #18233a; --ink-2: rgb(24 35 58 / .7); --whisper: rgb(24 35 58 / .5); --hair: rgb(24 35 58 / .1);
-  --st-date: #4f6c94; --st-nav: #2f4a72; --pill: rgb(243 247 252 / .42); --pill-on: rgb(255 255 255 / .5); --panel: rgb(238 243 250 / .6);
+  --nav-glass: var(--pill); --st-date: #4f6c94; --st-nav: #2f4a72; --pill: rgb(243 247 252 / .42); --pill-on: rgb(255 255 255 / .5); --panel: rgb(238 243 250 / .6);
   background: var(--sky-low, #f9ede2) linear-gradient(180deg, var(--sky-top, #9ec0e9) 0%, var(--sky-mid, #cdd9e9) 48%, var(--sky-low, #f9ede2) 92%) fixed;
   transition: background-color 2s linear; }
 .is-street.is-night { color-scheme: dark; --bg: #13264a;

@@ -136,6 +136,11 @@
     hRing.style.translate = `${(px * 6).toFixed(2)}px ${(py * 4).toFixed(2)}px`;
     return moving;
   }
+  // Tonight's moon (lab: Horizon, Sun and moon): how much of it is lit, on the right while it's waxing.
+  if (hDisc) {
+    const syn = 29.530588853, age = ((Date.now() / 864e5 - 10962.76) % syn + syn) % syn, lit = (1 - Math.cos(2 * Math.PI * age / syn)) / 2;
+    hDisc.style.setProperty('--moon', ((age < syn / 2 ? -1 : 1) * Math.max(.14, lit)).toFixed(3));
+  }
 
   /* ── Videos loop only while they are on screen; with reduced motion they wait for a press ── */
   document.querySelectorAll('video[data-inview]').forEach((v) => {
@@ -222,7 +227,11 @@
       const nx = lerp(it.x, it.tx, .08), ny = lerp(it.y, it.ty, .08);
       if (Math.abs(nx - it.x) + Math.abs(ny - it.y) < .0004) { it.x = it.tx; it.y = it.ty; return; }
       it.x = nx; it.y = ny; moving = true;
-      if (it.media) it.media.style.transform = `perspective(1300px) rotateX(${(-it.y * 6).toFixed(2)}deg) rotateY(${(it.x * 8).toFixed(2)}deg)`;
+      // With just a picture and a caption the picture fills the card, so the whole card tilts (Shipped's stays as it is).
+      const whole = it.card && (document.body.dataset.copy || 'full') !== 'full' && !it.el.classList.contains('t-shipped');
+      const tilt = `perspective(1300px) rotateX(${(-it.y * 6).toFixed(2)}deg) rotateY(${(it.x * 8).toFixed(2)}deg)`;
+      if (whole) it.card.style.transform = tilt;
+      if (it.media) it.media.style.transform = whole ? '' : tilt;
       // Layers slide by their depth: back layers against the pointer, front layers with it.
       it.layers.forEach((l) => { l.el.style.translate = `${(it.x * 60 * l.d).toFixed(1)}px ${(it.y * 42 * l.d).toFixed(1)}px`; });
       it.blobs.forEach((b, i) => { const k = 50 + i * 22; b.style.transform = `translate3d(${(it.x * k).toFixed(1)}px, ${(it.y * k * .8).toFixed(1)}px, 0)`; });

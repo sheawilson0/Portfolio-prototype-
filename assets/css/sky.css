@@ -57,48 +57,44 @@ footer .sky-open:hover { color: var(--ink); }
 @media (hover: hover) { .theme-toggle:hover .tt-hint { opacity: 1; translate: 0 0; transition-delay: .35s; } }
 .theme-toggle:focus-visible .tt-hint { opacity: 1; translate: 0 0; }
 
-/* ───────── The time bar ───────── */
-.sky-bar { position: fixed; z-index: 120; left: 50%; bottom: max(16px, env(safe-area-inset-bottom)); width: min(600px, calc(100vw - 24px)); translate: -50% 24px;
-  display: grid; gap: 6px; padding: 8px 10px 10px; border-radius: 20px; font: 400 13px/1 var(--sans); letter-spacing: -.005em; color: var(--ink);
-  background: var(--glass-strong); border: 1px solid var(--glass-edge); box-shadow: 0 18px 50px rgba(0, 0, 0, .18);
-  -webkit-backdrop-filter: blur(24px) saturate(1.8); backdrop-filter: blur(24px) saturate(1.8);
-  opacity: 0; visibility: hidden; transition: opacity .45s var(--ease), translate .6s var(--ease), visibility 0s .6s; }
-.sky-bar.is-open { opacity: 1; visibility: visible; translate: -50% 0; transition: opacity .45s var(--ease), translate .6s var(--ease); }
-.sky-bar button { flex: none; display: inline-grid; place-items: center; padding: 8px 10px; border-radius: 10px; color: var(--ink-2); white-space: nowrap; transition: background-color .25s, color .25s; }
-.sky-bar button:hover { color: var(--ink); }
-.sky-bar button[aria-pressed="true"] { color: var(--ink); background: color-mix(in srgb, var(--ink) 9%, transparent); }
+/* ───────── The time bar ─────────
+   One frosted tile with no stroke, the same glass as the nav and the Shipped street's buttons. */
+.sky-bar { position: fixed; z-index: 120; left: 50%; bottom: max(18px, env(safe-area-inset-bottom)); width: min(540px, calc(100vw - 24px)); translate: -50% 24px;
+  display: grid; gap: 8px; padding: 10px 10px 8px; border-radius: 30px; corner-shape: squircle; font: 400 14px/1 var(--sans); letter-spacing: -.005em; color: var(--ink);
+  background: rgb(243 247 252 / .55); box-shadow: 0 16px 50px rgb(20 40 80 / .16);
+  -webkit-backdrop-filter: blur(20px) saturate(1.8) brightness(1.1); backdrop-filter: blur(20px) saturate(1.8) brightness(1.1);
+  opacity: 0; visibility: hidden; transition: opacity .35s var(--ease), translate .55s var(--ease), visibility 0s .55s; }
+[data-theme="dark"] .sky-bar { background: rgb(34 54 100 / .5); }
+@supports not (corner-shape: squircle) { .sky-bar { border-radius: 24px; } }
+.sky-bar.is-open { opacity: 1; visibility: visible; translate: -50% 0; transition: opacity .35s var(--ease), translate .55s cubic-bezier(.2, .9, .25, 1); }
+.sky-bar button, .sb-board { flex: none; display: inline-grid; place-items: center; height: 34px; padding: 0 12px; border-radius: 999px; color: var(--ink-2); white-space: nowrap; transition: background-color .2s var(--ease), color .2s var(--ease), scale .2s var(--ease); }
+.sky-bar button:hover, .sb-board:hover { color: var(--ink); background: color-mix(in srgb, var(--ink) 6%, transparent); }
+.sky-bar button:active { scale: .96; }
+.sky-bar button[aria-pressed="true"] { color: var(--ink); background: color-mix(in srgb, var(--ink) 10%, transparent); }
 .sky-bar svg { width: 12px; height: 12px; }
-.sb-time { display: flex; align-items: center; gap: 6px; }
-.sb-play, .sb-close { width: 34px; height: 34px; padding: 0 !important; border-radius: 50% !important; }
-.sb-play { color: var(--ink) !important; background: color-mix(in srgb, var(--ink) 8%, transparent); }
-.sb-row { display: flex; align-items: center; gap: 2px; padding-left: 4px; overflow-x: auto; scrollbar-width: none; }
-.sb-row::-webkit-scrollbar { display: none; }
-.sb-read { flex: 1 1 auto; min-width: 0; display: flex; align-items: baseline; gap: 8px; overflow: hidden; line-height: 1.5; padding: 2px 0; color: var(--ink-2); white-space: nowrap; }
+.sb-top { display: flex; align-items: center; gap: 4px; }
+.sky-bar .sb-play, .sky-bar .sb-close { width: 34px; padding: 0; }
+.sky-bar .sb-play { color: var(--bg); background: var(--ink); }
+.sky-bar .sb-play:hover { color: var(--bg); background: var(--ink); }
+.sb-read { flex: 1 1 auto; min-width: 0; display: flex; align-items: baseline; gap: 8px; padding-left: 8px; overflow: hidden; line-height: 1.5; color: var(--ink-2); white-space: nowrap; }
 /* Every digit is the same width and the clock's box never changes size, so nothing beside it moves. */
-.sb-clock { flex: none; width: 4.6em; font-weight: 500; color: var(--ink); font-variant-numeric: tabular-nums; font-feature-settings: "tnum"; }
-.sb-name { overflow: hidden; text-overflow: ellipsis; line-height: 1.5; padding-bottom: 1px; }
-.sb-name.is-new { animation: sb-name .5s var(--ease); }
+.sb-clock { flex: none; width: 4.4em; font-size: 16px; font-weight: 500; color: var(--ink); font-variant-numeric: tabular-nums; font-feature-settings: "tnum"; }
+.sb-name { overflow: hidden; text-overflow: ellipsis; }
+.sb-name.is-new { animation: sb-name .45s var(--ease); }
 @keyframes sb-name { from { opacity: 0; translate: 0 3px; } }
-.sb-seasons { display: flex; gap: 2px; }
 .sb-now[hidden] { display: none !important; }
-.sb-board { padding: 8px 10px; color: var(--whisper); white-space: nowrap; }
-.sb-board:hover { color: var(--ink); }
-.sky-bar input[type="range"] { flex: 1; min-width: 80px; height: 30px; appearance: none; -webkit-appearance: none; background: none; cursor: pointer; }
+.sb-stages { display: flex; justify-content: space-between; gap: 2px; overflow-x: auto; scrollbar-width: none; font-size: 13px; }
+.sb-stages::-webkit-scrollbar { display: none; }
+.sky-bar .sb-stages button { height: 30px; padding: 0 9px; }
+.sky-bar input[type="range"] { width: calc(100% - 16px); margin: 0 8px; height: 22px; appearance: none; -webkit-appearance: none; background: none; cursor: pointer; }
 /* The track is the day: dark before sunrise and after sunset, light between. */
-.sky-bar input[type="range"]::-webkit-slider-runnable-track { height: 10px; border-radius: 99px; box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ink) 10%, transparent);
-  background: linear-gradient(90deg, #1b1d3a 0, #1b1d3a calc(var(--rise) - 3%), #ff8fb0 var(--rise), #ffe6b0 calc(var(--rise) + 5%), #eef3ff calc(var(--rise) + 12%),
-    #eef3ff calc(var(--set) - 12%), #ffb24d calc(var(--set) - 3%), #ed4f7d var(--set), #3a1f6e calc(var(--set) + 4%), #1b1d3a calc(var(--set) + 10%), #1b1d3a 100%); }
-.sky-bar input[type="range"]::-moz-range-track { height: 10px; border-radius: 99px;
-  background: linear-gradient(90deg, #1b1d3a 0, #1b1d3a calc(var(--rise) - 3%), #ff8fb0 var(--rise), #ffe6b0 calc(var(--rise) + 5%), #eef3ff calc(var(--rise) + 12%),
-    #eef3ff calc(var(--set) - 12%), #ffb24d calc(var(--set) - 3%), #ed4f7d var(--set), #3a1f6e calc(var(--set) + 4%), #1b1d3a calc(var(--set) + 10%), #1b1d3a 100%); }
-.sky-bar input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; margin-top: -5px; border-radius: 50%; background: #fff; box-shadow: 0 0 0 1px rgba(0, 0, 0, .12), 0 4px 12px rgba(0, 0, 0, .25); }
-.sky-bar input[type="range"]::-moz-range-thumb { width: 20px; height: 20px; border: 0; border-radius: 50%; background: #fff; box-shadow: 0 0 0 1px rgba(0, 0, 0, .12), 0 4px 12px rgba(0, 0, 0, .25); }
-/* The site's squircle corners. Round buttons stay round. */
-@supports (corner-shape: squircle) {
-  .sky-bar, .tt-hint { corner-shape: squircle; }
-  .sky-bar { border-radius: 34px; }
-  .tt-hint { border-radius: 20px; }
-  .sky-bar button { corner-shape: squircle; border-radius: 16px; }
-  .sb-play, .sb-close { corner-shape: round; }
-}
-@media (max-width: 480px) { .sb-seasons button { padding: 8px 7px; } }
+.sky-bar input[type="range"]::-webkit-slider-runnable-track { height: 8px; border-radius: 99px;
+  background: linear-gradient(90deg, #14264c 0, #14264c calc(var(--rise) - 4%), #f5a07c var(--rise), #cfe0f6 calc(var(--rise) + 7%), #a9c8ee calc(var(--rise) + 14%),
+    #a9c8ee calc(var(--set) - 13%), #ffd0a0 calc(var(--set) - 4%), #ff9455 var(--set), #3c5488 calc(var(--set) + 5%), #14264c calc(var(--set) + 11%), #14264c 100%); }
+.sky-bar input[type="range"]::-moz-range-track { height: 8px; border-radius: 99px;
+  background: linear-gradient(90deg, #14264c 0, #14264c calc(var(--rise) - 4%), #f5a07c var(--rise), #cfe0f6 calc(var(--rise) + 7%), #a9c8ee calc(var(--rise) + 14%),
+    #a9c8ee calc(var(--set) - 13%), #ffd0a0 calc(var(--set) - 4%), #ff9455 var(--set), #3c5488 calc(var(--set) + 5%), #14264c calc(var(--set) + 11%), #14264c 100%); }
+.sky-bar input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; margin-top: -6px; border-radius: 50%; background: #fff; box-shadow: 0 0 0 1px rgb(0 0 0 / .08), 0 3px 10px rgb(10 30 70 / .3); transition: scale .2s var(--ease); }
+.sky-bar input[type="range"]:active::-webkit-slider-thumb { scale: 1.15; }
+.sky-bar input[type="range"]::-moz-range-thumb { width: 20px; height: 20px; border: 0; border-radius: 50%; background: #fff; box-shadow: 0 0 0 1px rgb(0 0 0 / .08), 0 3px 10px rgb(10 30 70 / .3); }
+@media (max-width: 520px) { .sb-stages { justify-content: flex-start; } .sb-board { display: none; } }

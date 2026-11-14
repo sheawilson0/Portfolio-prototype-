@@ -227,8 +227,9 @@
     function paint() {
       if (!on()) { ['--sky-top', '--sky-mid', '--sky-low', '--sky-sun', '--sky-sun-a'].forEach((k) => body.style.removeProperty(k)); return; }
       const d = new Date(), mode = html.dataset.mode;
-      const min = mode === 'dark' ? 0 : t ? +t.split(':')[0] * 60 + +(t.split(':')[1] || 0) : d.getHours() * 60 + d.getMinutes();
-      const sun = window.__sky?.sun() || { rise: 450, set: 1020, tw: 38 };
+      const sk = window.__sky?.now?.(); // sky.js's minute: now, ?t, or wherever the time bar is
+      const min = mode === 'dark' ? 0 : sk ? sk.min : t ? +t.split(':')[0] * 60 + +(t.split(':')[1] || 0) : d.getHours() * 60 + d.getMinutes();
+      const sun = window.__sky?.sun(sk?.ymd) || { rise: 450, set: 1020, tw: 38 };
       const L = mode === 'light' ? SKIES.day : skyAt(min, sun);
       [['--sky-top', L.top], ['--sky-mid', L.mid], ['--sky-low', L.low], ['--sky-sun', L.glow], ['--sky-sun-a', L.ga.toFixed(2)]].forEach(([k, v]) => body.style.setProperty(k, v));
       if (!body.classList.contains('is-street')) return;
@@ -237,6 +238,7 @@
     }
     paint();
     setInterval(paint, 30000);
+    document.addEventListener('sky:paint', paint);
     new MutationObserver(paint).observe(html, { attributes: true, attributeFilter: ['data-mode'] });
     new MutationObserver(paint).observe(body, { attributes: true, attributeFilter: ['data-skylook'] });
   }

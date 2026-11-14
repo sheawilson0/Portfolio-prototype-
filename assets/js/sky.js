@@ -224,6 +224,7 @@
     decorate();
     syncBar();
     report();
+    document.dispatchEvent(new Event('sky:paint')); // the street's sky (shipped.js) follows
   }
 
   /* ───────── The page's extra pieces ───────── */
@@ -411,32 +412,35 @@
   }
 
   /* ───────── The time bar ─────────
-     For visitors: opened from the full stop or the footer. Scrub or play the day, try a season, and the sun
-     comes out to show where it is. Closing it goes back to now. */
+     For visitors: opened from the full stop or the footer. One frosted tile, like the Shipped street's buttons:
+     the time and what the sky is called, the moments of the day to step through, and the day itself to drag or
+     play. It opens on now and holds still. Closing it goes back to now. */
   const fmt = (m) => { const h = Math.floor(m / 60), mm = String(m % 60).padStart(2, '0'); return `${h % 12 || 12}:${mm}${h < 12 ? 'am' : 'pm'}`; };
-  const SEASON_DAYS = [['12-21', 'Winter'], ['03-20', 'Spring'], ['06-21', 'Summer'], ['09-22', 'Autumn']];
-  let bar = null, playing = 0;
+  // The moments, from that day's sunrise R, sunset S and twilight T (the street sky's own anchors).
+  const STAGES = [['Dawn', (R, S, T) => R - .1 * T], ['Sunrise', (R, S, T) => R + .7 * T], ['Morning', (R, S, T) => R + 2.4 * T], ['Day', (R, S) => (R + S) / 2],
+    ['Golden hour', (R, S, T) => S - 1.6 * T], ['Sunset', (R, S, T) => S + .1 * T], ['Dusk', (R, S, T) => S + 1.1 * T], ['Night', (R, S, T) => S + 2.4 * T + 40]];
+  const stageMin = (i, n) => wrap(Math.round(STAGES[i][1](n.rise, n.set, n.tw)));
+  let bar = null, playing = 0, gliding = 0;
   function buildBar() {
     bar = document.createElement('div');
     bar.className = 'sky-bar';
     bar.setAttribute('role', 'dialog');
     bar.setAttribute('aria-label', 'Time of day');
     bar.innerHTML = `
-      <div class="sb-time">
-        <button type="button" class="sb-play" aria-label="Play the day"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 1.8v8.4L10 6z" fill="currentColor"/></svg></button>
-        <input type="range" min="0" max="1439" step="1" aria-label="Time of day">
+      <div class="sb-top">
+        <button type="button" class="sb-play" aria-label="Play the day"></button>
+        <span class="sb-read"><b class="sb-clock"></b><span class="sb-name"></span></span>
+        ${liveHost && !params.has('lab') ? '' : '<a class="sb-board" href="sky/">Compare times</a>'}
         <button type="button" class="sb-now">Now</button>
         <button type="button" class="sb-close" aria-label="Close and go back to now"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 3l6 6M9 3l-6 6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
       </div>
-      <div class="sb-row">
-        <span class="sb-read"></span>
-        <span class="sb-seasons">${SEASON_DAYS.map(([d, t]) => `<button type="button" data-d="${d}">${t}</button>`).join('')}</span>
-        ${liveHost && !params.has('lab') ? '' : '<a class="sb-board" href="sky/">Compare times</a>'}
-      </div>`;
+      <input type="range" min="0" max="1439" step="1" aria-label="Time of day">
+      <div class="sb-stages">${STAGES.map(([t], i) => `<button type="button" data-s="${i}">${t}</button>`).join('')}</div>`;
     document.body.append(bar);
     bar.addEventListener('click', onBar);
     const range = bar.querySelector('input');
     range.addEventListener('input', () => { stopPlay(); frozen = toHM(+range.value); paint(); });
+    stopPlay();
   }
   function openBar() {
     if (!bar) buildBar();
@@ -445,8 +449,6 @@
     root.classList.add('sun-on');
     bar.classList.add('is-open');
     paint(true);
-    // Opening it plays the day straight away; touching the slider or pause stops it.
-    play();
   }
   function closeBar() {
     if (!bar) return;
@@ -457,9 +459,10 @@
   }
   const PLAY = '<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 1.8v8.4L10 6z" fill="currentColor"/></svg>';
   const PAUSE = '<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 2h2v8H3zM7 2h2v8H7z" fill="currentColor"/></svg>';
-  const stopPlay = () => { cancelAnimationFrame(playing); playing = 0; const b = bar?.querySelector('.sb-play'); if (b) { b.innerHTML = PLAY; b.setAttribute('aria-label', 'Play the day'); } };
+  const stopPlay = () => { cancelAnimationFrame(playing); cancelAnimationFrame(gliding); playing = gliding = 0; const b = bar?.querySelector('.sb-play'); if (b) { b.innerHTML = PLAY; b.setAttribute('aria-label', 'Play the day'); } };
   function play() {
     if (playing) { stopPlay(); return; }
+    stopPlay();
     let m = frozen ? hm(frozen) : now().min, prev = performance.now();
     const b = bar.querySelector('.sb-play'); b.innerHTML = PAUSE; b.setAttribute('aria-label', 'Pause');
     const tick = (t) => {
@@ -470,35 +473,50 @@
     };
     playing = requestAnimationFrame(tick);
   }
+  // Stepping to a moment: the day runs there the short way round, in under a second.
+  function glide(to) {
+    stopPlay();
+    const from = frozen ? hm(frozen) : now().min, gap = ((to - from + 2160) % 1440) - 720, t0 = performance.now();
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) { frozen = toHM(to); paint(); return; }
+    const tick = (t) => {
+      const k = Math.min(1, (t - t0) / 900);
+      frozen = toHM(wrap(Math.round(from + gap * smooth(k))));
+      paint();
+      gliding = k < 1 ? requestAnimationFrame(tick) : 0;
+    };
+    gliding = requestAnimationFrame(tick);
+  }
   function onBar(e) {
     const b = e.target.closest('button');
     if (!b) return;
     if (b.classList.contains('sb-play')) return play();
     if (b.classList.contains('sb-close')) return closeBar();
+    if (b.dataset.s) return glide(stageMin(+b.dataset.s, now()));
     if (b.classList.contains('sb-now')) { stopPlay(); frozen = null; frozenDate = null; }
-    // A season sets the date to its solstice or equinox; pressing it again goes back to today.
-    else if (b.dataset.d) { const d = `${new Date().getFullYear()}-${b.dataset.d}`; frozenDate = frozenDate === d ? null : d; }
     paint(true);
   }
   function syncBar() {
     if (!bar || !last) return;
-    bar.querySelectorAll('[data-d]').forEach((b) => b.setAttribute('aria-pressed', String(!!frozenDate && frozenDate.slice(5) === b.dataset.d)));
     bar.querySelector('.sb-now').hidden = !frozen && !frozenDate;
     const { n, L } = last, range = bar.querySelector('input');
-    if (document.activeElement !== range || playing) range.value = n.min;
+    if (document.activeElement !== range || playing || gliding) range.value = n.min;
     range.style.setProperty('--rise', `${n.rise / 14.4}%`);
     range.style.setProperty('--set', `${n.set / 14.4}%`);
-    const read = bar.querySelector('.sb-read');
-    if (!read.firstChild) read.innerHTML = '<b class="sb-clock"></b><span class="sb-name"></span>';
-    read.firstChild.textContent = fmt(n.min);
-    const name = read.lastChild;
-    if (name.textContent !== L.name) { name.textContent = L.name; name.classList.remove('is-new'); void name.offsetWidth; name.classList.add('is-new'); }
+    // The moment we're in: the last one the clock has passed.
+    let on = STAGES.length - 1;
+    STAGES.forEach((_, i) => { if (stageMin(i, n) <= n.min) on = i; });
+    if (n.min < stageMin(0, n)) on = STAGES.length - 1;
+    bar.querySelectorAll('[data-s]').forEach((b, i) => { const v = String(i === on); if (b.getAttribute('aria-pressed') !== v) b.setAttribute('aria-pressed', v); });
+    bar.querySelector('.sb-clock').textContent = fmt(n.min);
+    const name = bar.querySelector('.sb-name'), label = STAGES[on][0];
+    if (name.textContent !== label) { name.textContent = label; name.classList.remove('is-new'); void name.offsetWidth; name.classList.add('is-new'); }
   }
   addEventListener('keydown', (e) => { if (e.key === 'Escape' && barOpen) closeBar(); });
 
   /* ───────── For the board at /sky/ ───────── */
   window.__sky = {
     sun: (d) => sun(d || wall(Date.now()).ymd),
+    now: () => last && { min: last.n.min, ymd: last.n.ymd },
     at: (min, d) => lookAt(wrap(Math.round(min)), d || wall(Date.now()).ymd),
   };
   function report() {

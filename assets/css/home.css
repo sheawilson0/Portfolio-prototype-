@@ -18,7 +18,7 @@
 .last { color: var(--ink); white-space: nowrap; }
 .last a { text-decoration: underline; text-decoration-color: color-mix(in srgb, var(--ink) 25%, transparent); text-underline-offset: 3px; transition: text-decoration-color .2s var(--ease); }
 .last a:hover { text-decoration-color: var(--ink); }
-.last::before { content: ""; display: inline-block; width: 6px; height: 6px; margin: 0 7px 2px 1px; border-radius: 50%; background: #2fd67b; box-shadow: 0 0 0 3px color-mix(in srgb, #2fd67b 22%, transparent); }
+.last::before { content: ""; display: inline-block; width: 6px; height: 6px; margin: 0 7px 2px 1px; border-radius: 50%; background: #f26419; box-shadow: 0 0 0 3px color-mix(in srgb, #f26419 22%, transparent); }
 
 /* ───────── Quit28, live (q28-card.js) ─────────
    Copied from the app at its own sizes (Quit-Coach journey.module.css, craving-timer.module.css): Manrope, the
@@ -72,7 +72,7 @@ body[data-q28="hand"] .work .q28-cal { left: 14px; top: 64px; rotate: -3deg; }
 body[data-q28="hand"] .work .q28-float { left: 6px; top: 228px; }
 body[data-q28="hand-cal"] .work .q28-float, body[data-q28="hand-circle"] .work .q28-cal { display: none; }
 body[data-q28="hand-cal"] .work .q28-cal { left: 22px; top: 162px; rotate: -5deg; }
-body[data-q28="hand-circle"] .work .q28-float { left: 10px; top: 146px; }
+body[data-q28="hand-circle"] .work .q28-float { left: -18px; top: 166px; scale: calc(var(--s) * .88); }
 
 /* ───────── Work as a mosaic (after raylight.app) ─────────
    Colour tiles, the product big, a name and a few words underneath. The tile never moves. On hover its
@@ -248,7 +248,8 @@ body[data-copy="lean"] .work .screen-export { width: 25%; left: 63%; top: 44%; }
    the glow on the horizon at sunrise and sunset, the eclipse's disc in the sky's colour, and the glass cards
    frosted over it instead of sitting on white. */
 body.home[data-skylook="street"] { --pane: rgb(255 255 255 / .45); background: var(--sky-low, #f9ede2) linear-gradient(180deg, var(--sky-top, #9ec0e9) 0%, var(--sky-mid, #cdd9e9) 48%, var(--sky-low, #f9ede2) 92%) fixed; }
-[data-theme="dark"] body.home[data-skylook="street"] { --pane: rgb(18 30 56 / .5); }
+[data-theme="dark"] body.home[data-skylook="street"] { --pane: rgb(24 46 92 / .62); --nav-glass: rgb(40 60 105 / .38); }
+body.home[data-skylook="street"] { --nav-glass: rgb(243 247 252 / .42); }
 body.home[data-skylook="street"]::before { content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none; background: radial-gradient(80% 50% at 50% 108%, var(--sky-sun, transparent), transparent 70%); opacity: var(--sky-sun-a, 0); }
 body.home[data-skylook="street"] .disc { background: var(--sky-top, var(--bg)); }
 body.home[data-skylook="street"] .work .card { -webkit-backdrop-filter: blur(22px) saturate(1.4); backdrop-filter: blur(22px) saturate(1.4);
@@ -290,27 +291,18 @@ body:is([data-copy="cap"], [data-copy="lean"]) .work .t-amp .media { inset: 0; b
 .work .t-amp .media img, .item.is-hot.t-amp .media img { object-fit: contain; transform: scale(1.08); }
 
 /* ───────── Horizon (lab) ─────────
-   Arc, none, or Sun and eclipse: a whole small circle above the headline. By day a pale sun with a clean edge
-   and a soft bloom, turning the sky's own orange at sunset; at night a black moon with its ring. */
+   Arc, none, or Sun and moon: a whole small circle above the headline. By day a pale sun with a clean edge and a
+   soft bloom, turning the sky's own orange at sunset. At night the moon, in tonight's real phase (--moon, set by
+   site.js: how far the lit edge reaches across, right when waxing), with the dark side just visible. */
 body[data-arc="none"] .eclipse { display: none; }
+body:is([data-arc="none"], [data-arc="sun"]) :is(.sun, .corona) { display: none; }
 body[data-arc="sun"] .eclipse { --d: 124px; width: var(--d); left: calc(50% - var(--d) / 2); top: 10px; }
-body[data-arc="sun"] .corona { display: none; inset: -22%; }
 body.home[data-arc="sun"] .disc { --sun: color-mix(in srgb, var(--sky-sun, #ff9a5c) calc(var(--sky-sun-a, 0) * 90%), #fffaf0);
   background: radial-gradient(circle at 50% 36%, color-mix(in srgb, var(--sun) 70%, #fff), var(--sun));
   box-shadow: 0 0 46px 6px color-mix(in srgb, var(--sun) 55%, transparent), 0 0 150px 50px color-mix(in srgb, var(--sun) 22%, transparent); }
-[data-theme="dark"] body[data-arc="sun"] .corona { display: block; }
-[data-theme="dark"] body.home[data-arc="sun"] .disc { background: #04060d; box-shadow: none; }
+[data-theme="dark"] body.home[data-arc="sun"] .disc { background: rgb(255 255 255 / .05); box-shadow: inset calc(var(--moon, -.4) * var(--d)) 0 0 0 #f1eee3;
+  filter: drop-shadow(0 0 18px rgb(206 220 255 / .45)); }
 @media (max-width: 700px) { body[data-arc="sun"] .eclipse { --d: 96px; top: 34px; } }
-/* Ring colour: the sky's own light, warm at sunrise and pearl white round the moon (lab: the brand rainbow). */
+/* Ring colour: the sky's own light, warm at sunrise and pearl white at night (lab: the brand rainbow). */
 body[data-ring="sky"] .corona { background: conic-gradient(from 0deg, #ffd08a, #ff9d6e 60deg, #ffc9d8 120deg, #fff1d2 180deg, #ffb07c 240deg, #ffd9e4 300deg, #ffd08a); }
 [data-theme="dark"] body[data-ring="sky"] .corona { background: conic-gradient(from 0deg, #fff, #a9c1ff 70deg, #f3f6ff 140deg, #7f9cf0 210deg, #fff 280deg, #c9d6ff 330deg, #fff); }
-
-/* Words (lab). Airy: black at 64%. Sky ink: the Shipped street's navy, so the quieter words take the sky's tint. */
-body.home[data-words="navy"] { --ink: #18233a; --ink-2: rgb(24 35 58 / .78); --whisper: rgb(24 35 58 / .6); }
-[data-theme="dark"] body.home[data-words="navy"] { --ink: #edf2fa; --ink-2: rgb(237 242 250 / .78); --whisper: rgb(237 242 250 / .58); }
-
-/* Nav shape (lab): the pill, or the Shipped street's frosted squircle with no stroke. */
-body[data-nav="tile"] .nav-pill { border: 0; border-radius: 19px; corner-shape: squircle; background: rgb(243 247 252 / .42); box-shadow: 0 12px 40px rgb(20 40 80 / .1);
-  -webkit-backdrop-filter: blur(16px) saturate(1.8) brightness(1.12); backdrop-filter: blur(16px) saturate(1.8) brightness(1.12); }
-[data-theme="dark"] body[data-nav="tile"] .nav-pill { background: rgb(40 60 105 / .38); }
-@supports not (corner-shape: squircle) { body[data-nav="tile"] .nav-pill { border-radius: 16px; } }
