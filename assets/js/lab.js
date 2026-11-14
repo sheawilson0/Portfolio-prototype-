@@ -7,8 +7,7 @@
   // [attribute, label, options, the recommended one]
   const ROWS = [
     ['work', 'Work', [['cards', 'Cards'], ['mosaic', 'Mosaic']], 'cards'],
-    ['about', 'About', [['long', 'Now'], ['short', 'Shorter'], ['art', 'Painting'], ['line', 'One sentence'], ['big', 'Sentence, big pictures'], ['off', 'Photo and a line']], 'big'],
-    ['layout', 'Contact', [['line', 'One sentence (now)'], ['row', 'Three words'], ['peng', 'Peng-style'], ['foot', 'Footer only']], 'peng'],
+    ['about', 'About', [['long', 'Now'], ['short', 'Shorter'], ['art', 'Painting'], ['line', 'One sentence'], ['off', 'Photo and a line']], 'line'],
     ['arc', 'Horizon', [['arc', 'Arc'], ['none', 'None'], ['sun', 'Sun and moon']], 'sun'],
   ];
   const KEY = 'home-lab-8'; // home-lab-8: options changed 14 Nov, start everyone on the defaults

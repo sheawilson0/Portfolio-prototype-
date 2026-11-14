@@ -319,9 +319,9 @@ body[data-about="art"] .about { align-items: end; }
 body[data-about="art"] .about-art { display: grid; gap: 16px; rotate: 1.2deg; }
 .about-art img { display: block; width: 100%; height: auto; border-radius: 6px; box-shadow: 0 1px 2px rgb(0 0 0 / .2), 0 30px 60px -20px rgb(0 0 0 / .45); }
 .about-art .tile-cap { rotate: -1.2deg; }
-body:is([data-about="line"], [data-about="big"]) .about { display: block; padding-top: 120px; text-align: center; }
-body:is([data-about="line"], [data-about="big"]) .about > :not(.about-line) { display: none; }
-body:is([data-about="line"], [data-about="big"]) .about-line { display: block; max-width: 23em; margin: 0 auto; font-family: var(--serif); font-weight: 300; font-size: clamp(28px, 3.4vw, 50px); line-height: 1.26; letter-spacing: var(--track-heading); text-wrap: balance; }
+body[data-about="line"] .about { display: block; padding-top: 120px; text-align: center; }
+body[data-about="line"] .about > :not(.about-line) { display: none; }
+body[data-about="line"] .about-line { display: block; max-width: 23em; margin: 0 auto; font-family: var(--serif); font-weight: 300; font-size: clamp(28px, 3.4vw, 50px); line-height: 1.26; letter-spacing: var(--track-heading); text-wrap: balance; }
 .about-line :is(.in-photo, .in-art) { display: inline-block; height: 1.05em; width: auto; vertical-align: -.2em; }
 .about-line .in-photo { aspect-ratio: 1; border-radius: 50%; object-fit: cover; }
 .about-line .in-art { border-radius: .12em; rotate: -3deg; margin: 0 .1em; box-shadow: 0 .1em .3em rgb(0 0 0 / .3); }
@@ -330,10 +330,6 @@ body:is([data-about="line"], [data-about="big"]) .about-line { display: block; m
 .about-line .org-mark.is-ulster { width: 1.45em; }
 .about-line .org-mark::before { opacity: .9; }
 /* Sentence, big pictures: the photo and the painting grow into the line. */
-/* Every line is opened up the same amount, so the bigger pictures fit without covering words or making one line taller. */
-body[data-about="big"] .about-line { line-height: 1.75; }
-body[data-about="big"] .about-line .in-photo { height: 1.4em; vertical-align: middle; margin: -.1em .05em; }
-body[data-about="big"] .about-line .in-art { height: 1.8em; vertical-align: middle; margin: -.1em .15em; }
 
 /* ───────── Horizon (lab) ─────────
    Arc, none, or Sun and moon: a whole small circle above the headline. By day a pale sun with a clean edge and a
@@ -364,23 +360,10 @@ body.home[data-arc="sun"] .disc[data-orb="moon"] { background: none; box-shadow:
 body[data-ring="sky"] .corona { background: conic-gradient(from 0deg, #ffd08a, #ff9d6e 60deg, #ffc9d8 120deg, #fff1d2 180deg, #ffb07c 240deg, #ffd9e4 300deg, #ffd08a); }
 [data-theme="dark"] body[data-ring="sky"] .corona { background: conic-gradient(from 0deg, #fff, #a9c1ff 70deg, #f3f6ff 140deg, #7f9cf0 210deg, #fff 280deg, #c9d6ff 330deg, #fff); }
 
-/* ───────── Contact layout (lab: Contact) ─────────
-   As now: heading, a line, the email and my handle with two logos. Three words: the heading and one row, the email,
-   LinkedIn and X as plain words. One sentence: no heading, just a line in the serif with the links in it.
-   Footer only: no section at all, the email joins the footer. */
-.socials .word, .contact-line, .foot-email { display: none; }
-body[data-layout="row"] .contact :is(.sub, .handle, .mark, .email-icon) { display: none; }
-body[data-layout="row"] .socials .word { display: inline; }
-body[data-layout="row"] .socials { margin-left: 0; gap: 2px; }
-body[data-layout="line"] .contact > :not(.contact-line) { display: none; }
-body[data-layout="line"] .contact { padding: 150px var(--gutter) 130px; }
-body[data-layout="line"] .contact-line { display: block; max-width: 22em; margin: 0 auto; font-family: var(--serif); font-weight: 300; font-size: clamp(30px, 3.6vw, 52px); line-height: 1.18; letter-spacing: var(--track-heading); text-wrap: balance; }
-.contact-line a, body[data-layout="foot"] .foot-email { text-decoration: underline; text-decoration-thickness: 1px; text-decoration-color: color-mix(in srgb, var(--ink) 25%, transparent); text-underline-offset: .14em; transition: text-decoration-color .2s var(--ease); }
-.contact-line a:hover, body[data-layout="foot"] .foot-email:hover { text-decoration-color: var(--ink); }
-.contact-line a[href^="mailto"] { font-style: italic; }
-body[data-layout="foot"] .contact { display: none; }
-/* Peng-style: the heading, then the email, LinkedIn and X as grey words with dots between. On hover a word goes
+/* ───────── Contact ─────────
+   The heading, then the email, LinkedIn and X as grey words with dots between. On hover a word goes
    full ink and a thick underline fades in, breaking around g, y and p (after pengzhe.ng). */
+.socials .word { display: none; }
 body[data-layout="peng"] .contact :is(.sub, .handle, .mark, .email-icon) { display: none; }
 body[data-layout="peng"] .socials .word { display: inline; }
 body[data-layout="peng"] .socials { margin-left: -.3em; gap: 0; } /* cancels the space after the email */
@@ -388,8 +371,6 @@ body[data-layout="peng"] .contact :is(.email, .socials a) { display: inline-bloc
   text-decoration: underline transparent; text-decoration-thickness: .09em; text-underline-offset: .22em; text-decoration-skip-ink: auto; transition: color .15s ease, text-decoration-color .15s ease; }
 body[data-layout="peng"] .contact :is(.email, .socials a):is(:hover, :focus-visible) { background: none; color: var(--ink); text-decoration-color: currentColor; }
 body[data-layout="peng"] .socials a::before { content: "·"; display: inline-block; margin: 0 .55em; color: var(--whisper); }
-body[data-layout="foot"] .foot-email { display: inline; color: var(--ink); }
-body[data-layout="foot"] .about { padding-bottom: 120px; }
 
 @media (max-width: 700px) {
   .last { white-space: normal; }
