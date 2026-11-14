@@ -115,11 +115,28 @@
      and the coin in the footer for Arcade. No arrows: the whole card is the button. */
   const linkAttrs = (l) => `${attrs(l)} data-id="${l.id}" style="--tone:${l.tone || '#ed1652'}"`;
   const IG_GRADIENT = '<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="ig-grad" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#feda75"/><stop offset=".3" stop-color="#fa7e1e"/><stop offset=".6" stop-color="#d62976"/><stop offset="1" stop-color="#4f5bd5"/></linearGradient></defs></svg>';
-  const skWork = () => `<section class="sk-work" aria-labelledby="sk-work-title">
+  // Recent work, three ways (lab): One at a time with dots, Peek inside (the row stays in the column), or List.
+  const skWork = () => `<section class="sk-work work-${state.work}" aria-labelledby="sk-work-title">
     <h2 id="sk-work-title">Recent work</h2>
     <ul class="sk-rail">${WORK.map((w, i) => `<li style="--i:${i}"><a class="sk-shot" href="${w.href}" target="_blank" rel="noopener" style="--tone:${w.tone}">
       <span class="sk-shot-img pane">${w.art}</span>
-      <span class="sk-cap"><b>${w.name}</b><span>${w.note}</span></span></a></li>`).join('')}</ul></section>`;
+      <span class="sk-cap"><b>${w.name}</b><span>${w.note}</span></span></a></li>`).join('')}</ul>
+    ${state.work === 'pager' ? `<div class="sk-dots">${WORK.map((w, i) => `<button type="button" aria-label="Show ${w.name}"${i ? '' : ' aria-current="true"'}></button>`).join('')}</div>` : ''}</section>`;
+  // The row knows when it's at the end (Peek inside drops its fade there) and which card is showing (the dots).
+  function wireRail(scope) {
+    const rail = scope.querySelector('.sk-rail'), dots = [...scope.querySelectorAll('.sk-dots button')];
+    if (!rail) return;
+    const cards = [...rail.children];
+    const sync = () => {
+      const max = rail.scrollWidth - rail.clientWidth;
+      rail.classList.toggle('is-end', rail.scrollLeft >= max - 4);
+      const at = Math.round(rail.scrollLeft / Math.max(1, max) * (cards.length - 1));
+      dots.forEach((d, i) => d.setAttribute('aria-current', String(i === at)));
+    };
+    dots.forEach((d, i) => d.addEventListener('click', () => rail.scrollTo({ left: cards[i].offsetLeft - cards[0].offsetLeft, behavior: reduced ? 'auto' : 'smooth' })));
+    rail.addEventListener('scroll', sync, { passive: true });
+    sync();
+  }
 
   const sky = {
     name: 'Sky',
@@ -143,7 +160,7 @@
         </main>
       </div>`;
     },
-    mount(el) { wireName(el); wireCoin(el); },
+    mount(el) { wireName(el); wireCoin(el); wireRail(el); },
   };
 
   /* ═════════ 2. Arcade: a start menu ═════════ */
@@ -322,11 +339,12 @@
   // Options: [value, label].
   const OPTIONS = {
     style: Object.keys(STYLES).map((k) => [k, STYLES[k].name]),
+    work: [['pager', 'One at a time'], ['inside', 'Peek inside'], ['list', 'List']],
   };
   // DEFAULTS is what visitors get; PICKS are my recommendations (the green dots in the lab).
-  const DEFAULTS = { style: DEFAULT_STYLE, extras: '1' };
+  const DEFAULTS = { style: DEFAULT_STYLE, work: 'pager', extras: '1' };
   const PICKS = { ...DEFAULTS };
-  const LABELS = { style: 'Style' };
+  const LABELS = { style: 'Style', work: 'Recent work' };
   const valid = (k, v) => OPTIONS[k].some(([o]) => o === v);
   let savedLab = {};
   try { savedLab = showLab ? JSON.parse(saved('links-lab') || '{}') : {}; } catch (e) {}
@@ -386,7 +404,7 @@
     lab.setAttribute('aria-label', 'Try a style');
     const group = (k) => `<span class="lab-group"><span class="lab-tag">${LABELS[k]}</span>${OPTIONS[k].map(([v, name], i) =>
       `<button type="button" data-k="${k}" data-v="${v}"${v === PICKS[k] ? ' class="rec"' : ''}${k === 'style' ? ` title="${name} (${i + 1})"` : ''}>${name}</button>`).join('')}</span>`;
-    lab.innerHTML = `<div class="lab-row">${group('style')}</div>`;
+    lab.innerHTML = `<div class="lab-row">${group('style')}</div><div class="lab-row is-sub">${group('work')}</div>`;
     document.body.append(lab);
     lab.addEventListener('click', (e) => {
       const b = e.target.closest('button[data-k]');
