@@ -8,7 +8,6 @@
   const ROWS = [
     ['work', 'Work', [['cards', 'Cards'], ['mosaic', 'Mosaic']], 'cards'],
     ['arc', 'Horizon', [['arc', 'Arc'], ['none', 'None'], ['sun', 'Sun and moon']], 'sun'],
-    ['ring', 'Ring colour (arc)', [['sky', 'Sunrise and pearl'], ['rainbow', 'Rainbow']], 'sky'],
   ];
   const KEY = 'home-lab-8'; // home-lab-8: options changed 14 Nov, start everyone on the defaults
   const get = (k) => { try { return JSON.parse(localStorage.getItem(KEY) || '{}')[k]; } catch (e) { return null; } };

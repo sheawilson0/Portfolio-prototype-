@@ -136,8 +136,15 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .theme-toggle:hover .tt-ring { transform: rotate(180deg); }
 [data-theme="dark"] .tt-moon { transform: none; }
 
-::view-transition-old(root), ::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
-::view-transition-new(root) {
+/* Going from page to page: the old one fades, the new one fades in and settles up a little. The nav stays put. */
+@view-transition { navigation: auto; }
+.nav { view-transition-name: nav; }
+::view-transition-old(root) { animation: page-out .22s var(--ease) both; }
+::view-transition-new(root) { animation: page-in .5s .08s var(--ease) both; }
+@keyframes page-out { to { opacity: 0; } }
+@keyframes page-in { from { opacity: 0; translate: 0 14px; } }
+.theme-switching::view-transition-old(root), .theme-switching::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
+.theme-switching::view-transition-new(root) {
   -webkit-mask-image: radial-gradient(circle at var(--vx, 90%) var(--vy, 4%), #000 var(--umbra), transparent calc(var(--umbra) + 220px));
           mask-image: radial-gradient(circle at var(--vx, 90%) var(--vy, 4%), #000 var(--umbra), transparent calc(var(--umbra) + 220px));
   animation: umbra 1.15s var(--ease-io) both; }
@@ -434,5 +441,5 @@ footer a:hover { color: var(--ink); }
   .hero { position: relative; }
   .corona, .live::before { animation: none; }
   .js .reveal { opacity: 1; translate: none; transition: none; }
-  ::view-transition-new(root) { animation: none; }
+  ::view-transition-old(root), ::view-transition-new(root), .theme-switching::view-transition-new(root) { animation: none; }
 }

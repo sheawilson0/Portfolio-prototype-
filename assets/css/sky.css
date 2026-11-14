@@ -86,15 +86,17 @@ footer .sky-open:hover { color: var(--ink); }
 .sb-stages { display: flex; justify-content: space-between; gap: 2px; overflow-x: auto; scrollbar-width: none; font-size: 13px; }
 .sb-stages::-webkit-scrollbar { display: none; }
 .sky-bar .sb-stages button { height: 30px; padding: 0 9px; }
-.sky-bar input[type="range"] { width: calc(100% - 16px); margin: 0 8px; height: 22px; appearance: none; -webkit-appearance: none; background: none; cursor: pointer; }
-/* The track is the day: dark before sunrise and after sunset, light between. */
-.sky-bar input[type="range"]::-webkit-slider-runnable-track { height: 8px; border-radius: 99px;
-  background: linear-gradient(90deg, #14264c 0, #14264c calc(var(--rise) - 4%), #f5a07c var(--rise), #cfe0f6 calc(var(--rise) + 7%), #a9c8ee calc(var(--rise) + 14%),
-    #a9c8ee calc(var(--set) - 13%), #ffd0a0 calc(var(--set) - 4%), #ff9455 var(--set), #3c5488 calc(var(--set) + 5%), #14264c calc(var(--set) + 11%), #14264c 100%); }
-.sky-bar input[type="range"]::-moz-range-track { height: 8px; border-radius: 99px;
-  background: linear-gradient(90deg, #14264c 0, #14264c calc(var(--rise) - 4%), #f5a07c var(--rise), #cfe0f6 calc(var(--rise) + 7%), #a9c8ee calc(var(--rise) + 14%),
-    #a9c8ee calc(var(--set) - 13%), #ffd0a0 calc(var(--set) - 4%), #ff9455 var(--set), #3c5488 calc(var(--set) + 5%), #14264c calc(var(--set) + 11%), #14264c 100%); }
-.sky-bar input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; margin-top: -6px; border-radius: 50%; background: #fff; box-shadow: 0 0 0 1px rgb(0 0 0 / .08), 0 3px 10px rgb(10 30 70 / .3); transition: scale .2s var(--ease); }
-.sky-bar input[type="range"]:active::-webkit-slider-thumb { scale: 1.15; }
-.sky-bar input[type="range"]::-moz-range-thumb { width: 20px; height: 20px; border: 0; border-radius: 50%; background: #fff; box-shadow: 0 0 0 1px rgb(0 0 0 / .08), 0 3px 10px rgb(10 30 70 / .3); }
+/* The scrubber is the day drawn out: the sun's path over a horizon line, the sun (or the moon, under the line) on
+   it where the time is. The real slider lies over it, invisible, so it drags and works from the keyboard. */
+.sb-path { position: relative; height: 64px; margin: 0 10px; }
+.sb-path svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; fill: none; stroke-linecap: round; }
+.sb-curve { stroke: color-mix(in srgb, var(--ink) 34%, transparent); stroke-width: 1.5; stroke-dasharray: 1 5; vector-effect: non-scaling-stroke; }
+.sb-hz { stroke: color-mix(in srgb, var(--ink) 16%, transparent); stroke-width: 1; vector-effect: non-scaling-stroke; }
+.sb-orb { position: absolute; width: 18px; height: 18px; margin: -9px 0 0 -9px; border-radius: 50%; pointer-events: none;
+  background: #ffb347; box-shadow: 0 0 0 4px rgb(255 179 71 / .22), 0 0 18px rgb(255 160 60 / .7); transition: background-color .4s var(--ease), box-shadow .4s var(--ease), scale .2s var(--ease); }
+.sb-orb.is-moon { background: #eef1fb; box-shadow: 0 0 0 4px rgb(220 228 255 / .16), 0 0 14px rgb(200 214 255 / .5); }
+.sb-path:active .sb-orb { scale: 1.2; }
+.sky-bar input[type="range"] { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: grab; }
+.sky-bar input[type="range"]:active { cursor: grabbing; }
+.sb-path:has(input:focus-visible) { outline: 2px solid color-mix(in srgb, var(--ink) 40%, transparent); outline-offset: 2px; border-radius: 12px; }
 @media (max-width: 520px) { .sb-stages { justify-content: flex-start; } .sb-board { display: none; } }

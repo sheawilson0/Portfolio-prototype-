@@ -434,7 +434,7 @@
         <button type="button" class="sb-now">Now</button>
         <button type="button" class="sb-close" aria-label="Close and go back to now"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 3l6 6M9 3l-6 6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
       </div>
-      <input type="range" min="0" max="1439" step="1" aria-label="Time of day">
+      <div class="sb-path"><svg viewBox="0 0 520 64" preserveAspectRatio="none" aria-hidden="true"><path class="sb-curve"/><path class="sb-hz" d="M0 40H520"/></svg><i class="sb-orb"></i><input type="range" min="0" max="1439" step="1" aria-label="Time of day"></div>
       <div class="sb-stages">${STAGES.map(([t], i) => `<button type="button" data-s="${i}">${t}</button>`).join('')}</div>`;
     document.body.append(bar);
     bar.addEventListener('click', onBar);
@@ -466,7 +466,9 @@
     let m = frozen ? hm(frozen) : now().min, prev = performance.now();
     const b = bar.querySelector('.sb-play'); b.innerHTML = PAUSE; b.setAttribute('aria-label', 'Pause');
     const tick = (t) => {
-      m = wrap(m + (t - prev) / 1000 * 60); prev = t; // an hour a second: the whole day in 24 s
+      // Quick through the day and the night, slow through sunrise and sunset, where the sky is worth watching.
+      const n = now(), near = Math.min(Math.abs(m - n.rise), Math.abs(m - n.set)) < 2.6 * n.tw;
+      m = wrap(m + (t - prev) / 1000 * (near ? 9 : 110)); prev = t;
       frozen = toHM(Math.floor(m));
       paint();
       playing = requestAnimationFrame(tick);
@@ -500,8 +502,15 @@
     bar.querySelector('.sb-now').hidden = !frozen && !frozenDate;
     const { n, L } = last, range = bar.querySelector('input');
     if (document.activeElement !== range || playing || gliding) range.value = n.min;
-    range.style.setProperty('--rise', `${n.rise / 14.4}%`);
-    range.style.setProperty('--set', `${n.set / 14.4}%`);
+    // The sun's path for that day: over the horizon line between sunrise and sunset, under it at night.
+    const noon = (n.rise + n.set) / 2, half = Math.cos(Math.PI * (n.set - n.rise) / 1440);
+    const alt = (m) => (Math.cos(2 * Math.PI * (m - noon) / 1440) - half) / (1 - half); // 1 at noon, 0 on the horizon
+    const yAt = (m) => 40 - Math.max(-.62, alt(m)) * 30;
+    const key = `${n.rise}|${n.set}`;
+    if (bar.dataset.path !== key) { bar.dataset.path = key; bar.querySelector('.sb-curve').setAttribute('d', Array.from({ length: 73 }, (_, i) => `${i ? 'L' : 'M'}${(i * 520 / 72).toFixed(1)} ${yAt(i * 20).toFixed(1)}`).join('')); }
+    const orb = bar.querySelector('.sb-orb');
+    orb.style.left = `${n.min / 14.4}%`; orb.style.top = `${yAt(n.min) / .64}%`;
+    orb.classList.toggle('is-moon', alt(n.min) < -.08);
     // The moment we're in: the last one the clock has passed.
     let on = STAGES.length - 1;
     STAGES.forEach((_, i) => { if (stageMin(i, n) <= n.min) on = i; });

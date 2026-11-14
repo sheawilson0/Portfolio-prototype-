@@ -72,7 +72,7 @@ body[data-q28="hand"] .work .q28-cal { left: 14px; top: 64px; rotate: -3deg; }
 body[data-q28="hand"] .work .q28-float { left: 6px; top: 228px; }
 body[data-q28="hand-cal"] .work .q28-float, body[data-q28="hand-circle"] .work .q28-cal { display: none; }
 body[data-q28="hand-cal"] .work .q28-cal { left: 22px; top: 162px; rotate: -5deg; }
-body[data-q28="hand-circle"] .work .q28-float { left: -18px; top: 166px; scale: calc(var(--s) * .88); }
+body[data-q28="hand-circle"] .work .q28-float { left: 4px; top: 176px; scale: calc(var(--s) * .78); }
 
 /* ───────── Work as a mosaic (after raylight.app) ─────────
    Colour tiles, the product big, a name and a few words underneath. The tile never moves. On hover its
@@ -277,6 +277,8 @@ body[data-contact="quiet"] .socials .handle { display: inline; order: -1; margin
 body[data-contact="quiet"] :is(.email, .socials a) { display: inline-flex; align-items: center; gap: 9px; width: auto; height: auto; padding: 8px 14px; border-radius: 999px; font-size: 17px; color: var(--ink); text-decoration: none; transition: background-color .3s var(--ease); }
 body[data-contact="quiet"] :is(.email, .socials a):hover { background: color-mix(in srgb, var(--ink) 6%, transparent); }
 body[data-contact="quiet"] .socials .mark { width: 16px; height: 16px; }
+body[data-contact="quiet"] .socials a[aria-label="X"] .mark { width: 13px; height: 13px; }
+body[data-contact="quiet"] .email:hover { box-shadow: none; }
 
 
 /* At night the tiles' colour is dimmed, so it sits in the dark page instead of glaring. Only the colour: the
@@ -293,14 +295,16 @@ body:is([data-copy="cap"], [data-copy="lean"]) .work .t-amp .media { inset: 0; b
 /* ───────── Horizon (lab) ─────────
    Arc, none, or Sun and moon: a whole small circle above the headline. By day a pale sun with a clean edge and a
    soft bloom, turning the sky's own orange at sunset. At night the moon, in tonight's real phase (--moon, set by
-   site.js: how far the lit edge reaches across, right when waxing), with the dark side just visible. */
+   site.js: how far the lit edge reaches across, right when waxing), and only the lit part drawn.
+   None has nothing to make room for, so the headline moves up. */
 body[data-arc="none"] .eclipse { display: none; }
+body[data-arc="none"] .stage { height: 84px; }
 body:is([data-arc="none"], [data-arc="sun"]) :is(.sun, .corona) { display: none; }
 body[data-arc="sun"] .eclipse { --d: 124px; width: var(--d); left: calc(50% - var(--d) / 2); top: 10px; }
 body.home[data-arc="sun"] .disc { --sun: color-mix(in srgb, var(--sky-sun, #ff9a5c) calc(var(--sky-sun-a, 0) * 90%), #fffaf0);
   background: radial-gradient(circle at 50% 36%, color-mix(in srgb, var(--sun) 70%, #fff), var(--sun));
   box-shadow: 0 0 46px 6px color-mix(in srgb, var(--sun) 55%, transparent), 0 0 150px 50px color-mix(in srgb, var(--sun) 22%, transparent); }
-[data-theme="dark"] body.home[data-arc="sun"] .disc { background: rgb(255 255 255 / .05); box-shadow: inset calc(var(--moon, -.4) * var(--d)) 0 0 0 #f1eee3;
+[data-theme="dark"] body.home[data-arc="sun"] .disc { background: none; box-shadow: inset calc(var(--moon, -.4) * var(--d)) 0 0 0 #f1eee3;
   filter: drop-shadow(0 0 18px rgb(206 220 255 / .45)); }
 @media (max-width: 700px) { body[data-arc="sun"] .eclipse { --d: 96px; top: 34px; } }
 /* Ring colour: the sky's own light, warm at sunrise and pearl white at night (lab: the brand rainbow). */

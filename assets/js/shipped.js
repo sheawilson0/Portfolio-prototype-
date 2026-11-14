@@ -224,14 +224,19 @@
   function streetSky(on = () => true) {
     const html = document.documentElement, body = document.body;
     const t = new URLSearchParams(location.search).get('t');
+    // Pulling past the top or bottom shows the colour behind the page: make it the sky's colour at that end.
+    let ends = null;
+    const behind = () => { if (ends) html.style.backgroundColor = scrollY > (html.scrollHeight - innerHeight) / 2 ? ends[1] : ends[0]; };
+    addEventListener('scroll', behind, { passive: true });
     function paint() {
-      if (!on()) { ['--sky-top', '--sky-mid', '--sky-low', '--sky-sun', '--sky-sun-a'].forEach((k) => body.style.removeProperty(k)); return; }
+      if (!on()) { ['--sky-top', '--sky-mid', '--sky-low', '--sky-sun', '--sky-sun-a'].forEach((k) => body.style.removeProperty(k)); ends = null; html.style.backgroundColor = ''; return; }
       const d = new Date(), mode = html.dataset.mode;
       const sk = window.__sky?.now?.(); // sky.js's minute: now, ?t, or wherever the time bar is
       const min = mode === 'dark' ? 0 : sk ? sk.min : t ? +t.split(':')[0] * 60 + +(t.split(':')[1] || 0) : d.getHours() * 60 + d.getMinutes();
       const sun = window.__sky?.sun(sk?.ymd) || { rise: 450, set: 1020, tw: 38 };
       const L = mode === 'light' ? SKIES.day : skyAt(min, sun);
       [['--sky-top', L.top], ['--sky-mid', L.mid], ['--sky-low', L.low], ['--sky-sun', L.glow], ['--sky-sun-a', L.ga.toFixed(2)]].forEach(([k, v]) => body.style.setProperty(k, v));
+      ends = [L.top, L.low]; behind();
       if (!body.classList.contains('is-street')) return;
       body.classList.toggle('is-night', !!L.dark);
       document.querySelector('meta[name="theme-color"]')?.setAttribute('content', L.top);
