@@ -392,3 +392,9 @@ body[data-layout="peng"] .socials a::before { content: "·"; display: inline-blo
   .last { white-space: normal; }
   .home .hero .intro { text-wrap: pretty; }
 }
+
+/* ───────── Hover on cards, the words under the headline (lab) ─────────
+   Calmer: the pictures still slide apart and the card still lights up, but the card stays flat, no label rides the
+   pointer and there's no brush of air (site.js, sound.js). Shorter: who I am is left to the About sentence. */
+body[data-hover="calm"] .tip { display: none; }
+body[data-intro="short"] .intro-who { display: none; }
