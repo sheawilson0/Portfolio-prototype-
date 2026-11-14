@@ -148,6 +148,10 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 ::view-transition-old(project), ::view-transition-new(project) { height: 100%; width: 100%; object-fit: cover; overflow: clip; }
 ::view-transition-image-pair(project) { border-radius: 22px; overflow: clip; }
 @keyframes page-in { from { opacity: 0; translate: 0 14px; } }
+/* Where the browser can't do that between pages (Firefox, Zen), sky.js does it by hand with these. */
+.pg-out:not(.pg-card) body > *, .pg-card body > :not(#work), .pg-card .work .item:not(.is-going), .pg-card .is-going .item-cap, .pg-card .earlier { opacity: 0 !important; transition: opacity .2s ease !important; }
+.pg-in body { opacity: 0; }
+.pg-now { opacity: 1 !important; translate: none !important; transition: none !important; }
 .theme-switching::view-transition-old(root), .theme-switching::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
 .theme-switching::view-transition-new(root) {
   -webkit-mask-image: radial-gradient(circle at var(--vx, 90%) var(--vy, 4%), #000 var(--umbra), transparent calc(var(--umbra) + 220px));

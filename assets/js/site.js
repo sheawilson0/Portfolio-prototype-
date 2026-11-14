@@ -140,18 +140,49 @@
   if (hDisc) {
     const syn = 29.530588853, age = ((Date.now() / 864e5 - 10962.76) % syn + syn) % syn, lit = (1 - Math.cos(2 * Math.PI * age / syn)) / 2;
     hDisc.style.setProperty('--moon', ((age < syn / 2 ? -1 : 1) * Math.max(.14, lit)).toFixed(3));
-    // Setting and rising (lab: Sun and moon). The sun is down by sunset and the moon isn't up until half an hour
-    // after, so the page turns dark (15 to 30 minutes after sunset) while neither is showing.
-    const ramp = (x, a, b) => { const k = clamp((x - a) / (b - a), 0, 1); return k * k * (3 - 2 * k); };
-    const signed = (m) => ((m + 720) % 1440 + 1440) % 1440 - 720;
+    /* Setting and rising (lab: Sun and moon). sink: 0 is up, .45 has its middle on the horizon, GONE is just out
+       of sight. The sun is half down at sunset and gone the minute the page turns dark; the moon starts up that
+       same minute and is clear half an hour later (and the reverse before dawn), so one of them is always there.
+       What's drawn eases after that on a spring, so a jump in the time bar, or D, still sets and rises; and they
+       swap only while hidden: the sun goes all the way down before the moon comes up. */
+    const GONE = .84, signed = (m) => ((m + 720) % 1440 + 1440) % 1440 - 720;
+    const flips = {}; // per day: the minute the page turns dark after sunset, and light before sunrise
+    const flipOf = (ymd, s) => flips[ymd + s.rise] || (flips[ymd + s.rise] = (() => {
+      const dark = (m) => window.__sky.at((m + 1440) % 1440, ymd).theme === 'dark';
+      let dusk = s.set + 22, dawn = s.rise - 22;
+      for (let m = s.set - 10; m < s.set + 120; m++) if (dark(m)) { dusk = m; break; }
+      for (let m = s.rise + 10; m > s.rise - 120; m--) if (dark(m)) { dawn = m + 1; break; }
+      return { dusk, dawn };
+    })());
+    const orb = { want: 'sun', is: '', to: 0, s: 0, v: 0, raf: 0, t: 0 };
+    const draw = () => { hDisc.style.setProperty('--sink', orb.s.toFixed(4)); if (hDisc.dataset.orb !== orb.is) hDisc.dataset.orb = orb.is; };
+    const spring = (t) => {
+      const dt = Math.min(.04, (t - orb.t) / 1000 || .016); orb.t = t;
+      const swapping = orb.is !== orb.want, goal = swapping ? 1.02 : orb.to;
+      // Critically damped: it leaves gently and arrives without overshooting.
+      const w = 7; orb.v += (w * w * (goal - orb.s) - 2 * w * orb.v) * dt; orb.s += orb.v * dt;
+      if (swapping && orb.s >= GONE + .03) { orb.is = orb.want; orb.v *= .3; }
+      const rest = !swapping && Math.abs(goal - orb.s) < .0008 && Math.abs(orb.v) < .004;
+      if (rest) { orb.s = goal; orb.v = 0; }
+      draw();
+      orb.raf = rest ? 0 : requestAnimationFrame(spring);
+    };
     document.addEventListener('sky:paint', () => {
-      const n = window.__sky?.now?.(), s = n && window.__sky.sun(n.ymd);
-      let sink = 0;
+      const n = window.__sky?.now?.(), s = n && window.__sky.sun(n.ymd), dark = root.dataset.theme === 'dark';
+      orb.want = dark ? 'moon' : 'sun'; orb.to = 0;
       if (s && root.dataset.mode === 'sky') {
-        const after = signed(n.min - s.set), before = signed(s.rise - n.min);
-        sink = root.dataset.theme === 'dark' ? 1 - Math.min(ramp(after, 30, 85), ramp(before, 30, 85)) : Math.max(ramp(after, -55, 4), ramp(before, -55, 4));
+        const f = flipOf(n.ymd, s), sq = (x) => x * x, k01 = (x) => clamp(x, 0, 1);
+        if (dark) { const up = (x) => { const k = k01(x / 30); return k * k * (3 - 2 * k); }; orb.to = GONE * (1 - Math.min(up((n.min - f.dusk + 2880) % 1440), up((f.dawn - n.min + 2880) % 1440))); } // minutes since dark, minutes until light
+        else {
+          const a = signed(n.min - s.set), b = signed(s.rise - n.min); // minutes after sunset, minutes before sunrise
+          const down = a <= 0 ? .45 * sq(k01(1 + a / 55)) : .45 + (GONE - .45) * k01(a / Math.max(1, f.dusk - s.set));
+          const rise = b <= 0 ? .45 * sq(k01(1 + b / 55)) : .45 + (GONE - .45) * k01(b / Math.max(1, s.rise - f.dawn));
+          orb.to = Math.max(down, rise);
+        }
       }
-      hDisc.style.setProperty('--sink', sink.toFixed(3));
+      // The first paint, and reduced motion: just be there.
+      if (!orb.is || reduced) { orb.is = orb.want; orb.s = orb.to; orb.v = 0; draw(); return; }
+      if (!orb.raf && (orb.is !== orb.want || Math.abs(orb.to - orb.s) > .0008)) { orb.t = performance.now(); orb.raf = requestAnimationFrame(spring); }
     });
   }
 

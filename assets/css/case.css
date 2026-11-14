@@ -7,6 +7,12 @@
 
 .case main { max-width: 1380px; margin: 0 auto; padding: 0 var(--gutter); }
 
+/* Lab: Project page top → Sky (or ?top=sky). The homepage's sky sits at the very top and is gone within the first
+   screen, so opening a card doesn't jump from blue to a blank page. The colours come from sky.js. */
+:root[data-top="sky"] body.case { position: relative; background: none; }
+:root[data-top="sky"] body.case::before { content: ""; position: absolute; inset: 0 0 auto; height: min(88svh, 860px); z-index: -1; pointer-events: none;
+  background: linear-gradient(var(--sky-top, transparent), color-mix(in srgb, var(--sky-mid, transparent) 62%, transparent) 38%, color-mix(in srgb, var(--sky-mid, transparent) 20%, transparent) 70%, transparent); }
+
 /* ───────── Hero ───────── */
 .cs-hero { display: grid; grid-template-columns: repeat(12, 1fr); column-gap: 22px; align-items: start; padding: clamp(150px, 22vh, 220px) 0 clamp(44px, 5vw, 64px); }
 .cs-hero h1 { grid-column: 1 / -1; font-family: var(--serif); font-weight: 300; font-size: clamp(64px, 11vw, 176px); line-height: .92; letter-spacing: var(--track-display); word-spacing: var(--word-display); }

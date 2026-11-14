@@ -311,7 +311,7 @@ body[data-about="line"] .about-line { display: block; max-width: 23em; margin: 0
 .about-line .in-photo { aspect-ratio: 1; border-radius: 50%; object-fit: cover; }
 .about-line .in-art { border-radius: .12em; rotate: -3deg; margin: 0 .1em; box-shadow: 0 .1em .3em rgb(0 0 0 / .3); }
 .about-line .org-mark { display: inline-block; height: .8em; vertical-align: -.08em; }
-.about-line .org-mark.is-influential { width: 1.98em; }
+.about-line .org-mark.is-influential { width: 1.98em; vertical-align: .04em; }
 .about-line .org-mark.is-ulster { width: 1.45em; }
 .about-line .org-mark::before { opacity: .9; }
 
@@ -325,17 +325,19 @@ body[data-arc="none"] .stage { height: 84px; }
 body:is([data-arc="none"], [data-arc="sun"]) :is(.sun, .corona) { display: none; }
 /* The arc leans with the pointer (--lx, --ly from site.js). */
 .home .disc, .home .corona { translate: var(--lx, 0px) var(--ly, 0px); }
-/* The sun really sets: it sinks behind a soft horizon at the foot of the stage as sunset comes (--sink, 0 up to 1
-   gone, from site.js), and the moon comes up from the same line once it's dark, and goes down before dawn. */
+/* The sun really sets (--sink from site.js: 0 up, about a half with its middle on the horizon at sunset, .84 just
+   gone). It goes under a soft horizon at the foot of the stage as the page turns dark, and the moon comes up from
+   the same line straight after. Which of the two is showing is the disc's own data-orb, not the theme, so they
+   only ever swap below the horizon; site.js eases every move, however the time got there. */
 /* The stage reaches up to the top of the page here, so the horizon only cuts the glow at the bottom. */
 body[data-arc="sun"] .stage { height: 256px; margin-top: -96px; -webkit-mask: linear-gradient(#000 calc(100% - 30px), transparent); mask: linear-gradient(#000 calc(100% - 30px), transparent); }
-body[data-arc="sun"] .disc { translate: var(--lx, 0px) calc(var(--ly, 0px) + var(--sink, 0) * 180px); }
-[data-theme="dark"] body[data-arc="sun"] .disc { rotate: 22deg; }
+body[data-arc="sun"] .disc { translate: var(--lx, 0px) calc(var(--ly, 0px) + var(--sink, 0) * 180px); opacity: clamp(0, (.84 - var(--sink, 0)) * 9, 1); }
+body[data-arc="sun"] .disc[data-orb="moon"] { rotate: 22deg; }
 body[data-arc="sun"] .eclipse { --d: 124px; width: var(--d); left: calc(50% - var(--d) / 2); top: 106px; }
 body.home[data-arc="sun"] .disc { --sun: color-mix(in srgb, var(--sky-sun, #ff9a5c) calc(var(--sky-sun-a, 0) * 90%), #fffaf0);
   background: radial-gradient(circle at 50% 36%, color-mix(in srgb, var(--sun) 70%, #fff), var(--sun));
   box-shadow: 0 0 46px 6px color-mix(in srgb, var(--sun) 55%, transparent), 0 0 150px 50px color-mix(in srgb, var(--sun) 22%, transparent); }
-[data-theme="dark"] body.home[data-arc="sun"] .disc { background: none; box-shadow: inset calc(var(--moon, -.4) * var(--d)) 0 0 0 #f1eee3;
+body.home[data-arc="sun"] .disc[data-orb="moon"] { background: none; box-shadow: inset calc(var(--moon, -.4) * var(--d)) 0 0 0 #f1eee3;
   filter: drop-shadow(0 0 18px rgb(206 220 255 / .45)); }
 @media (max-width: 700px) { body[data-arc="sun"] .eclipse { --d: 96px; top: 126px; } body[data-arc="sun"] .stage { height: 252px; margin-top: -92px; } }
 /* Ring colour: the sky's own light, warm at sunrise and pearl white at night (lab: the brand rainbow). */

@@ -192,53 +192,24 @@
   const longDate = (d) => { const x = day(d); return `${MONTHS[x.getMonth()]} ${x.getDate()}, ${x.getFullYear()}`; };
 
   /* The sky over the street, after Peng's: a tall gradient from the sky at the top to a warm horizon, a glow
-     where the sun is coming up or going down, and a fine grain. It follows the sun where the visitor is (sunrise
-     and sunset come from sky.js), stays blue rather than plum at dusk, and the words turn light after dark.
-     The theme toggle's Light and Dark hold it at midday or night; ?t=HH:MM previews a time. */
-  const SKIES = {
-    night:   { top: '#0a1631', mid: '#12264b', low: '#1c3159', glow: '#29407a', ga: .25 },
-    predawn: { top: '#0f2655', mid: '#27457f', low: '#5d6593', glow: '#c98a8a', ga: .35 },
-    dawn:    { top: '#4e7ccc', mid: '#98b1df', low: '#f5b386', glow: '#ff9f6b', ga: .75 },
-    sunrise: { top: '#7aa4e2', mid: '#bccff0', low: '#fdd0a6', glow: '#ffbb85', ga: .55 },
-    morning: { top: '#91b8e8', mid: '#c8d8ef', low: '#f8e5d3', glow: '#ffe1c2', ga: .2 },
-    day:     { top: '#9ec0e9', mid: '#cdd9e9', low: '#f9ede2', glow: '#fff1e2', ga: 0 },
-    golden:  { top: '#9fbbe4', mid: '#d6d5dd', low: '#fbdcbc', glow: '#ffc58a', ga: .35 },
-    sunset:  { top: '#6886c8', mid: '#b9b4cc', low: '#ffb47f', glow: '#ff9455', ga: .8 },
-    dusk:    { top: '#1f3a6e', mid: '#3c5488', low: '#b97c64', glow: '#e08a5a', ga: .45 },
-  };
-  function skyAt(min, sun) {
-    const { rise: R, set: S, tw: T } = sun;
-    const A = [['night', R - 2.4 * T], ['predawn', R - 1.1 * T], ['dawn', R - .1 * T], ['sunrise', R + .7 * T], ['morning', R + 2.4 * T],
-      ['day', (R + S) / 2], ['golden', S - 1.6 * T], ['sunset', S + .1 * T], ['dusk', S + 1.1 * T], ['night', S + 2.4 * T]];
-    if (min < A[0][1]) min += 1440;
-    let i = A.findIndex((a) => a[1] > min);
-    if (i <= 0) return { ...SKIES.night, dark: true };
-    const [ak, am] = A[i - 1], [bk, bm] = A[i], t = (min - am) / (bm - am), k = t * t * (3 - 2 * t);
-    const a = SKIES[ak], b = SKIES[bk], mix = (x, y) => '#' + [1, 3, 5].map((j) => Math.round(parseInt(x.slice(j, j + 2), 16) * (1 - k) + parseInt(y.slice(j, j + 2), 16) * k).toString(16).padStart(2, '0')).join('');
-    const midC = mix(a.mid, b.mid);
-    // Words go light once the middle of the sky (where they sit) is darker than about a quarter.
-    const lum = [1, 3, 5].map((j) => { const v = parseInt(midC.slice(j, j + 2), 16) / 255; return v <= .04045 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4; }).reduce((t, v, j) => t + v * [.2126, .7152, .0722][j], 0);
-    return { top: mix(a.top, b.top), mid: midC, low: mix(a.low, b.low), glow: mix(a.glow, b.glow), ga: a.ga + (b.ga - a.ga) * k, dark: lum < .26 };
-  }
+     where the sun is coming up or going down, and a fine grain. The colours come from sky.js (street), which
+     follows the sun where the visitor is; the words turn light when the site turns dark.
+     Light and Dark (the D key) hold it at midday or night; ?t=HH:MM previews a time. */
   // on(): whether to paint. The homepage only wears this sky with lab: Page sky → Street.
   function streetSky(on = () => true) {
     const html = document.documentElement, body = document.body;
-    const t = new URLSearchParams(location.search).get('t');
     // Pulling past the top or bottom shows the colour behind the page: make it the sky's colour at that end.
     let ends = null;
     const behind = () => { if (ends) html.style.backgroundColor = scrollY > (html.scrollHeight - innerHeight) / 2 ? ends[1] : ends[0]; };
     addEventListener('scroll', behind, { passive: true });
     function paint() {
       if (!on()) { ['--sky-top', '--sky-mid', '--sky-low', '--sky-sun', '--sky-sun-a'].forEach((k) => body.style.removeProperty(k)); ends = null; html.style.backgroundColor = ''; return; }
-      const d = new Date(), mode = html.dataset.mode;
-      const sk = window.__sky?.now?.(); // sky.js's minute: now, ?t, or wherever the time bar is
-      const min = mode === 'dark' ? 0 : sk ? sk.min : t ? +t.split(':')[0] * 60 + +(t.split(':')[1] || 0) : d.getHours() * 60 + d.getMinutes();
-      const sun = window.__sky?.sun(sk?.ymd) || { rise: 450, set: 1020, tw: 38 };
-      const L = mode === 'light' ? SKIES.day : skyAt(min, sun);
+      const L = window.__sky.street(); // sky.js's sky for its minute: now, ?t, or wherever the time bar is
+      if (!L) return;
       [['--sky-top', L.top], ['--sky-mid', L.mid], ['--sky-low', L.low], ['--sky-sun', L.glow], ['--sky-sun-a', L.ga.toFixed(2)]].forEach(([k, v]) => body.style.setProperty(k, v));
       ends = [L.top, L.low]; behind();
       if (!body.classList.contains('is-street')) return;
-      body.classList.toggle('is-night', !!L.dark);
+      body.classList.toggle('is-night', html.dataset.theme === 'dark'); // dark exactly when the homepage is
       document.querySelector('meta[name="theme-color"]')?.setAttribute('content', L.top);
     }
     paint();

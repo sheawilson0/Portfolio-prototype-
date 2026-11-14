@@ -133,6 +133,9 @@
   const lum = (h) => hex(h).map((v) => { v /= 255; return v <= .04045 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4; }).reduce((a, v, i) => a + v * [.2126, .7152, .0722][i], 0);
 
   let frozen = params.get('t'), frozenDate = params.get('d');
+  let topSky = params.get('top');
+  try { topSky = topSky || JSON.parse(localStorage.getItem('home-lab-8') || '{}').top; } catch (e) {}
+  if (topSky === 'sky') root.dataset.top = 'sky';
   function now() {
     const w = wall(Date.now());
     const ymd = frozenDate || w.ymd;
@@ -141,9 +144,14 @@
 
   const ANCHORS = new Map();
   const DAYLIGHT = root.hasAttribute('data-daylight');
+  // A page marked data-daylight (/shipped/) keeps midday's colours, but is light or dark when every other page is.
   function lookAt(min, ymd) {
+    if (!DAYLIGHT) return look(min, ymd);
+    const { rise, set } = sun(ymd);
+    return { ...look(Math.round((rise + set) / 2), ymd), theme: look(min, ymd).theme };
+  }
+  function look(min, ymd) {
     const { rise: R, set: S, tw } = sun(ymd);
-    if (DAYLIGHT) min = Math.round((R + S) / 2); // a page marked data-daylight (/shipped/) stays at midday
     if (!ANCHORS.has(ymd)) ANCHORS.set(ymd, anchors(R, S, tw));
     const list = ANCHORS.get(ymd);
     let i = list.findIndex((a) => a[1] > min);
@@ -164,6 +172,35 @@
       sun: mix(mix(A.sun, B.sun, t), s.tint, .15), sa: A.sa + (B.sa - A.sa) * t, angle: Math.max(-72, Math.min(72, -52 + 104 * dayFrac)),
       season: s.name, rise: R, set: S,
     };
+  }
+
+  /* The sky over the Shipped street and the homepage, after Peng's: a tall gradient from the sky at the top to a
+     warm horizon, with a glow where the sun is coming up or going down. It stays blue rather than plum at dusk.
+     shipped.js paints it; project pages can wear its top (lab: Project page top). */
+  const SKIES = {
+    night:   { top: '#0a1631', mid: '#12264b', low: '#1c3159', glow: '#29407a', ga: .25 },
+    predawn: { top: '#0f2655', mid: '#27457f', low: '#5d6593', glow: '#c98a8a', ga: .35 },
+    dawn:    { top: '#4e7ccc', mid: '#98b1df', low: '#f5b386', glow: '#ff9f6b', ga: .75 },
+    sunrise: { top: '#7aa4e2', mid: '#bccff0', low: '#fdd0a6', glow: '#ffbb85', ga: .55 },
+    morning: { top: '#91b8e8', mid: '#c8d8ef', low: '#f8e5d3', glow: '#ffe1c2', ga: .2 },
+    day:     { top: '#9ec0e9', mid: '#cdd9e9', low: '#f9ede2', glow: '#fff1e2', ga: 0 },
+    golden:  { top: '#9fbbe4', mid: '#d6d5dd', low: '#fbdcbc', glow: '#ffc58a', ga: .35 },
+    sunset:  { top: '#6886c8', mid: '#b9b4cc', low: '#ffb47f', glow: '#ff9455', ga: .8 },
+    dusk:    { top: '#1f3a6e', mid: '#3c5488', low: '#b97c64', glow: '#e08a5a', ga: .45 },
+  };
+  // mode: 'light' holds it at midday, 'dark' at night, anything else follows the minute.
+  function street(min, ymd, mode) {
+    if (mode === 'light') return { ...SKIES.day, dark: false };
+    const { rise: R, set: S, tw: T } = sun(ymd);
+    const A = [['night', R - 2.4 * T], ['predawn', R - 1.1 * T], ['dawn', R - .1 * T], ['sunrise', R + .7 * T], ['morning', R + 2.4 * T],
+      ['day', (R + S) / 2], ['golden', S - 1.6 * T], ['sunset', S + .1 * T], ['dusk', S + 1.1 * T], ['night', S + 2.4 * T]];
+    if (min < A[0][1]) min += 1440;
+    const i = mode === 'dark' ? 0 : A.findIndex((a) => a[1] > min);
+    if (i <= 0) return { ...SKIES.night, dark: true };
+    const [ak, am] = A[i - 1], [bk, bm] = A[i], k = smooth((min - am) / (bm - am)), a = SKIES[ak], b = SKIES[bk];
+    const midC = mix(a.mid, b.mid, k);
+    // Words go light once the middle of the sky (where they sit) is darker than about a quarter.
+    return { top: mix(a.top, b.top, k), mid: midC, low: mix(a.low, b.low, k), glow: mix(a.glow, b.glow, k), ga: a.ga + (b.ga - a.ga) * k, dark: lum(midC) < .26 };
   }
 
   // The next time the page crosses between light and dark, in minutes from now.
@@ -219,6 +256,7 @@
     if (theme === 'dark') { if (root.dataset.theme !== 'dark') root.dataset.theme = 'dark'; } else delete root.dataset.theme;
     const meta = document.querySelector('meta[name="theme-color"]'), metaC = m === 'sky' ? L.bg : theme === 'dark' ? '#05070b' : '#ffffff';
     if (meta && meta.content !== metaC && !DAYLIGHT) meta.setAttribute('content', metaC); // a daylight page paints its own
+    if (root.dataset.top === 'sky') { const st = street(n.min, n.ymd, m); set('--sky-top', st.top); set('--sky-mid', st.mid); }
     last = { n, L, theme, mode: m };
     favicon();
     decorate();
@@ -527,6 +565,8 @@
     sun: (d) => sun(d || wall(Date.now()).ymd),
     now: () => last && { min: last.n.min, ymd: last.n.ymd },
     at: (min, d) => lookAt(wrap(Math.round(min)), d || wall(Date.now()).ymd),
+    street: () => last && street(last.n.min, last.n.ymd, last.mode),
+    barOpen: () => barOpen,
   };
   function report() {
     if (!embed || parent === window || !last) return;
@@ -557,6 +597,48 @@
     const file = from && new URL(from).pathname.split('/').pop();
     named(file && work.querySelector(`a[href="${file}"]`)?.closest('.item')?.querySelector('.card'));
   });
+
+  /* The same thing by hand, for browsers that can't yet carry one page into the next (Firefox, and so Zen). Leaving:
+     everything but the card you clicked fades, then the page changes. Arriving: the picture at the top of the new
+     page starts where the card was, cropped to its shape, and grows into place while the rest fades in. */
+  if (!window.CSSViewTransitionRule && !embed && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    let going = false;
+    document.addEventListener('click', (e) => {
+      const a = e.target.closest?.('a[href]');
+      if (!a || going || e.defaultPrevented || e.button || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || a.target === '_blank') return;
+      const to = new URL(a.href);
+      if (to.origin !== location.origin || (to.pathname === location.pathname && to.search === location.search)) return; // another site, or a jump within this page
+      e.preventDefault(); going = true;
+      const item = a.closest('.work .item'), card = item?.querySelector('.card'), r = card?.getBoundingClientRect();
+      try { sessionStorage.setItem('pg', JSON.stringify({ at: Date.now(), r: r && [r.left, r.top, r.width, r.height, parseFloat(getComputedStyle(card).borderRadius) || 0] })); } catch (err) {}
+      item?.classList.add('is-going');
+      root.classList.add('pg-out'); root.classList.toggle('pg-card', !!card);
+      setTimeout(() => { location.href = a.href; }, 200);
+    });
+    // Coming back with the back button can bring the old page out of memory exactly as it was left: faded.
+    addEventListener('pageshow', () => { going = false; root.classList.remove('pg-out', 'pg-card'); document.querySelector('.is-going')?.classList.remove('is-going'); });
+    let pg = null;
+    try { pg = JSON.parse(sessionStorage.getItem('pg')); sessionStorage.removeItem('pg'); } catch (err) {}
+    if (pg && Date.now() - pg.at < 8000) {
+      root.classList.add('pg-in'); // nothing shows until the pieces are in their starting places
+      document.addEventListener('DOMContentLoaded', () => {
+        const top = pg.r && document.querySelector(TOP), soft = 'cubic-bezier(.22, .8, .2, 1)';
+        const fade = (el) => { if (!el.matches('.reveal, script, style')) el.animate([{ opacity: 0, translate: '0 14px' }, { opacity: 1, translate: '0 0' }], { duration: 500, delay: 80, easing: 'cubic-bezier(.2, .7, .2, 1)', fill: 'backwards' }); };
+        if (!top) [...document.body.children].forEach(fade);
+        else {
+          for (let el = top; el !== document.body; el = el.parentElement) {
+            if (el.matches('.reveal')) el.classList.add('in', 'pg-now');
+            [...el.parentElement.children].forEach((x) => { if (x !== el) fade(x); });
+          }
+          const t = top.getBoundingClientRect(), [x, y, w, h, rad] = pg.r, sc = Math.max(w / t.width, h / t.height);
+          const ix = Math.max(0, (t.width - w / sc) / 2), iy = Math.max(0, (t.height - h / sc) / 2), end = parseFloat(getComputedStyle(top).borderRadius) || 0;
+          top.animate([{ transform: `translate(${x + w / 2 - t.left - t.width / 2}px, ${y + h / 2 - t.top - t.height / 2}px) scale(${sc})`, clipPath: `inset(${iy}px ${ix}px round ${rad / sc}px)` },
+            { transform: 'translate(0px, 0px) scale(1)', clipPath: `inset(0px 0px round ${end}px)` }], { duration: 620, easing: soft });
+        }
+        root.classList.remove('pg-in');
+      });
+    }
+  }
 
   /* ───────── Go ───────── */
   if (embed && params.has('sun')) root.classList.add('sun-on');
