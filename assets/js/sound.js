@@ -20,7 +20,10 @@
       if (ctx.state !== 'running') ctx.resume();
     } catch (e) {}
   };
-  ['pointerdown', 'touchend', 'keydown'].forEach((t) => addEventListener(t, wake, { capture: true, passive: true }));
+  // Which event counts as a press differs by browser and by mouse or finger, so listen to them all.
+  ['pointerdown', 'pointerup', 'touchend', 'click', 'keydown'].forEach((t) => addEventListener(t, wake, { capture: true, passive: true }));
+  // Made on the first move, so it's already running if the browser counts the click that brought you here.
+  addEventListener('pointermove', wake, { once: true, passive: true });
   const live = () => ctx && ctx.state === 'running';
   const off = () => 1 + (.02 + Math.random() * .02) * (Math.random() < .5 ? -1 : 1); // 2 to 4 percent either way
 
