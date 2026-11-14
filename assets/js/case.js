@@ -1,5 +1,9 @@
 /* Case study extras. site.js runs the nav, theme, tip, reveal and cards; this adds the pieces only these pages have. */
 (() => {
+  /* Near the top, the colour behind the page is the sky's (case.css); further down it's the page's. */
+  const pastTop = () => document.documentElement.classList.toggle('past-top', scrollY > (document.documentElement.scrollHeight - innerHeight) / 2);
+  addEventListener('scroll', pastTop, { passive: true }); pastTop();
+
   /* ── Squircle clip for live media ──
      A WebGL canvas or a playing video gets its own compositor layer, and while scrolling the compositor
      clips it with plain rounded corners instead of a squircle, so the corners flicker. The media sits

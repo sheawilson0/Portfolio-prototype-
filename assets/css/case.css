@@ -13,6 +13,9 @@
 :root[data-top="sky"] body.case { position: relative; display: flow-root; background: none; }
 :root[data-top="sky"] body.case::before { content: ""; position: absolute; inset: 0 0 auto; height: min(88svh, 860px); z-index: -1; pointer-events: none;
   background: linear-gradient(var(--sky-top, transparent), color-mix(in srgb, var(--sky-mid, transparent) 62%, transparent) 38%, color-mix(in srgb, var(--sky-mid, transparent) 20%, transparent) 70%, transparent); }
+/* Pulling down past the top shows the colour behind the page: near the top that's the sky's, not the plain page's.
+   case.js adds .past-top past halfway, so pulling past the bottom still shows the page colour. */
+:root[data-top="sky"]:not(.past-top) { background-color: var(--sky-top, var(--bg)); }
 
 /* ───────── Hero ───────── */
 .cs-hero { display: grid; grid-template-columns: repeat(12, 1fr); column-gap: 22px; align-items: start; padding: clamp(150px, 22vh, 220px) 0 clamp(44px, 5vw, 64px); }
