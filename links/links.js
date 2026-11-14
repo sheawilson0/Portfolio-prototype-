@@ -110,8 +110,8 @@
   });
 
   /* ═════════ 1. Sky: the homepage, as a link page ═════════
-     Settled 2026-11-14 to match the homepage: its sky behind everything (sky.js, following the sun), the sun up
-     in it (tonight's moon after dark), frosted panes like the homepage's work cards, recent work as a peek row,
+     Settled 2026-11-14 to match the homepage: its sky behind everything (sky.js, following the sun), the sun as
+     Portfolio's icon (tonight's moon after dark), frosted panes like the homepage's work cards, recent work as a peek row,
      and the coin in the footer for Arcade. No arrows: the whole card is the button. */
   const linkAttrs = (l) => `${attrs(l)} data-id="${l.id}" style="--tone:${l.tone || '#ed1652'}"`;
   const IG_GRADIENT = '<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="ig-grad" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#feda75"/><stop offset=".3" stop-color="#fa7e1e"/><stop offset=".6" stop-color="#d62976"/><stop offset="1" stop-color="#4f5bd5"/></linearGradient></defs></svg>';
@@ -128,7 +128,6 @@
       const [feat, ...after] = links.filter((l) => !l.social);
       return `${IG_GRADIENT}
       <div class="sk-page">
-        <span class="sk-orb" aria-hidden="true"></span>
         <header class="sk-head">
           <span class="sk-photo"><img src="${PHOTO}" srcset="/links/shea-160.webp 160w, /links/shea-320.webp 320w, /links/shea-480.webp 480w" sizes="120px" alt="Shea Wilson" width="240" height="240"></span>
           <h1 data-egg>Shea Wilson</h1>
