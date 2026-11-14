@@ -178,3 +178,5 @@
   .st-search { padding-top: 9vh; }
 }
 @media (prefers-reduced-motion: reduce) { .st-more, .st-menu, .st-menu.is-open, .st-search-panel, .is-searching .st-search-panel { transition: opacity .2s; transform: none; } }
+/* Only the stand uses proximity; its artwork need not inherit every scroll update. */
+@property --near { syntax: '<number>'; inherits: false; initial-value: 1; }
