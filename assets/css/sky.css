@@ -100,3 +100,10 @@ footer .sky-open:hover { color: var(--ink); }
 .sky-bar input[type="range"]:active { cursor: grabbing; }
 .sb-path:has(input:focus-visible) { outline: 2px solid color-mix(in srgb, var(--ink) 40%, transparent); outline-offset: 2px; border-radius: 12px; }
 @media (max-width: 520px) { .sb-stages { justify-content: flex-start; } .sb-board { display: none; } }
+
+@media (pointer: coarse) {
+  .sky-bar { max-height: calc(100dvh - 24px); overflow-y: auto; }
+  .sky-bar button, .sky-bar .sb-stages button { min-height: 44px; }
+  .sky-bar .sb-play, .sky-bar .sb-close { width: 44px; }
+  .sb-stages { flex-wrap: wrap; }
+}

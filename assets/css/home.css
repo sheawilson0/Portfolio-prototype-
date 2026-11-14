@@ -361,3 +361,8 @@ body[data-layout="line"] .contact-line { display: block; max-width: 22em; margin
 body[data-layout="foot"] .contact { display: none; }
 body[data-layout="foot"] .foot-email { display: inline; color: var(--ink); }
 body[data-layout="foot"] .about { padding-bottom: 120px; }
+
+@media (max-width: 700px) {
+  .last { white-space: normal; }
+  .home .hero .intro { text-wrap: pretty; }
+}

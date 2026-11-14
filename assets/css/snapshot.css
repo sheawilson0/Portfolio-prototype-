@@ -65,3 +65,7 @@
 }
 
 .sn-when { font-size: 13px; color: var(--whisper); margin-bottom: 12px; }
+
+@media (pointer: coarse) {
+  .film-sound { width: 44px; height: 44px; }
+}

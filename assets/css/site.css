@@ -452,3 +452,17 @@ footer a:hover { color: var(--ink); }
   .js .reveal { opacity: 1; translate: none; transition: none; }
   ::view-transition-old(root), ::view-transition-new(root), .theme-switching::view-transition-new(root) { animation: none; }
 }
+
+/* Leave room for thumbs and iPhone safe areas without moving the desktop nav. */
+@media (pointer: coarse) {
+  .nav { padding-left: max(var(--gutter), env(safe-area-inset-left)); padding-right: max(var(--gutter), env(safe-area-inset-right)); }
+  .nav .logo { min-height: 44px; align-items: center; }
+  .links a { display: inline-flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; }
+  footer nav { flex-wrap: wrap; align-items: center; gap: 8px 22px; }
+  footer nav :is(a, button) { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; min-width: 44px; }
+  footer { padding-bottom: max(34px, env(safe-area-inset-bottom)); }
+}
+/* The colour wash can bleed past a card, but must stop at the page edge. */
+@media (max-width: 1440px) {
+  .case main, .home .work { overflow-x: clip; }
+}
