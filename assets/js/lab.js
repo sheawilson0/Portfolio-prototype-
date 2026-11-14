@@ -6,7 +6,6 @@
   if (live && !new URLSearchParams(location.search).has('lab')) return;
   // [attribute, label, options, the recommended one]
   const ROWS = [
-    ['pill', 'Menu when you scroll', [['glass', 'As now'], ['solid', 'Solid']], 'solid'],
   ];
   if (!ROWS.length) return; // nothing open just now
   const KEY = 'home-lab-8'; // home-lab-8: options changed 14 Nov, start everyone on the defaults

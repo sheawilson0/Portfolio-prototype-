@@ -394,8 +394,3 @@ body[data-layout="peng"] .socials a::before { content: "·"; display: inline-blo
   .last { white-space: normal; }
   .home .hero .intro { text-wrap: pretty; }
 }
-
-/* ───────── Menu when you scroll (lab) ─────────
-   Solid: the pill is the sky's pale colour all the way through, so nothing behind it can be read through it. */
-body.home[data-pill="solid"] { --nav-glass: #f4f7fb; }
-[data-theme="dark"] body.home[data-pill="solid"] { --nav-glass: #1b2d58; }
