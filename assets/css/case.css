@@ -198,10 +198,55 @@ body[data-credits="two"] .facts .c-when { display: none; }
 .nx-tile:hover .nx-card img { transform: translate3d(0, -2%, 0); }
 .nx-cap { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 10px; padding: 0 4px; font-size: 15px; color: var(--whisper); }
 .nx-cap b { font-weight: 400; color: var(--ink); }
-/* Lab: just the next one, the same size as one of the two. */
-body[data-next="one"] .nx-tile + .nx-tile { display: none; }
 body[data-next="one"] .nx-tiles { grid-template-columns: minmax(0, 1fr); max-width: calc(50% - 12px); }
-@media (max-width: 700px) { .nx-tiles { grid-template-columns: 1fr; gap: 40px; } body[data-next="one"] .nx-tiles { max-width: none; } }
+@media (max-width: 700px) { .nx-tiles { grid-template-columns: 1fr; gap: 40px; } }
+
+/* ───────── Layouts (lab: data-layout on <body>) ─────────
+   Centred is the default above. The other three put the words on the left edge, where you read from. */
+:is(.sn-case, .js-case):not([data-layout="centre"]) :is(.cs-hero, .sn-flow-head, .sn-head, .js-head, .js-prose, .js-note, .sn-meters, .cs-cta, .sn-block .sn-note) { text-align: left; }
+:is(.sn-case, .js-case):not([data-layout="centre"]) :is(.cs-hero .lede, .facts, .sn-meter-what, .js-head h2, .js-prose p, .js-note, .sn-block) { margin-left: 0; margin-right: 0; }
+:is(.sn-case, .js-case):not([data-layout="centre"]) .cs-cta .cta { justify-content: flex-start; }
+
+/* Left, wide: credits in a row, and a hairline above each section so you can feel where one ends. */
+.case[data-layout="left"] .cs-hero h1 { font-size: clamp(56px, 9vw, 140px); }
+.case[data-layout="left"] .facts { display: flex; flex-wrap: wrap; gap: 20px 56px; width: auto; }
+.case[data-layout="left"] .facts > div { grid-template-columns: 1fr; gap: 4px; }
+.case[data-layout="left"] .facts dt { text-align: left; }
+.case[data-layout="left"] :is(.sn-flow, .sn-ch, .js-ch) { padding-top: 28px; border-top: 1px solid var(--hair); }
+
+/* Headings left: each section's title sits in the left third, its screens and numbers on the right. */
+@media (min-width: 1041px) {
+  .case[data-layout="split"] .cs-hero { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 22px; align-items: start; }
+  .case[data-layout="split"] .cs-hero h1 { grid-column: 1 / span 6; grid-row: 1 / span 2; }
+  .case[data-layout="split"] .cs-hero > :not(h1) { grid-column: 7 / -1; }
+  .case[data-layout="split"] .cs-hero .lede { margin-top: 0; }
+  .case[data-layout="split"] .facts { margin-top: 32px; }
+  .case[data-layout="split"] :is(.sn-flow, .sn-ch, .js-ch) { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 22px; align-items: start;
+    padding-top: 28px; border-top: 1px solid var(--hair); }
+  .case[data-layout="split"] :is(.sn-flow, .sn-ch, .js-ch) > * { grid-column: 5 / -1; }
+  .case[data-layout="split"] :is(.sn-flow-head, .sn-head, .js-head, .js-prose) { grid-column: 1 / span 4; }
+  .case[data-layout="split"] :is(.sn-flow-head, .sn-head) { grid-row: 1 / span 4; position: sticky; top: 110px; }
+  .case[data-layout="split"] .js-head { grid-row: 1; }
+  .case[data-layout="split"] .js-prose { grid-row: 2; margin-top: 18px; }
+  .case[data-layout="split"] .js-ch > :not(.js-head, .js-prose) { grid-row: 1 / span 3; margin-top: 0; }
+  .case[data-layout="split"] :is(.sn-flow-head h2, .sn-head h2, .js-head h2) { font-size: clamp(30px, 2.8vw, 42px); }
+  .case[data-layout="split"] .js-prose p { font-size: 16px; }
+  .case[data-layout="split"] :is(.sn-steps, .sn-meters, .sn-block) { margin-top: 0; }
+  .case[data-layout="split"] .sn-meters.is-four { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 48px 28px; }
+  .case[data-layout="split"] .sn-block + .sn-meters { margin-top: 48px; }
+  .case[data-layout="split"] .js-pair { grid-template-columns: 1fr; }
+}
+
+/* Side contents: the page's sections listed down the left, the one you're reading lit (case.js builds the list). */
+.cs-rail { display: none; }
+@media (min-width: 1100px) {
+  .case[data-layout="rail"] main { padding-left: calc(var(--gutter) + 230px); }
+  .case[data-layout="rail"] .cs-rail { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; position: fixed; z-index: 5; top: 50%; translate: 0 -50%;
+    left: max(var(--gutter), calc((100vw - 1380px) / 2 + var(--gutter))); width: 180px; font-size: 14px; line-height: 1.35; }
+  .cs-rail a { color: var(--whisper); transition: color .3s var(--ease); }
+  .cs-rail a:hover, .cs-rail a.is-on { color: var(--ink); }
+  .cs-rail a:first-child { margin-bottom: 8px; font-family: var(--serif); font-size: 20px; color: var(--ink); }
+}
 
 /* An overview with no label (Brain Dump) sits on the left, where the headings start. */
 .cs-intro:not(:has(.label)) p { grid-column: 1 / span 8; }

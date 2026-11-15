@@ -5,12 +5,12 @@
   if (live && !new URLSearchParams(location.search).has('lab')) return;
   // [attribute, label, options, the recommended one]
   const ROWS = [
+    ['layout', 'Layout', [['centre', 'Centred'], ['left', 'Left, wide'], ['split', 'Headings left'], ['rail', 'Side contents']], 'rail'],
     ['credits', 'Credits', [['all', 'Role, client, when'], ['two', 'Role and client']], 'all'],
     ['nums', 'Numbers', [['serif', 'Serif, light'], ['sans', 'Sans']], 'sans'],
-    ['next', 'Next', [['two', 'Two tiles'], ['one', 'One tile']], 'two'],
-  ].filter(([k]) => (k !== 'credits' || document.querySelector('.facts')) && (k !== 'nums' || document.querySelector('.sn-meters')));
+  ].filter(([k]) => (k === 'layout' ? document.body.dataset.layout : k !== 'credits' || document.querySelector('.facts')) && (k !== 'nums' || document.querySelector('.sn-meters')));
   if (!ROWS.length) return; // nothing open just now
-  const KEY = 'case-lab-2'; // 15 Nov: credits without team, numbers, next tiles
+  const KEY = 'case-lab-3'; // 15 Nov: layouts; Next locked to two tiles
   const get = (k) => { try { return JSON.parse(localStorage.getItem(KEY) || '{}')[k]; } catch (e) { return null; } };
   const set = (k, v) => { try { const o = JSON.parse(localStorage.getItem(KEY) || '{}'); o[k] = v; localStorage.setItem(KEY, JSON.stringify(o)); } catch (e) {} };
   // A row lives wherever index.html put its default: on <html> (set before anything paints) or on <body>.
