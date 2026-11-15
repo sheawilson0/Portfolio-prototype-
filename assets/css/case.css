@@ -165,49 +165,51 @@
 
 /* ───────── Current work (Snapshot, Quit28, JumpStart): quiet and centred, like the homepage ─────────
    The title and line sit centred, and the credits read like the homepage's About index: label on the left, words on the right. */
-:is(.sn-case, .js-case) .cs-hero { display: block; text-align: center; padding: clamp(64px, 8vw, 110px) 0 0; }
-:is(.sn-case, .js-case) .cs-hero h1 { font-size: clamp(48px, 7vw, 104px); }
-:is(.sn-case, .js-case) .cs-hero .lede { max-width: 40ch; margin: 24px auto 0; font-size: clamp(19px, 1.8vw, 23px); }
-:is(.sn-case, .js-case) .facts { display: flex; flex-wrap: wrap; justify-content: center; gap: 18px 56px; margin: 40px auto 0; }
-:is(.sn-case, .js-case) .facts > div { max-width: 22ch; }
-:is(.sn-case, .js-case) .facts dt { font-size: 13px; color: var(--whisper); }
-:is(.sn-case, .js-case) .facts dd { margin-top: 4px; max-width: none; font-size: 15px; line-height: 1.45; text-wrap: balance; }
+.cs-calm .cs-hero { display: block; text-align: center; padding: clamp(64px, 8vw, 110px) 0 0; }
+.cs-calm .cs-hero h1 { font-size: clamp(48px, 7vw, 104px); }
+.cs-calm .cs-hero .lede { max-width: 40ch; margin: 24px auto 0; font-size: clamp(19px, 1.8vw, 23px); }
+.cs-calm .cs-hero .facts { display: flex; flex-wrap: wrap; justify-content: center; gap: 18px 56px; margin: 40px auto 0; padding: 0; border: 0; }
+.cs-calm .cs-hero .facts > div { max-width: 22ch; }
+.cs-calm .cs-hero .facts dt { font-size: 13px; color: var(--whisper); }
+.cs-calm .cs-hero .facts dd { margin-top: 4px; max-width: none; font-size: 15px; line-height: 1.45; text-wrap: balance; }
 
-/* The way out: a plain underlined link, as in the homepage's contact, not a black pill. */
-.case .cs-cta .cta { gap: 28px; flex-wrap: wrap; justify-content: center; }
-.case .cs-cta .email { padding: 0; gap: 8px; background: none; color: var(--ink); box-shadow: none; font-size: clamp(18px, 1.6vw, 21px);
-  text-decoration: underline; text-decoration-color: var(--hair); text-underline-offset: 6px; transition: text-decoration-color .3s var(--ease); }
-.case .cs-cta .email:hover { box-shadow: none; text-decoration-color: currentColor; }
+/* The way out, as in the homepage's contact (after pengzhe.ng): grey words with a dot between, no icon. On hover a
+   word goes full ink and a thick underline fades in, breaking around g, y and p. */
+.case .cs-cta .cta { gap: 0; flex-wrap: wrap; justify-content: center; align-items: baseline; }
+.case .cs-cta .cta > * + *::before { content: "·"; display: inline-block; margin: 0 .55em; color: var(--whisper); text-decoration: none; }
+.case .cs-cta :is(.email, .copy) { display: inline-block; height: auto; padding: 0; border: 0; border-radius: 0; background: none; box-shadow: none;
+  font-size: 20px; color: var(--ink-2); text-decoration: underline transparent; text-decoration-thickness: .09em; text-underline-offset: .22em; text-decoration-skip-ink: auto;
+  transition: color .15s ease, text-decoration-color .15s ease; }
+.case .cs-cta :is(.email, .copy):is(:hover, :focus-visible) { background: none; box-shadow: none; color: var(--ink); text-decoration-color: currentColor; }
 .case .cs-cta .email::before { display: none; }
-.case .cs-cta .email-icon { width: 15px; height: 15px; }
-.case .cs-cta .copy { height: auto; padding: 0; background: none; border: 0; font-size: clamp(16px, 1.4vw, 18px); }
+.case .cs-cta .email-icon { display: none; }
+.case .cs-cta .copy.is-soon { color: var(--whisper); }
+.case .cs-cta .copy.is-soon:hover { color: var(--whisper); text-decoration-color: transparent; }
 .case .cs-cta .copy.is-soon i { display: none; }
 
 /* One gap between every block on these pages, so the page keeps one beat as you scroll. */
-:is(.sn-case, .js-case) { --beat: clamp(96px, 11vw, 150px); }
-:is(.sn-case, .js-case) :is(.sn-flow, .sn-ch, .js-ch, .cs-cta, .cs-next) { margin-top: var(--beat); }
-:is(.sn-case, .js-case) .cs-cta h2 { font-size: clamp(34px, 4vw, 56px); line-height: 1.08; letter-spacing: var(--track-heading); }
-:is(.sn-case, .js-case) .cs-cta .cta { margin-top: 24px; }
+.cs-calm { --beat: clamp(96px, 11vw, 150px); }
+.cs-calm :is(.sn-flow, .sn-ch, .js-ch, .cs-cta, .cs-next) { margin-top: var(--beat); }
+.cs-calm .cs-cta h2 { font-size: clamp(34px, 4vw, 56px); line-height: 1.08; letter-spacing: var(--track-heading); }
+.cs-calm .cs-cta .cta { margin-top: 24px; }
 .nx-title { margin-bottom: 40px; text-align: center; font-family: var(--serif); font-weight: 300; font-size: clamp(34px, 4vw, 56px); line-height: 1.08; letter-spacing: var(--track-heading); }
 
-/* Next: the next two projects as homepage tiles (a picture in a sky-tinted card, its name and status underneath). */
+/* Next: the next two projects, each with the same picture as its homepage card (tiles.css draws them; q28-card.js
+   fits each .art stage to its card). The card stays put; on hover the picture tilts and its layers slide apart. */
 .nx-tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
 .nx-tile { display: flex; flex-direction: column; gap: 16px; }
-.nx-card { position: relative; display: block; aspect-ratio: 4 / 3; overflow: hidden; border-radius: var(--radius); corner-shape: squircle;
+.nx-card { position: relative; display: block; aspect-ratio: 4 / 3; overflow: hidden; border-radius: var(--radius); corner-shape: squircle; isolation: isolate;
   background: color-mix(in srgb, var(--sky-mid, #a8c3e6) 42%, var(--bg)); }
-.nx-card img { position: absolute; transition: transform 1s var(--ease); }
-.nx-card.is-hand img { width: 72%; height: auto; left: 18%; bottom: -14%; }
-.nx-card.is-phone img { height: 92%; width: auto; left: 50%; top: 12%; translate: -50% 0; filter: drop-shadow(0 24px 40px rgba(0, 0, 0, .25)); }
-.nx-card.is-screen img { width: 86%; height: auto; left: 10%; top: 12%; border-radius: 10px; box-shadow: 0 24px 60px rgba(10, 30, 60, .18); }
-.nx-card.is-cut img { width: 84%; height: 84%; left: 8%; top: 8%; object-fit: contain; }
-.nx-tile:hover .nx-card img { transform: translate3d(0, -2%, 0); }
+/* Snapshot as on the homepage: the phone on the left, the results behind it on the right. */
+.nx-tile.m-snap .m-snap-res { left: 206px; rotate: 4deg; }
+.nx-tile.m-snap .m-snap-phone { left: -6px; }
+/* Cipher and Amp: their one cut-out picture, floating clear of the edges. */
+.nx-tile.m-cut .art { --w: 400; --h: 300; }
+.nx-tile.m-cut .art img { left: 0; top: 0; width: 100%; height: 100%; object-fit: contain; scale: .9; }
 .nx-cap { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 10px; padding: 0 4px; font-size: 15px; color: var(--whisper); }
 .nx-cap b { font-weight: 400; color: var(--ink); }
-body[data-next="one"] .nx-tiles { grid-template-columns: minmax(0, 1fr); max-width: calc(50% - 12px); }
 @media (max-width: 700px) { .nx-tiles { grid-template-columns: 1fr; gap: 40px; } }
 
-/* An overview with no label (Brain Dump) sits on the left, where the headings start. */
-.cs-intro:not(:has(.label)) p { grid-column: 1 / span 8; }
 
 
 .case footer { margin-top: 110px; }
@@ -245,3 +247,13 @@ body[data-next="one"] .nx-tiles { grid-template-columns: minmax(0, 1fr); max-wid
   .hero-shot { width: 100vw; margin-left: calc(50% - 50vw); }
 }
 @media (prefers-reduced-motion: reduce) { .js .case :is(main > *, .cs-hero .reveal, .facts > div) { translate: none !important; scale: none !important; filter: none !important; } }
+
+/* Above the Next tiles (lab: Above the next two). Next or More work as a heading; More work as a small label at the
+   tiles' left edge, like their captions; or nothing (still read out to screen readers). */
+body:not([data-nxh="next"]) .nx-h-next, body[data-nxh="next"] .nx-h-more { display: none; }
+body[data-nxh="quiet"] .nx-title { margin-bottom: 16px; padding: 0 4px; text-align: left; font: 400 15px/1.4 var(--sans); letter-spacing: 0; color: var(--whisper); }
+body[data-nxh="none"] .nx-title { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+/* The overview on the calm pages (Brain Dump, Amp, Cipher): one centred paragraph under the credits, no label. */
+.cs-calm .cs-intro { display: block; margin-top: clamp(56px, 6vw, 88px); text-align: center; }
+.cs-calm .cs-intro p:not(.label) { max-width: 30em; margin: 0 auto; font-size: clamp(21px, 1.9vw, 27px); line-height: 1.42; letter-spacing: -.01em; text-wrap: pretty; }

@@ -30,10 +30,11 @@
 <link rel="stylesheet" href="/assets/fonts/portfolio.css">
 <link rel="stylesheet" href="assets/css/site.css">
 <link rel="stylesheet" href="assets/css/sky.css">
+<link rel="stylesheet" href="assets/css/tiles.css">
 <link rel="stylesheet" href="assets/css/case.css">
 <link rel="stylesheet" href="assets/css/jumpstart.css">
 </head>
-<body class="case js-case" style="--tone:#4fae86">
+<body class="case js-case cs-calm" data-nxh="next" style="--tone:#4fae86">
 
 <div class="tip" aria-hidden="true"><i></i><span class="tip-text"></span><svg class="tip-arrow" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5l5-5M4.5 3.5h4v4"/></svg></div>
 
@@ -61,7 +62,6 @@
       </div>
     </div>
   </article>
-<p class="js-note reveal">I’ve scaled the figures in the National Football Museum screens, so no real campaign numbers appear on this page.</p>
 <header class="cs-hero">
     <h1 class="reveal">JumpStart</h1>
     <div class="js-hero-copy reveal" style="--d:.06s">
@@ -73,7 +73,7 @@
       <div><dt>When</dt><dd>June 2026 to now</dd></div>
     </dl>
   </header>
-<section class="js-ch" id="briefing" aria-labelledby="briefing-title"><div class="js-head reveal"><h2 id="briefing-title">A budget holder doesn’t want a dashboard</h2></div><div class="js-prose reveal"><p>It opens with one sentence, “Every £1 you spent brought back £2.86”, says whether anything needs you, and the account lead checks it before it reaches you. The numbers are there to back up the sentence.</p></div><div class="js-pair">
+<section class="js-ch" id="briefing" aria-labelledby="briefing-title"><div class="js-head reveal"><h2 id="briefing-title">The answer comes first</h2></div><div class="js-prose reveal"><p>It opens with one sentence, “Every £1 you spent brought back £2.86”, says whether anything needs you, and the account lead checks it before it reaches you. The numbers are there to back up the sentence.</p></div><div class="js-pair">
           <figure class="js-fig reveal"><div class="shot"><img src="assets/media/jumpstart/brief-good.webp" alt="A good week: every £1 you spent brought back £2.86" width="1800" height="1125" loading="lazy" decoding="async" srcset="assets/media/jumpstart/brief-good-480w.webp 480w, assets/media/jumpstart/brief-good-800w.webp 800w, assets/media/jumpstart/brief-good-1200w.webp 1200w, assets/media/jumpstart/brief-good.webp 1800w" sizes="(max-width: 720px) 89.74vw, (max-width: 1512px) 41.14vw, 622px"></div><figcaption>A good week.</figcaption></figure>
           <figure class="js-fig reveal" style="--d:.06s"><div class="shot"><img src="assets/media/jumpstart/brief-bad.webp" alt="A losing week: every £1 brought back 75p, and one decision for you, pause or change the offer" width="1800" height="1125" loading="lazy" decoding="async" srcset="assets/media/jumpstart/brief-bad-480w.webp 480w, assets/media/jumpstart/brief-bad-800w.webp 800w, assets/media/jumpstart/brief-bad-1200w.webp 1200w, assets/media/jumpstart/brief-bad.webp 1800w" sizes="(max-width: 720px) 89.74vw, (max-width: 1512px) 41.14vw, 622px"></div><figcaption>A losing one. The celebration goes, and one clear decision takes its place.</figcaption></figure>
         </div>
@@ -112,15 +112,15 @@
   </section>
 
   <section class="cs-next" aria-label="More work">
-    <h2 class="nx-title reveal">Next</h2>
+    <h2 class="nx-title reveal"><span class="nx-h-next">Next</span><span class="nx-h-more">More work</span></h2>
     <div class="nx-tiles">
-      <a class="nx-tile" href="braindump.html">
-        <span class="nx-card is-phone"><img src="assets/media/home/brain-home.webp" alt="Brain Dump home: tasks and routines for the evening" width="520" height="1077" loading="lazy" decoding="async"></span>
-        <span class="nx-cap"><b>Brain Dump</b><span>In beta</span></span>
+      <a class="nx-tile m-brain" href="braindump.html">
+        <span class="nx-card"><span class="art"><img class="m-brain-back" style="--d:-.5" src="assets/media/home/brain-voice.webp" alt="" loading="lazy" decoding="async" width="520" height="1077"><img class="m-brain-phone" style="--d:.9" src="assets/media/home/brain-home.webp" alt="Brain Dump on a phone" loading="lazy" decoding="async" width="520" height="1077"></span></span>
+        <span class="nx-cap"><b>Brain Dump</b><span>An app that sorts what you type or say, in beta</span></span>
       </a>
-      <a class="nx-tile" href="cipher.html">
-        <span class="nx-card is-cut"><img src="assets/media/home/cipher-laptop.webp" alt="Cipher’s website on a laptop" width="1633" height="2000" loading="lazy" decoding="async" srcset="assets/media/home/cipher-laptop-480w.webp 480w, assets/media/home/cipher-laptop-800w.webp 800w, assets/media/home/cipher-laptop-1200w.webp 1200w, assets/media/home/cipher-laptop.webp 1633w" sizes="(max-width: 700px) 90vw, 45vw"></span>
-        <span class="nx-cap"><b>Cipher</b><span>Concept</span></span>
+      <a class="nx-tile m-cut" href="cipher.html">
+        <span class="nx-card"><span class="art"><img style="--d:.2" src="assets/media/home/cipher-laptop.webp" alt="Cipher’s website on a laptop" width="1633" height="2000" loading="lazy" decoding="async" srcset="assets/media/home/cipher-laptop-480w.webp 480w, assets/media/home/cipher-laptop-800w.webp 800w, assets/media/home/cipher-laptop-1200w.webp 1200w, assets/media/home/cipher-laptop.webp 1633w" sizes="(max-width: 700px) 90vw, 45vw"></span></span>
+        <span class="nx-cap"><b>Cipher</b><span>A concept brand, website and app for an AI-first bank</span></span>
       </a>
     </div>
   </section>
@@ -133,5 +133,7 @@
 
 <script src="assets/js/site.js" defer></script>
 <script src="assets/js/case.js" defer></script>
+<script src="assets/js/q28-card.js" defer></script>
+<script src="assets/js/lab.js" defer></script>
 </body>
 </html>

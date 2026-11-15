@@ -32,10 +32,11 @@
 <link rel="stylesheet" href="/assets/fonts/portfolio.css">
 <link rel="stylesheet" href="assets/css/site.css">
 <link rel="stylesheet" href="assets/css/sky.css">
+<link rel="stylesheet" href="assets/css/tiles.css">
 <link rel="stylesheet" href="assets/css/case.css">
 <link rel="stylesheet" href="assets/css/snapshot.css">
 </head>
-<body class="case sn-case" style="--tone:#ed1652">
+<body class="case sn-case cs-calm" data-nxh="next" style="--tone:#ed1652">
 
 <div class="tip" aria-hidden="true"><i></i><span class="tip-text"></span><svg class="tip-arrow" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5l5-5M4.5 3.5h4v4"/></svg></div>
 
@@ -120,15 +121,15 @@
   </section>
 
   <section class="cs-next" aria-label="More work">
-    <h2 class="nx-title reveal">Next</h2>
+    <h2 class="nx-title reveal"><span class="nx-h-next">Next</span><span class="nx-h-more">More work</span></h2>
     <div class="nx-tiles">
-      <a class="nx-tile" href="quit28.html">
-        <span class="nx-card is-hand"><img src="assets/media/home/quit28-hand.webp" alt="Quit28 on a phone held in one hand" width="1300" height="1218" loading="lazy" decoding="async" srcset="assets/media/home/quit28-hand-480w.webp 480w, assets/media/home/quit28-hand-800w.webp 800w, assets/media/home/quit28-hand.webp 1300w" sizes="(max-width: 700px) 90vw, 45vw"></span>
-        <span class="nx-cap"><b>Quit28</b><span>Live now</span></span>
+      <a class="nx-tile m-quit" href="quit28.html">
+        <span class="nx-card"><span class="q28-set" data-q28-live></span></span>
+        <span class="nx-cap"><b>Quit28</b><span>A 28-day quit plan, live now</span></span>
       </a>
-      <a class="nx-tile" href="jumpstart.html">
-        <span class="nx-card is-screen"><img src="assets/media/home/jumpstart-report.webp" alt="The JumpStart client briefing: every £1 you spent brought back £2.86" width="1289" height="1000" loading="lazy" decoding="async" srcset="assets/media/home/jumpstart-report-480w.webp 480w, assets/media/home/jumpstart-report-800w.webp 800w, assets/media/home/jumpstart-report-1200w.webp 1200w, assets/media/home/jumpstart-report.webp 1289w" sizes="(max-width: 700px) 90vw, 45vw"></span>
-        <span class="nx-cap"><b>JumpStart</b><span>In pilot with the National Football Museum</span></span>
+      <a class="nx-tile m-jump" href="jumpstart.html">
+        <span class="nx-card"><span class="art"><img class="m-jump-a" style="--d:-.6" src="assets/media/home/jumpstart-agency.webp" alt="" loading="lazy" decoding="async" width="1600" height="1000"><img class="m-jump-b" style="--d:.3" src="assets/media/home/jumpstart-report.webp" alt="JumpStart client report" loading="lazy" decoding="async" width="1289" height="1000"><img class="m-jump-c" style="--d:1.2" src="assets/media/home/jumpstart-export.webp" alt="" loading="lazy" decoding="async" width="1200" height="869"></span></span>
+        <span class="nx-cap"><b>JumpStart</b><span>Paid media reporting, in pilot with the National Football Museum</span></span>
       </a>
     </div>
   </section>
@@ -141,6 +142,8 @@
 
 <script src="assets/js/site.js" defer></script>
 <script src="assets/js/case.js" defer></script>
+<script src="assets/js/q28-card.js" defer></script>
+<script src="assets/js/lab.js" defer></script>
 <script src="assets/js/snapshot.js" defer></script>
 <script src="assets/js/film-player.js" defer></script>
 </body>

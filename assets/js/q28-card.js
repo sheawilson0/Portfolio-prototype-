@@ -69,9 +69,9 @@
     stage.style.setProperty('--k', Math.min(width / cs.getPropertyValue('--w'), height / cs.getPropertyValue('--h')).toFixed(4));
   }).observe(stage.parentElement));
 
-  // Hover, on the mosaic tiles and the cards: --px and --py (-.5 to .5) follow the pointer, eased, and ease back to 0.
+  // Hover, on the mosaic tiles, the cards and the case pages' Next tiles: --px and --py (-.5 to .5) follow the pointer, eased, and ease back to 0.
   if (reduced || !matchMedia('(hover: hover) and (pointer: fine)').matches) return;
-  const tiles = [...document.querySelectorAll('.tile, .item')].map((el) => ({ el, x: 0, y: 0, tx: 0, ty: 0, light: null }));
+  const tiles = [...document.querySelectorAll('.tile, .item, .nx-tile')].map((el) => ({ el, x: 0, y: 0, tx: 0, ty: 0, light: null }));
   let raf = 0;
   const frame = () => {
     raf = 0;

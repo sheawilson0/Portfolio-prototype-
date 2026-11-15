@@ -1,0 +1,135 @@
+/* Tiles and their pictures: the layered .art stages (Snapshot, JumpStart, Brain Dump, Cipher, Amp), Quit28 live
+   (q28-card.js) and the Shipped picture. Used by the homepage cards and by the Next tiles on the case pages. */
+@font-face { font-family: 'Manrope'; src: url(../fonts/Manrope-600.woff2) format('woff2'); font-weight: 600; font-display: swap; }
+@font-face { font-family: 'Manrope'; src: url(../fonts/Manrope-800.woff2) format('woff2'); font-weight: 800; font-display: swap; }
+/* ───────── Quit28, live (q28-card.js) ─────────
+   Copied from the app at its own sizes (Quit-Coach journey.module.css, craving-timer.module.css): Manrope, the
+   green logged days, pink day 28, the blue breathing circles. On a 520 × 540 stage (fitted to 520 × 500); each piece
+   is drawn at the app's real pixel size and shrunk by --s, the same scale as the phone screenshot. */
+.q28-set, .q-live { --q-blue: #00a7fa; --q-green: #06fb06; --q-pink: #f31a7b; --q-ink: #0a0a0a; --q-muted: #4a4a48; --q-tile: #f1f1ec; font-family: 'Manrope', var(--sans); color: var(--q-ink); }
+.q28-set { position: absolute; inset: 0; }
+.q28-stage { --s: .64; --w: 520; --h: 500; height: 540px; }
+.q28-stage > * { transform-origin: 0 0; scale: var(--s); }
+/* iPhone 17 Pro: a 402 × 874 screen in a thin black bezel. */
+/* The iPhone mock-up with the real Day 1 screen in it (assets/media/home/quit28-iphone.webp): a 402-wide screen. */
+.q28-phone { left: 14px; top: 44px; width: 438px; filter: drop-shadow(0 50px 50px rgba(0, 30, 70, .3)); }
+/* The craving timer's circles, floating on their own over the pink corner of the tile. */
+.q28-float { right: -22px; left: auto; top: 262px; width: 360px; height: 360px; display: grid; place-items: center; transform-origin: 100% 0; }
+.q28-breath { position: relative; width: 256px; aspect-ratio: 1; display: grid; place-items: center; }
+.q28-breath > i { position: absolute; border-radius: 50%; scale: .82; }
+.q28-outer { inset: 0; background: color-mix(in srgb, var(--q-blue) 14%, #fff); }
+.q28-inner { inset: 32px; background: var(--q-blue); box-shadow: 0 0 44px 4px color-mix(in srgb, var(--q-blue) 55%, transparent); }
+.is-running .q28-breath > i { animation: q28-breathe 8s cubic-bezier(.37, 0, .63, 1) infinite; }
+@keyframes q28-breathe { 50% { scale: 1; } }
+.q28-hug { position: absolute; inset: -6px; width: calc(100% + 12px); height: calc(100% + 12px); rotate: -90deg; overflow: visible; fill: none; stroke-width: 3; stroke: color-mix(in srgb, var(--q-blue) 16%, transparent); }
+.q28-fill { stroke: var(--q-blue); stroke-linecap: round; transition: stroke-dashoffset 1s linear; }
+.q28-words { position: relative; display: grid; justify-items: center; }
+.q28-words b { font-size: 24px; font-weight: 800; letter-spacing: -.035em; line-height: 1.15; white-space: nowrap; }
+.q28-words small { font-size: 15px; font-weight: 700; font-variant-numeric: tabular-nums; color: rgba(10, 10, 10, .75); }
+/* "Your 28 days", with its pin. */
+.q28-cal { right: 22px; left: auto; top: 50px; width: 342px; padding: 22px 22px 18px; border-radius: 20px; background: #fff; rotate: 6deg; transform-origin: 100% 0; box-shadow: 0 2px 4px rgba(0, 0, 0, .05), 0 40px 70px rgba(0, 20, 60, .26); }
+.q28-pin { position: absolute; top: -14px; right: 26px; font-size: 30px; line-height: 1; rotate: 12deg; filter: drop-shadow(0 3px 2px rgba(0, 0, 0, .18)); }
+.q28-head { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+.q28-head svg { width: 25px; height: 25px; flex: none; }
+.q28-head b { display: block; font-size: 18px; font-weight: 800; letter-spacing: -.03em; }
+.q28-head small { display: block; margin-top: 2px; font-size: 13px; font-weight: 600; color: var(--q-muted); }
+.q28-days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
+.q28-days i { aspect-ratio: 1; display: grid; place-items: center; border-radius: 9px; background: var(--q-tile); font-size: 13px; font-style: normal; font-weight: 700; font-variant-numeric: tabular-nums; transition: background-color .3s var(--ease); }
+.q28-days i:first-child, .q28-days i.is-logged { background: var(--q-green); color: #000; }
+.q28-days i:last-child:not(.is-logged) { background: var(--q-pink); color: #000; }
+.q28-days i.is-pop { animation: q28-pop .35s cubic-bezier(.2, .9, .3, 1.3); }
+@keyframes q28-pop { 50% { scale: 1.18; } }
+@media (prefers-reduced-motion: reduce) { .q28-breath > i { animation: none !important; } }
+/* On the Quit28 card (lab: Quit28 card): the iPhone mock-up, or the hand-held one with the live calendar and circle
+   around it. The hand runs off the bottom right; the phone in it is the same size as the mock-up. */
+.q28-hand { display: none; left: 190px; top: 34px; width: 1210px; filter: drop-shadow(0 50px 50px rgba(0, 30, 70, .22)); }
+:is(body[data-q28^="hand"] .work, .nx-card) .q28-phone { display: none; }
+:is(body[data-q28^="hand"] .work, .nx-card) .q28-hand { display: block; }
+:is(body[data-q28^="hand"] .work, .nx-card) :is(.q28-cal, .q28-float) { right: auto; transform-origin: 0 0; }
+:is(body[data-q28^="hand"] .work, .nx-card) .q28-pin { right: auto; left: 22px; rotate: -12deg; }
+/* The phone in the hand runs from x 220 to 500 on the 520 stage, its screen from y 34 down. Everything else sits in
+   the column to its left, centred in it: the calendar level with the top of the screen, the circle under it. */
+:is(body[data-q28="hand"] .work, .nx-card) :is(.q28-cal, .q28-float) { scale: calc(var(--s) * .84); }
+:is(body[data-q28="hand"] .work, .nx-card) .q28-cal { left: 14px; top: 64px; rotate: -3deg; }
+:is(body[data-q28="hand"] .work, .nx-card) .q28-float { left: 6px; top: 228px; }
+body[data-q28="hand-cal"] .work .q28-float, body[data-q28="hand-circle"] .work .q28-cal { display: none; }
+body[data-q28="hand-cal"] .work .q28-cal { left: 22px; top: 162px; rotate: -5deg; }
+body[data-q28="hand-circle"] .work .q28-float { left: 4px; top: 176px; scale: calc(var(--s) * .78); }
+
+/* ───────── Work as a mosaic (after raylight.app) ─────────
+   Colour tiles, the product big, a name and a few words underneath. The tile never moves. On hover its
+   coloured shadow comes up and the pictures inside move apart in layers, the back ones against the pointer and
+   the front ones with it (--d, eased by q28-card.js), and the whole picture tilts a little, like the old cards.
+   Lab: Space between tiles → As before. */
+.tile { --bg1: #eeeef1; --bg2: #e2e2e8; display: flex; flex-direction: column; gap: 16px; }
+.tile-art { position: relative; display: block; overflow: hidden; height: 540px; border-radius: 22px; corner-shape: squircle; isolation: isolate;
+  background:
+    radial-gradient(90% 80% at var(--glow, 92% 108%), color-mix(in oklab, var(--bg2) 92%, transparent), transparent 70%),
+    radial-gradient(70% 60% at var(--light, 0% 0%), color-mix(in oklab, var(--bg1) 72%, white), transparent 65%),
+    linear-gradient(var(--fall, 165deg), var(--bg1), color-mix(in oklab, var(--bg1) 82%, var(--shade, black)));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .22); transition: box-shadow .5s var(--ease), translate .5s var(--ease); }
+.tile-cap { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 10px; padding: 0 4px; font-size: 15px; color: var(--whisper); }
+.tile-cap b { font-weight: 400; color: var(--ink); white-space: nowrap; }
+/* Each tile's pictures sit on an .art stage --w × --h (design pixels), scaled by --k to fit the tile, centred. */
+.art { position: absolute; left: 50%; top: 50%; width: calc(var(--w) * 1px); height: calc(var(--h) * 1px); translate: -50% -50%; scale: var(--k, 1); }
+.art > * { position: absolute; display: block; max-width: none; translate: calc(var(--px, 0) * var(--d, 0) * 44px) calc(var(--py, 0) * var(--d, 0) * 32px); }
+@media (hover: hover) {
+  .tile:hover .tile-art { box-shadow: inset 0 1px 0 rgba(255, 255, 255, .22), 0 26px 60px -10px color-mix(in srgb, var(--bg1, #000) 45%, transparent); }
+  :is(.tile-art, .nx-card) > :is(.art, img, .shelf) { transform: perspective(1300px) rotateX(calc(var(--py, 0) * -6deg)) rotateY(calc(var(--px, 0) * 8deg)); }
+}
+/* Same gradient on every tile, but the second colour (--glow) and the light (--light) sit somewhere different. */
+.m-snap { --glow: 96% -8%; --light: 0% 100%; --fall: 20deg; }
+.m-quit { --glow: 104% 82%; --light: 0% 0%; }
+.m-jump { --glow: 6% 110%; --light: 100% 0%; --fall: 200deg; }
+.m-brain { --glow: 50% 112%; --light: 100% 0%; --fall: 190deg; }
+.m-ship { --glow: -6% -8%; --light: 100% 100%; --fall: 340deg; }
+/* Snapshot: the results card behind, the phone in front running off the bottom. */
+.m-snap .art { --w: 640; --h: 540; }
+.m-snap-res { width: 440px; left: -6px; top: 118px; rotate: -4deg; border-radius: 14px; box-shadow: 0 30px 60px rgba(20, 0, 80, .35); }
+.m-snap-phone { width: 250px; left: 396px; top: 52px; filter: drop-shadow(0 40px 50px rgba(20, 0, 80, .4)); }
+/* Snapshot's phone and Quit28's are different phones, so they shouldn't meet in the middle of the row. Lab: Two
+   phones flips one tile, its picture and its gradient.
+   Only side by side: on a phone the tiles stack. */
+@media (min-width: 901px) {
+  body[data-phones="snap"] .m-snap { --glow: 4% -8%; --light: 100% 100%; --fall: 340deg; }
+  body[data-phones="snap"] .m-snap-res { left: 206px; rotate: 4deg; }
+  body[data-phones="snap"] .m-snap-phone { left: -6px; }
+  body[data-phones="quit"] .m-quit { --glow: -4% 82%; --light: 100% 0%; --fall: 195deg; }
+  body[data-phones="quit"] .q28-phone { left: 226px; }
+  body[data-phones="quit"] .q28-float { left: -22px; right: auto; transform-origin: 0 0; }
+  body[data-phones="quit"] .q28-cal { left: 22px; right: auto; rotate: -6deg; transform-origin: 0 0; }
+  body[data-phones="quit"] .q28-pin { left: 26px; right: auto; rotate: -12deg; }
+}
+/* JumpStart: the agency view, the client report and the export, fanned out. */
+.m-jump .art { --w: 840; --h: 480; }
+.m-jump-a { width: 437px; left: 34px; top: 48px; rotate: -4deg; border-radius: 10px; box-shadow: 0 30px 60px rgba(0, 30, 20, .4); }
+.m-jump-b { width: 370px; left: 286px; top: 134px; rotate: 1.5deg; border-radius: 10px; box-shadow: 0 30px 60px rgba(0, 30, 20, .45); }
+.m-jump-c { width: 252px; left: 554px; top: 250px; rotate: 4deg; border-radius: 10px; box-shadow: 0 30px 60px rgba(0, 30, 20, .45); }
+/* Brain Dump: home in front, the voice screen behind. */
+.m-brain .art { --w: 420; --h: 480; }
+.m-brain-phone { width: 236px; left: 156px; top: 48px; filter: drop-shadow(0 40px 50px rgba(30, 0, 80, .45)); }
+.m-brain-back { width: 196px; left: 14px; top: 96px; rotate: -8deg; opacity: .9; filter: drop-shadow(0 24px 30px rgba(30, 0, 80, .35)); }
+/* Cipher and Amp: one photo, a touch bigger than the tile so moving it never shows an edge. */
+.m-photo .tile-art img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; scale: 1.08; translate: calc(var(--px, 0) * -16px) calc(var(--py, 0) * -12px); }
+/* Shipped: yellow (lab: red), set on <body>. Yellow mixed with black goes olive, so it shades and dims towards a warm brown. */
+.m-ship { --bg1: #ff3d2e; --bg2: #ff8a65; --shade: #7a0d00; }
+body[data-ship="yellow"] .m-ship { --bg1: #ffc21f; --bg2: #ff8a1f; --shade: #c2410c; }
+.m-ship .tile-art::before { background: #3a1200; }
+[data-theme="dark"] .m-ship .tile-art::before { opacity: .14; }
+.m-ship .tile-art { display: flex; align-items: center; justify-content: center; }
+
+/* The Shipped picture, on the tile and the card: two things I've made, out of their boxes. Meridian's butterfly,
+   live (meridian-line.js, Shea's own design), and Pip from Shea's own sprite sheet: idling, waving on hover. */
+.ship-hero { position: relative; display: flex; align-items: flex-end; gap: 6px; }
+.ship-hero > * { translate: calc(var(--px, 0) * var(--d, 0) * 40px) calc(var(--py, 0) * var(--d, 0) * 30px); }
+.ship-fly { --d: -.5; width: 190px; height: 190px; margin-bottom: 40px; color: #f6c93a; --head: currentColor; filter: drop-shadow(0 18px 22px rgba(60, 0, 0, .3)); }
+.ship-pip { --d: 1; --z: 2; flex: none; animation: pip-idle 5.4s steps(6) infinite; filter: drop-shadow(0 18px 18px rgba(60, 0, 0, .28)); }
+:is(.tile, .item):hover .ship-pip { animation: pip-greet 1.3s steps(5) infinite; }
+@keyframes pip-idle { from { background-position: 0 -624px; } to { background-position: -1152px -624px; } }
+@keyframes pip-greet { from { background-position: 0 -416px; } to { background-position: -960px -416px; } }
+@media (prefers-reduced-motion: reduce) { .ship-pip, :is(.tile, .item):hover .ship-pip { animation: none; background-position: 0 -624px; } }
+/* At night the tiles' colour is dimmed, so it sits in the dark page instead of glaring. Only the colour: the
+   pictures on top paint over this layer and stay as they are. */
+.tile-art::before { content: ""; position: absolute; inset: 0; background: #05070b; opacity: 0; pointer-events: none; transition: opacity .6s var(--ease); }
+[data-theme="dark"] .tile-art::before { opacity: .3; }
+[data-theme="dark"] .tile-art { box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .05); }

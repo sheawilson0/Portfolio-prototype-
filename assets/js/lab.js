@@ -1,13 +1,14 @@
-/* The lab bar, on the homepage. Only on preview hosts, or with ?lab on the live site.
+/* The lab bar, on the homepage and the case pages. Only on preview hosts, or with ?lab on the live site.
    Each row sets a data attribute on <body>; home.css does the rest. A row starts on whatever index.html sets on
    <body> (the site as it would go live). The green dot is Claude's recommendation, which may be something else. */
 (() => {
   const live = /(^|\.)sheawilson\.uk$|\.vercel\.app$/.test(location.hostname);
   if (live && !new URLSearchParams(location.search).has('lab')) return;
-  // [attribute, label, options, the recommended one]
+  // [attribute, label, options, the recommended one, the pages it's for (a selector on <body>)]
   const ROWS = [
-    ['mer', 'Fourth project', [['brain', 'Brain Dump'], ['one', 'Meridian: one screen'], ['two', 'Meridian: two screens'], ['film', 'Meridian: film']], 'one'],
-  ];
+    ['mer', 'Fourth project', [['brain', 'Brain Dump'], ['one', 'Meridian: one screen'], ['two', 'Meridian: two screens'], ['film', 'Meridian: film']], 'one', '.home'],
+    ['nxh', 'Above the next two', [['next', 'Next'], ['more', 'More work'], ['quiet', 'Small label'], ['none', 'Nothing']], 'quiet', '.case'],
+  ].filter((r) => document.body.matches(r[4]));
   if (!ROWS.length) return; // nothing open just now
   const KEY = 'home-lab-16'; // home-lab-16: Meridian in Brain Dump's place, 15 Nov
   const get = (k) => { try { return JSON.parse(localStorage.getItem(KEY) || '{}')[k]; } catch (e) { return null; } };
