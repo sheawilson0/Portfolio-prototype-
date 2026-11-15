@@ -6,12 +6,12 @@
   if (live && !new URLSearchParams(location.search).has('lab')) return;
   // [attribute, label, options, the recommended one]
   const ROWS = [
-    ['hero', 'Top', [['headline', 'Headline'], ['line', 'A paragraph']], 'line'],
     ['air', 'Room around the top', [['tight', 'Work shows early'], ['airy', 'Work peeks at the bottom']], 'airy'],
-    ['about', 'About', [['line', 'Sentence'], ['full', 'Photo + story'], ['short', 'Short'], ['art', 'With the painting'], ['para', 'Paragraph'], ['index', 'Index'], ['together', 'Index + contact'], ['mine', 'Built for me']], 'together'],
+    ['grid', 'Work layout (laptop)', [['mosaic', 'Mosaic'], ['pairs', 'Pairs'], ['column', 'One column'], ['list', 'Index + preview']], 'mosaic'],
+    ['brain', 'Brain Dump', [['show', 'Show'], ['hide', 'Hide']], 'hide'],
   ];
   if (!ROWS.length) return; // nothing open just now
-  const KEY = 'home-lab-13'; // home-lab-13: cards locked; Top, room and About rows, 15 Nov
+  const KEY = 'home-lab-14'; // home-lab-14: headline and About locked; work layout and Brain Dump rows, 15 Nov
   const get = (k) => { try { return JSON.parse(localStorage.getItem(KEY) || '{}')[k]; } catch (e) { return null; } };
   const set = (k, v) => { try { const o = JSON.parse(localStorage.getItem(KEY) || '{}'); o[k] = v; localStorage.setItem(KEY, JSON.stringify(o)); } catch (e) {} };
   // A row lives wherever index.html put its default: on <html> (set before anything paints) or on <body>.

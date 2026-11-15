@@ -164,7 +164,7 @@ body[data-ship="yellow"] .m-ship { --bg1: #ffc21f; --bg2: #ff8a1f; --shade: #c24
 
 /* ───────── The older glass cards (lab: Work → Cards) ───────── */
 .home .work { margin-top: -150px; padding-top: 0; }
-body[data-brain="hide"] .t-brain { display: none; }
+body.home[data-brain="hide"] .work .item.t-brain { display: none; }
 body[data-brain="hide"] .t-shipped { grid-column: span 12; }
 .t-shipped { grid-column: span 6; }
 .t-shipped .card { min-height: 0; height: 100%; }
@@ -518,4 +518,29 @@ body[data-about="together"] .contact { display: none; }
 @media (max-width: 700px) {
   body[data-about="together"] .about { min-height: 0; padding: 64px var(--gutter) 96px; }
   body[data-about="together"] .about-index { text-align: center; margin-top: 32px; }
+}
+
+/* ───────── Work layout (lab: Work layout) ─────────
+   Laptop only; on a phone every layout is one card after another. Mosaic: sizes by importance (as it is). Pairs:
+   every project the same size, two a row. One column: one project a row, big. Index + preview: Peng's list, the
+   names down the left and the hovered project's card on the right. */
+body[data-brain="hide"][data-grid="mosaic"] .work .t-jump { grid-column: span 12; }
+@media (min-width: 901px) {
+  body[data-grid="pairs"] .work .item { grid-column: span 6; }
+  body[data-grid="pairs"]:not([data-brain="hide"]) .work .t-shipped { grid-column: span 12; }
+  body[data-grid="pairs"] .work .item > .card { height: 480px; }
+  body[data-grid="column"] .work .item { grid-column: 2 / span 10; }
+  body[data-grid="column"] .work .item > .card { height: 640px; }
+  body[data-grid="column"] .work :is(.t-small, .t-shipped) > .card { height: 520px; }
+
+  body[data-grid="list"] .work .grid { display: block; position: relative; min-height: 640px; padding: 40px 0 80px; }
+  body[data-grid="list"] .work .item { position: static; display: block; width: 40%; translate: none !important; }
+  body[data-grid="list"] .work .item-cap { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; padding: 12px 0; font-size: 15px; }
+  body[data-grid="list"] .work .item-cap b { font-family: var(--serif); font-size: clamp(28px, 2.6vw, 40px); font-weight: 300; letter-spacing: -.02em; color: var(--whisper); transition: color .3s var(--ease); }
+  body[data-grid="list"] .work .item > .card { position: absolute; top: 40px; right: 0; width: 56%; height: 600px; opacity: 0; pointer-events: none; transition: opacity .45s var(--ease); }
+  /* The first project shows until another is hovered; the hovered one's name goes to full ink. */
+  body[data-grid="list"] .work .grid:not(:has(.item:hover)) .item:first-child > .card,
+  body[data-grid="list"] .work .item:hover > .card { opacity: 1; pointer-events: auto; }
+  body[data-grid="list"] .work .grid:not(:has(.item:hover)) .item:first-child .item-cap b,
+  body[data-grid="list"] .work .item:hover .item-cap b { color: var(--ink); }
 }
