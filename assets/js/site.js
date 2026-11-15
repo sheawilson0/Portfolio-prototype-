@@ -426,3 +426,9 @@
   dlg.addEventListener('click', close);
   dlg.addEventListener('cancel', (e) => { e.preventDefault(); close(); });
 })();
+
+/* When About carries the contact details (lab: About, Index + contact), Contact in the nav goes there. */
+document.querySelectorAll('a[href="#contact"]').forEach((a) => a.addEventListener('click', (e) => {
+  if (document.body.dataset.about !== 'together') return;
+  e.preventDefault(); document.getElementById('about').scrollIntoView({ behavior: 'smooth' });
+}));

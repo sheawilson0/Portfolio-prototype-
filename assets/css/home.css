@@ -479,12 +479,10 @@ body[data-about="index"] .about-index { display: grid; gap: 12px; width: fit-con
 
 /* ───────── Room around the top (lab: Room around the top) ─────────
    The first card starts where the hero ends, less the 150px it tucks under. Work shows early: as it is. Work peeks at
-   the bottom: the words sit in the middle of the first screen and the top of the first card shows at its foot.
-   A full screen: the words alone, the work just below the fold (Peng's way). */
-body.home:is([data-air="airy"], [data-air="full"]) .hero { display: flex; flex-direction: column; justify-content: center; padding-top: 72px; }
+   the bottom: the words sit in the middle of the first screen and the top of the first card shows at its foot. */
+body.home[data-air="airy"] .hero { display: flex; flex-direction: column; justify-content: center; padding-top: 72px; }
 body.home[data-air="airy"] .hero { min-height: calc(82svh + 150px); }
-body.home[data-air="full"] .hero { min-height: calc(100svh + 150px); }
-body.home:is([data-air="airy"], [data-air="full"]) .hero .stage { display: none; }
+body.home[data-air="airy"] .hero .stage { display: none; }
 
 /* ───────── About: Built for me (lab: About) ─────────
    The photo, the line and where I work on the left; on the right, the tools I actually built, a name and a line each.
@@ -494,14 +492,30 @@ body[data-about="mine"] :is(.about-body, .about-short, .about-art, .about-off, .
 body[data-about="mine"] .about { align-items: end; }
 body[data-about="mine"] .about-mine { display: block; }
 body[data-about="mine"][data-hero="line"] .about-where { display: none; }
-.about-mine ul { list-style: none; display: grid; margin-top: 14px; border-top: 1px solid var(--hair); }
-.about-mine li { display: grid; grid-template-columns: 7.5em 1fr auto; align-items: center; gap: 18px; padding: 16px 0; border-bottom: 1px solid var(--hair); font-size: 17px; line-height: 1.45; }
+.about-mine ul { list-style: none; display: grid; gap: 26px; margin-top: 18px; }
+.about-mine li { display: grid; grid-template-columns: 1fr auto; align-items: center; column-gap: 18px; font-size: 18px; line-height: 1.45; }
+.about-mine li > :not(img) { grid-column: 1; }
+.about-mine li > img { grid-column: 2; grid-row: 1 / span 2; }
 .about-mine b { font-weight: 400; color: var(--ink); }
 .about-mine span { color: var(--ink-2); }
 .about-mine img { width: 64px; height: auto; border-radius: 3px; rotate: 3deg; box-shadow: 0 .3em .8em rgb(0 0 0 / .25); }
 @media (max-width: 700px) {
   body.home[data-air="airy"] .hero { min-height: calc(76svh + 150px); }
-  .about-mine li { grid-template-columns: 1fr auto; gap: 2px 14px; }
-  .about-mine li > span { grid-column: 1; }
-  .about-mine li > img { grid-column: 2; grid-row: 1 / span 2; }
+}
+
+/* ───────── About: Index + contact (lab: About) ─────────
+   The index with a last row for getting in touch, so there's no separate "Say hello" screen after it. It gets the
+   room that screen had: it fills the screen on its own. */
+.about-say { display: none !important; }
+body[data-about="together"] .about-say { display: grid !important; }
+.about-say a { text-decoration: underline; text-decoration-color: color-mix(in srgb, var(--ink) 25%, transparent); text-underline-offset: 3px; transition: text-decoration-color .2s var(--ease); }
+.about-say a:hover { text-decoration-color: var(--ink); }
+body[data-about="together"] .about { display: flex; flex-direction: column; justify-content: center; min-height: 100svh; padding: 100px var(--gutter); text-align: center; }
+body[data-about="together"] .about > :not(:first-child, .about-index), body[data-about="together"] .about-where { display: none; }
+body[data-about="together"] .about-photo { width: 104px; height: 104px; margin: 0 auto 28px; }
+body[data-about="together"] .about-index { display: grid; gap: 12px; width: fit-content; margin: 44px auto 0; font-size: clamp(16px, 1.3vw, 19px); text-align: left; }
+body[data-about="together"] .contact { display: none; }
+@media (max-width: 700px) {
+  body[data-about="together"] .about { min-height: 0; padding: 64px var(--gutter) 96px; }
+  body[data-about="together"] .about-index { text-align: center; margin-top: 32px; }
 }

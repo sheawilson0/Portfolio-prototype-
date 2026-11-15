@@ -7,8 +7,8 @@
   // [attribute, label, options, the recommended one]
   const ROWS = [
     ['hero', 'Top', [['headline', 'Headline'], ['line', 'A paragraph']], 'line'],
-    ['air', 'Room around the top', [['tight', 'Work shows early'], ['airy', 'Work peeks at the bottom'], ['full', 'A full screen']], 'airy'],
-    ['about', 'About', [['line', 'Sentence'], ['full', 'Photo + story'], ['short', 'Short'], ['art', 'With the painting'], ['para', 'Paragraph'], ['index', 'Index'], ['mine', 'Built for me']], 'mine'],
+    ['air', 'Room around the top', [['tight', 'Work shows early'], ['airy', 'Work peeks at the bottom']], 'airy'],
+    ['about', 'About', [['line', 'Sentence'], ['full', 'Photo + story'], ['short', 'Short'], ['art', 'With the painting'], ['para', 'Paragraph'], ['index', 'Index'], ['together', 'Index + contact'], ['mine', 'Built for me']], 'together'],
   ];
   if (!ROWS.length) return; // nothing open just now
   const KEY = 'home-lab-13'; // home-lab-13: cards locked; Top, room and About rows, 15 Nov
