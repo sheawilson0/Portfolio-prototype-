@@ -519,3 +519,20 @@ body[data-about="together"] .contact { display: none; }
   body[data-about="together"] .about { min-height: 0; padding: 64px var(--gutter) 96px; }
   body[data-about="together"] .about-index { text-align: center; margin-top: 32px; }
 }
+
+/* ───────── Fourth project (lab: Fourth project) ─────────
+   Brain Dump, or Meridian in its place. One screen: Home, big, running off the card's right and bottom edges, so the
+   greeting and the day read at a glance. Two screens: Home and Stash overlapping, like JumpStart's, with that row
+   split evenly. Film: the first post's clip, looping without sound, the row split the same way. */
+body.home[data-mer="brain"] .work .item.t-mer, body.home:not([data-mer="brain"]) .work .item.t-brain:not(.t-mer) { display: none; }
+.t-mer .media > * { position: absolute; display: none; border-radius: 10px; box-shadow: 0 0 0 1px rgb(255 255 255 / .06), 0 24px 60px rgb(10 10 30 / .28); }
+body[data-mer="one"] .t-mer .mer-home { display: block; width: 190%; max-width: none; left: 8%; top: 9%; }
+@media (min-width: 701px) { body:is([data-mer="two"], [data-mer="film"]) .work :is(.t-jump, .t-mer) { grid-column: span 6; } }
+body[data-mer="two"] .t-mer :is(.mer-home, .mer-stash) { display: block; width: 76%; }
+body[data-mer="two"] .t-mer .mer-home { left: 5%; top: 10%; rotate: -3deg; }
+body[data-mer="two"] .t-mer .mer-stash { left: 20%; top: 38%; rotate: 2deg; }
+body[data-mer="film"] .t-mer .mer-film { display: block; width: 88%; left: 6%; top: 50%; translate: 0 -50%; }
+@media (max-width: 700px) {
+  body[data-mer="one"] .t-mer .mer-home { width: 200%; left: 7%; top: 9%; }
+  body[data-mer="two"] .t-mer :is(.mer-home, .mer-stash) { width: 82%; }
+}

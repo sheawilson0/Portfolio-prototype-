@@ -432,3 +432,10 @@ document.querySelectorAll('a[href="#contact"]').forEach((a) => a.addEventListene
   if (document.body.dataset.about !== 'together') return;
   e.preventDefault(); document.getElementById('about').scrollIntoView({ behavior: 'smooth' });
 }));
+
+/* A film in a card (video[data-autoplay], muted) plays only while it's on screen, and loads nothing until then. */
+(() => {
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) e.target.play().catch(() => {}); else e.target.pause(); }), { threshold: .2 });
+  document.querySelectorAll('video[data-autoplay]').forEach((v) => io.observe(v));
+})();

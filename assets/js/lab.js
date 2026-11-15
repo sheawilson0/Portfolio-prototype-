@@ -6,9 +6,10 @@
   if (live && !new URLSearchParams(location.search).has('lab')) return;
   // [attribute, label, options, the recommended one]
   const ROWS = [
+    ['mer', 'Fourth project', [['brain', 'Brain Dump'], ['one', 'Meridian: one screen'], ['two', 'Meridian: two screens'], ['film', 'Meridian: film']], 'one'],
   ];
   if (!ROWS.length) return; // nothing open just now
-  const KEY = 'home-lab-15'; // home-lab-15: everything locked in, 15 Nov
+  const KEY = 'home-lab-16'; // home-lab-16: Meridian in Brain Dump's place, 15 Nov
   const get = (k) => { try { return JSON.parse(localStorage.getItem(KEY) || '{}')[k]; } catch (e) { return null; } };
   const set = (k, v) => { try { const o = JSON.parse(localStorage.getItem(KEY) || '{}'); o[k] = v; localStorage.setItem(KEY, JSON.stringify(o)); } catch (e) {} };
   // A row lives wherever index.html put its default: on <html> (set before anything paints) or on <body>.
