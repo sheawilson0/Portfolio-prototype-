@@ -6,9 +6,12 @@
   if (live && !new URLSearchParams(location.search).has('lab')) return;
   // [attribute, label, options, the recommended one]
   const ROWS = [
+    ['page', 'Page', [['sky', 'Sky'], ['dusk', 'Sky up top'], ['tint', 'One colour'], ['grain', 'Grain paper'], ['white', 'White']], 'dusk'],
+    ['hero', 'Top', [['headline', 'Headline'], ['line', 'A paragraph'], ['object', 'Object + paragraph'], ['left', 'Bare, left']], 'object'],
+    ['arc', 'Sun or moon (with Headline)', [['sun', 'Show'], ['none', 'None']], 'none'],
   ];
   if (!ROWS.length) return; // nothing open just now
-  const KEY = 'home-lab-10'; // home-lab-10: options changed 14 Nov, start everyone on the defaults
+  const KEY = 'home-lab-11'; // home-lab-11: Page, Top and Sun rows, 15 Nov
   const get = (k) => { try { return JSON.parse(localStorage.getItem(KEY) || '{}')[k]; } catch (e) { return null; } };
   const set = (k, v) => { try { const o = JSON.parse(localStorage.getItem(KEY) || '{}'); o[k] = v; localStorage.setItem(KEY, JSON.stringify(o)); } catch (e) {} };
   // A row lives wherever index.html put its default: on <html> (set before anything paints) or on <body>.
