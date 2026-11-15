@@ -7,7 +7,6 @@
   // [attribute, label, options, the recommended one, the pages it's for (a selector on <body>)]
   const ROWS = [
     ['mer', 'Fourth project', [['brain', 'Brain Dump'], ['one', 'Meridian: one screen'], ['two', 'Meridian: two screens'], ['film', 'Meridian: film']], 'one', '.home'],
-    ['nxh', 'Above the next two', [['next', 'Next'], ['more', 'More work'], ['quiet', 'Small label'], ['none', 'Nothing']], 'quiet', '.case'],
   ].filter((r) => document.body.matches(r[4]));
   if (!ROWS.length) return; // nothing open just now
   const KEY = 'home-lab-16'; // home-lab-16: Meridian in Brain Dump's place, 15 Nov

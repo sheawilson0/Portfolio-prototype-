@@ -2,7 +2,9 @@
 .js-case .shot { box-shadow: none; }
 
 .js-stage { padding-top: 100px; }
-.js-stage .card { aspect-ratio: 16 / 9; background: var(--surface); box-shadow: none; }
+/* No card behind the hero: the briefing and the phone float on the sky, with their own shadows. */
+.js-stage .card, .js-stage.is-hot .card { aspect-ratio: 16 / 9; overflow: visible; border: 0; background: none; box-shadow: none; }
+.js-stage .card::after { display: none; }
 .js-stage .media { position: absolute; inset: 0; }
 .js-stage-desk { width: 80%; left: 4%; top: 8%; }
 .js-stage-phone { width: 20%; left: 76%; top: 18%; border-radius: 24px; }

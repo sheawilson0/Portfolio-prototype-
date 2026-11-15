@@ -134,34 +134,8 @@
 .cs-cta h2 em { font-style: italic; letter-spacing: var(--track-heading); }
 .cs-cta .cta { margin-top: 38px; }
 
-/* ───────── Next project: the homepage tile, laid out wide ───────── */
+/* ───────── Next ───────── */
 .cs-next { margin-top: clamp(120px, 14vw, 190px); }
-.cs-next > .label { display: block; margin-bottom: 16px; }
-.t-next .card { display: grid; grid-template-columns: 1fr 1.25fr; grid-template-rows: auto 1fr; min-height: 440px; }
-.t-next .card-top { grid-column: 1; grid-row: 1; }
-.t-next .card-copy { grid-column: 1; grid-row: 2; align-self: end; padding-bottom: 38px; }
-.t-next .card h2 { font-size: clamp(40px, 4.4vw, 64px); letter-spacing: var(--track-heading); }
-.t-next .media { grid-column: 2; grid-row: 1 / -1; margin: 22px; }
-/* Brain Dump has cut-out phone screens rather than a photo: they stand in the glass, cropped at the foot */
-/* The two labels sit together, a dot between them, rather than at either end of the copy column. */
-.t-next .card-top { justify-content: flex-start; gap: 10px; }
-.t-next .card-top .label + .label::before { content: "·"; margin-right: 10px; }
-/* A few pieces of a product, overlapping and running off the card (Snapshot, JumpStart), not one cropped screenshot. */
-.t-next .media.is-comp { margin: 0; border-radius: 0; overflow: visible; aspect-ratio: auto; }
-.t-next .media.is-comp img { position: absolute; height: auto; max-width: none; object-fit: fill; transition: transform 1.2s var(--ease); }
-.t-next .is-comp .nx-snap-res { width: 72%; left: 4%; top: 20%; rotate: -4deg; border-radius: 12px; box-shadow: 0 30px 60px rgba(20, 0, 80, .25); }
-.t-next .is-comp .nx-snap-phone { width: 30%; left: 60%; top: 9%; filter: drop-shadow(0 30px 40px rgba(20, 0, 80, .3)); }
-.t-next .is-comp .nx-jump-a { width: 64%; left: 2%; top: 10%; rotate: -4deg; border-radius: 9px; box-shadow: 0 24px 50px rgba(0, 40, 25, .22); }
-.t-next .is-comp .nx-jump-b { width: 52%; left: 28%; top: 30%; rotate: 1.5deg; border-radius: 9px; box-shadow: 0 24px 50px rgba(0, 40, 25, .26); }
-.t-next .is-comp .nx-jump-c { width: 36%; left: 60%; top: 54%; rotate: 4deg; border-radius: 9px; box-shadow: 0 24px 50px rgba(0, 40, 25, .26); }
-.item.is-hot.t-next .is-comp img { transform: none; }
-.item.is-hot.t-next .is-comp :is(.nx-snap-phone, .nx-jump-c) { transform: translate3d(0, -3%, 0); }
-.t-next .media.is-phones { display: flex; justify-content: center; align-items: flex-start; gap: 4%; padding-top: 34px; border-radius: 0; overflow: visible; margin-bottom: 0; }
-.t-next .media.is-phones img { width: auto; height: 118%; max-width: 44%; object-fit: contain; filter: drop-shadow(0 30px 44px rgba(50, 0, 110, .26)); }
-.t-next .media.is-phones img + img { margin-top: 44px; }
-/* Quit28's hand-held phone runs off the bottom of the card */
-.t-next .media.is-hand { margin: 0; border-radius: 0; overflow: visible; min-height: 300px; }
-.t-next .media.is-hand img { position: absolute; width: min(80%, 480px); height: auto; left: 18%; bottom: -12%; object-fit: contain; filter: drop-shadow(0 40px 50px rgba(0, 50, 90, .22)); }
 
 /* ───────── Current work (Snapshot, Quit28, JumpStart): quiet and centred, like the homepage ─────────
    The title and line sit centred, and the credits read like the homepage's About index: label on the left, words on the right. */
@@ -235,9 +209,6 @@
   .stage.is-wide .card { aspect-ratio: 4 / 3; }
   .hero-shot { margin-top: 0; width: 125vw; margin-left: calc(50% - 62.5vw); }
   .points { grid-template-columns: 1fr; }
-  .t-next .card { grid-template-columns: 1fr; grid-template-rows: auto auto 1fr; min-height: 0; }
-  .t-next .card-copy { grid-row: 2; padding-bottom: 0; }
-  .t-next .media { grid-column: 1; grid-row: 3; min-height: 260px; }
   .browser-bar span { margin-right: 0; }
 }
 @media (max-width: 900px) { .cs-top .facts { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
@@ -247,12 +218,6 @@
   .hero-shot { width: 100vw; margin-left: calc(50% - 50vw); }
 }
 @media (prefers-reduced-motion: reduce) { .js .case :is(main > *, .cs-hero .reveal, .facts > div) { translate: none !important; scale: none !important; filter: none !important; } }
-
-/* Above the Next tiles (lab: Above the next two). Next or More work as a heading; More work as a small label at the
-   tiles' left edge, like their captions; or nothing (still read out to screen readers). */
-body:not([data-nxh="next"]) .nx-h-next, body[data-nxh="next"] .nx-h-more { display: none; }
-body[data-nxh="quiet"] .nx-title { margin-bottom: 16px; padding: 0 4px; text-align: left; font: 400 15px/1.4 var(--sans); letter-spacing: 0; color: var(--whisper); }
-body[data-nxh="none"] .nx-title { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
 /* The overview on the calm pages (Brain Dump, Amp, Cipher): one centred paragraph under the credits, no label. */
 .cs-calm .cs-intro { display: block; margin-top: clamp(56px, 6vw, 88px); text-align: center; }
