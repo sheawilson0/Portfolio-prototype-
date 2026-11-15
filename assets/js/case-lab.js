@@ -5,11 +5,12 @@
   if (live && !new URLSearchParams(location.search).has('lab')) return;
   // [attribute, label, options, the recommended one]
   const ROWS = [
-    ['credits', 'Credits', [['all', 'Role, client, team, when'], ['two', 'Role and team'], ['team', 'Team only']], 'all'],
-    ['next', 'Next project', [['glass', 'Glass card'], ['name', 'Just the name']], 'glass'],
-  ].filter(([k]) => k !== 'credits' || document.querySelector('.facts'));
+    ['credits', 'Credits', [['all', 'Role, client, when'], ['two', 'Role and client']], 'all'],
+    ['nums', 'Numbers', [['serif', 'Serif, light'], ['sans', 'Sans']], 'sans'],
+    ['next', 'Next', [['two', 'Two tiles'], ['one', 'One tile']], 'two'],
+  ].filter(([k]) => (k !== 'credits' || document.querySelector('.facts')) && (k !== 'nums' || document.querySelector('.sn-meters')));
   if (!ROWS.length) return; // nothing open just now
-  const KEY = 'case-lab-1'; // 15 Nov: credits and next project
+  const KEY = 'case-lab-2'; // 15 Nov: credits without team, numbers, next tiles
   const get = (k) => { try { return JSON.parse(localStorage.getItem(KEY) || '{}')[k]; } catch (e) { return null; } };
   const set = (k, v) => { try { const o = JSON.parse(localStorage.getItem(KEY) || '{}'); o[k] = v; localStorage.setItem(KEY, JSON.stringify(o)); } catch (e) {} };
   // A row lives wherever index.html put its default: on <html> (set before anything paints) or on <body>.

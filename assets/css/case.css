@@ -172,8 +172,8 @@
 :is(.sn-case, .js-case) .facts > div { display: grid; grid-template-columns: 5.5em minmax(0, 26em); gap: 22px; }
 :is(.sn-case, .js-case) .facts dt { font-size: 15px; color: var(--whisper); text-align: right; }
 :is(.sn-case, .js-case) .facts dd { margin: 0; max-width: none; font-size: 15px; }
-/* Lab: how many credits to show. Team always stays. */
-body[data-credits="two"] .facts :is(.c-client, .c-when), body[data-credits="team"] .facts :is(.c-role, .c-client, .c-when) { display: none; }
+/* Lab: drop the dates from the credits. */
+body[data-credits="two"] .facts .c-when { display: none; }
 
 /* The way out: a plain underlined link, as in the homepage's contact, not a black pill. */
 .case .cs-cta .cta { gap: 28px; flex-wrap: wrap; justify-content: center; }
@@ -185,14 +185,26 @@ body[data-credits="two"] .facts :is(.c-client, .c-when), body[data-credits="team
 .case .cs-cta .copy { height: auto; padding: 0; background: none; border: 0; font-size: clamp(16px, 1.4vw, 18px); }
 .case .cs-cta .copy.is-soon i { display: none; }
 
-/* Lab: the next project as just its name, big, instead of the glass card. */
-.next-name { display: none; }
-body[data-next="name"] .cs-next .t-next { display: none; }
-body[data-next="name"] .cs-next { text-align: center; }
-body[data-next="name"] .next-name { display: inline-flex; flex-direction: column; align-items: center; gap: 10px; }
-.next-name b { font-family: var(--serif); font-weight: 300; font-size: clamp(48px, 7vw, 104px); line-height: 1; letter-spacing: var(--track-display); transition: color .3s var(--ease); }
-.next-name span { font-size: 15px; color: var(--whisper); }
-.next-name:hover b { color: var(--tone); }
+/* Next: the next two projects as homepage tiles (a picture in a sky-tinted card, its name and status underneath). */
+.nx-tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+.nx-tile { display: flex; flex-direction: column; gap: 16px; }
+.nx-card { position: relative; display: block; aspect-ratio: 4 / 3; overflow: hidden; border-radius: var(--radius); corner-shape: squircle;
+  background: color-mix(in srgb, var(--sky-mid, #a8c3e6) 42%, var(--bg)); }
+.nx-card img { position: absolute; transition: transform 1s var(--ease); }
+.nx-card.is-hand img { width: 72%; height: auto; left: 18%; bottom: -14%; }
+.nx-card.is-phone img { height: 92%; width: auto; left: 50%; top: 12%; translate: -50% 0; filter: drop-shadow(0 24px 40px rgba(0, 0, 0, .25)); }
+.nx-card.is-screen img { width: 86%; height: auto; left: 10%; top: 12%; border-radius: 10px; box-shadow: 0 24px 60px rgba(10, 30, 60, .18); }
+.nx-card.is-cut img { width: 84%; height: 84%; left: 8%; top: 8%; object-fit: contain; }
+.nx-tile:hover .nx-card img { transform: translate3d(0, -2%, 0); }
+.nx-cap { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 10px; padding: 0 4px; font-size: 15px; color: var(--whisper); }
+.nx-cap b { font-weight: 400; color: var(--ink); }
+/* Lab: just the next one, the same size as one of the two. */
+body[data-next="one"] .nx-tile + .nx-tile { display: none; }
+body[data-next="one"] .nx-tiles { grid-template-columns: minmax(0, 1fr); max-width: calc(50% - 12px); }
+@media (max-width: 700px) { .nx-tiles { grid-template-columns: 1fr; gap: 40px; } body[data-next="one"] .nx-tiles { max-width: none; } }
+
+/* An overview with no label (Brain Dump) sits on the left, where the headings start. */
+.cs-intro:not(:has(.label)) p { grid-column: 1 / span 8; }
 
 @media (max-width: 600px) {
   :is(.sn-case, .js-case) .facts { gap: 14px; text-align: center; }
