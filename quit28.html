@@ -36,7 +36,7 @@
 <link rel="stylesheet" href="assets/css/snapshot.css">
 <link rel="stylesheet" href="assets/css/quit28.css">
 </head>
-<body class="case sn-case q28-case" style="--tone:#00a7fa">
+<body class="case sn-case q28-case" data-credits="all" data-next="glass" style="--tone:#00a7fa">
 
 <div class="tip" aria-hidden="true"><i></i><span class="tip-text"></span><svg class="tip-arrow" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5l5-5M4.5 3.5h4v4"/></svg></div>
 
@@ -73,80 +73,55 @@
       <p class="lede">A 28-day quit plan that runs in the browser. Pick a first day, log each smoke-free day, and open one small tip or tool a day.</p>
     </div>
     <dl class="facts reveal" style="--d:.12s">
-      <div><dt>Role</dt><dd>UX and visual design, build, film and reporting</dd></div>
-      <div><dt>Client</dt><dd>Smoking Ends Here, for Champs and NHS Cheshire and Merseyside</dd></div>
+      <div class="c-role"><dt>Role</dt><dd>UX and visual design, build, film and reporting</dd></div>
+      <div class="c-client"><dt>Client</dt><dd>Smoking Ends Here, for Champs and the NHS</dd></div>
       <div><dt>Team</dt><dd>James on the journey, Charlotte on daily tips, Connor on the logo</dd></div>
-      <div><dt>Timeline</dt><dd>August to October 2026</dd></div>
-      <div><dt>Built with</dt><dd>Next.js, Convex, Vercel, PostHog, HyperFrames, Claude Code and Codex</dd></div>
+      <div class="c-when"><dt>When</dt><dd>August to October 2026</dd></div>
     </dl>
   </header>
 
 <section class="sn-flow" aria-labelledby="flow-title">
     <div class="sn-flow-head reveal">
       <h2 id="flow-title">One day at a time, four screens</h2>
-      <p>On a phone, where most people use it.</p>
     </div>
     <div class="sn-flow-body">
       <ol class="sn-steps">
         <li class="sn-step is-on" data-step="0">
-          <p class="sn-step-n">1</p>
-          <h3>Pick your first day</h3>
-          <p>The welcome shows the whole product: the 28-day calendar, day 1’s tip and three steps. One button starts it.</p>
           <img class="sn-step-shot" src="assets/media/quit28/phone-welcome.webp" alt="Quit28 product screen" width="720" height="1566" loading="lazy" decoding="async">
+          <p class="sn-cap"><span>1</span><b>Pick your first day</b></p>
         </li>
         <li class="sn-step" data-step="1">
-          <p class="sn-step-n">2</p>
-          <h3>Log the day</h3>
-          <p>One tap logs a smoke-free day. The button turns green, a tick draws in and a chime plays. Every save gets the same small moment.</p>
           <img class="sn-step-shot" src="assets/media/quit28/phone-day-1-logged.webp" alt="Quit28 product screen" width="720" height="1566" loading="lazy" decoding="async">
+          <p class="sn-cap"><span>2</span><b>Log the day</b></p>
         </li>
         <li class="sn-step" data-step="2">
-          <p class="sn-step-n">3</p>
-          <h3>One small thing a day</h3>
-          <p>Each day opens one tip or tool. Day 7 asks for one thing you’re proud of.</p>
           <img class="sn-step-shot" src="assets/media/quit28/phone-day-7.webp" alt="Quit28 product screen" width="720" height="1566" loading="lazy" decoding="async">
+          <p class="sn-cap"><span>3</span><b>One small thing a day</b></p>
         </li>
         <li class="sn-step" data-step="3">
-          <p class="sn-step-n">4</p>
-          <h3>Help when a craving hits</h3>
-          <p>“Craving now?” sits in the header on every screen. It opens a three-minute timer with a breathing circle and a soft sound.</p>
           <img class="sn-step-shot" src="assets/media/quit28/phone-craving-timer.webp" alt="Quit28 product screen" width="720" height="1566" loading="lazy" decoding="async">
+          <p class="sn-cap"><span>4</span><b>Help when a craving hits</b></p>
         </li>
       </ol>
     </div>
   </section>
 <section class="sn-ch" id="results" aria-labelledby="results-title">
-        <div class="sn-head reveal">
-          <p class="sn-when">19 to 26 October</p>
-          <h2 id="results-title">The first week</h2>
-        </div>
-        <div class="sn-prose reveal">
-          <p>Quit28 counts what people do, not who they are. Every figure is an anonymous count per phone or browser, not per person. A logged day is someone’s own word, so none of this measures a quit.</p>
-        </div>
-
-        <div class="sn-block reveal">
-          <h3>From the welcome to day 1</h3>
-          <ul class="sn-bars" aria-label="The first week, step by step">
+    <div class="sn-head reveal"><h2 id="results-title">The first week</h2><p class="sn-note">19 to 26 October 2026. Anonymous counts per phone, not per person.</p></div>
+    <div class="sn-block reveal">
+      <ul class="sn-bars" aria-label="The first week, step by step">
             <li style="--v:173"><span class="sn-bar-name">Saw the welcome page</span><span class="sn-bar"><i></i></span><span class="sn-bar-num">173</span></li>
             <li style="--v:55"><span class="sn-bar-name">Clicked Start</span><span class="sn-bar"><i></i></span><span class="sn-bar-num">55</span></li>
             <li style="--v:40"><span class="sn-bar-name">Saved a start date</span><span class="sn-bar"><i></i></span><span class="sn-bar-num">40</span></li>
             <li style="--v:8"><span class="sn-bar-name">Logged day 1 smoke-free</span><span class="sn-bar"><i></i></span><span class="sn-bar-num">8</span></li>
           </ul>
-          <div class="sn-prose">
-            <p>Most people who pressed Start went on to save a date, 40 of 55. The big drop is earlier: two in three people who saw the welcome never pressed Start. That’s the next thing to work on.</p>
-          </div>
-        </div>
-
-        <div class="sn-block reveal">
-          <h3>After the start</h3>
-          <div class="sn-who">
-            <div class="stat"><span class="num" data-count="17">17</span><span class="what">smoke-free days logged</span></div>
-            <div class="stat"><span class="num" data-count="29">29</span><span class="what">opened “Keep your why close”, the most-used tool</span></div>
-            <div class="stat"><span class="num" data-count="5">5</span><span class="what">clicked through to a local stop smoking service or the NHS finder</span></div>
-          </div>
-
-        </div>
-      </section>
+      <p class="sn-note">Two in three who saw the welcome never pressed Start. That’s the next thing to work on.</p>
+    </div>
+    <ul class="sn-meters reveal">
+      <li><p class="sn-meter-num">17</p><p class="sn-meter-what">smoke-free days logged</p></li>
+      <li><p class="sn-meter-num">29</p><p class="sn-meter-what">opened “Keep your why close”, the most-used tool</p></li>
+      <li><p class="sn-meter-num">5</p><p class="sn-meter-what">clicked through to a stop smoking service or the NHS finder</p></li>
+    </ul>
+  </section>
   <section class="cs-cta">
     <h2 class="reveal">One day <em>at a time.</em></h2>
     <div class="cta reveal" style="--d:.08s">
@@ -169,6 +144,7 @@
         <div class="media is-comp"><img class="nx-jump-a" src="assets/media/home/jumpstart-agency.webp" alt="" width="1600" height="1000" loading="lazy" decoding="async" srcset="assets/media/home/jumpstart-agency-480w.webp 480w, assets/media/home/jumpstart-agency-800w.webp 800w, assets/media/home/jumpstart-agency-1200w.webp 1200w, assets/media/home/jumpstart-agency.webp 1600w" sizes="(max-width: 720px) 57.18vw, (max-width: 1512px) 29.76vw, 450px"><img class="nx-jump-b" src="assets/media/home/jumpstart-report.webp" alt="JumpStart client report: every pound spent brought back £2.86" width="1289" height="1000" loading="lazy" decoding="async" srcset="assets/media/home/jumpstart-report-480w.webp 480w, assets/media/home/jumpstart-report-800w.webp 800w, assets/media/home/jumpstart-report-1200w.webp 1200w, assets/media/home/jumpstart-report.webp 1289w" sizes="(max-width: 720px) 46.41vw, (max-width: 1512px) 24.21vw, 366px"><img class="nx-jump-c" src="assets/media/home/jumpstart-export.webp" alt="" width="1200" height="869" loading="lazy" decoding="async" srcset="assets/media/home/jumpstart-export-480w.webp 480w, assets/media/home/jumpstart-export-800w.webp 800w, assets/media/home/jumpstart-export.webp 1200w" sizes="(max-width: 720px) 32.05vw, (max-width: 1512px) 16.73vw, 253px"></div>
       </a>
     </article>
+    <a class="next-name" href="jumpstart.html"><b>JumpStart</b><span>In pilot with the National Football Museum</span></a>
   </section>
 </main>
 
@@ -179,6 +155,7 @@
 
 <script src="assets/js/site.js" defer></script>
 <script src="assets/js/case.js" defer></script>
+<script src="assets/js/case-lab.js" defer></script>
 <script src="assets/js/snapshot.js" defer></script>
 <script src="assets/js/film-player.js" defer></script>
 </body>

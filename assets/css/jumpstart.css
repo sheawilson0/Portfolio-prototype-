@@ -1,24 +1,17 @@
-/* Current product, compact credits and generous space for the screens. */
-.js-case .cs-hero { display: block; padding: clamp(48px, 6vw, 80px) 0 0; }
-.js-case .cs-hero h1 { font-size: clamp(48px, 7vw, 104px); }
-.js-case .cs-hero .lede { max-width: 55ch; margin-top: 26px; font-size: clamp(19px, 2vw, 24px); }
-.js-case .facts { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 22px; margin-top: 40px; padding-top: 24px; border-top: 1px solid var(--hair); }
-.js-case .facts dd { font-size: 14px; max-width: 28ch; }
-.js-case .facts dt { font-size: 12px; }
+/* JumpStart. The quiet hero and credits live in case.css. */
 .js-case .shot { box-shadow: none; }
-@media(max-width: 900px) { .js-case .facts { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-@media(max-width: 600px) { .js-case .facts { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px 18px; } .js-case .facts > :last-child { grid-column: 1 / -1; } }
 
 .js-stage { padding-top: 100px; }
 .js-stage .card { aspect-ratio: 16 / 9; background: var(--surface); box-shadow: none; }
 .js-stage .media { position: absolute; inset: 0; }
 .js-stage-desk { width: 80%; left: 4%; top: 8%; }
 .js-stage-phone { width: 20%; left: 76%; top: 18%; border-radius: 24px; }
-.js-note { margin-top: 18px; max-width: 65ch; font-size: 13px; line-height: 1.5; color: var(--whisper); }
+.js-note { margin: 18px auto 0; max-width: 65ch; text-align: center; font-size: 13px; line-height: 1.5; color: var(--whisper); }
 .js-ch { margin-top: clamp(80px,10vw,140px); }
-.js-head h2 { font-family: var(--serif); font-weight: 300; font-size: clamp(34px,4vw,56px); max-width: 25ch; line-height: 1.08; letter-spacing: var(--track-heading); }
+.js-head, .js-prose { text-align: center; }
+.js-head h2 { margin-inline: auto; font-family: var(--serif); font-weight: 300; font-size: clamp(34px,4vw,56px); max-width: 25ch; line-height: 1.08; letter-spacing: var(--track-heading); }
 .js-prose { margin-top: 24px; }
-.js-prose p { max-width: 65ch; font-size: 17px; line-height: 1.6; color: var(--ink-2); }
+.js-prose p { margin-inline: auto; max-width: 60ch; font-size: 17px; line-height: 1.6; color: var(--ink-2); }
 .js-fig { margin: 32px 0 0; }
 .js-fig img { display: block; }
 .js-fig figcaption { margin-top: 12px; font-size: 13px; color: var(--whisper); line-height: 1.5; }

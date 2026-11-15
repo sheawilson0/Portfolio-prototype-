@@ -33,7 +33,7 @@
 <link rel="stylesheet" href="assets/css/case.css">
 <link rel="stylesheet" href="assets/css/jumpstart.css">
 </head>
-<body class="case js-case" style="--tone:#4fae86">
+<body class="case js-case" data-credits="all" data-next="glass" style="--tone:#4fae86">
 
 <div class="tip" aria-hidden="true"><i></i><span class="tip-text"></span><svg class="tip-arrow" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5l5-5M4.5 3.5h4v4"/></svg></div>
 
@@ -68,11 +68,10 @@
       <p class="lede">Paid media reporting that explains itself. Clients get a briefing in plain English.</p>
     </div>
     <dl class="facts reveal" style="--d:.12s">
-      <div><dt>Role</dt><dd>Product design and build</dd></div>
-      <div><dt>Timeline</dt><dd>June 2026 to now</dd></div>
+      <div class="c-role"><dt>Role</dt><dd>Product design and build</dd></div>
+      <div class="c-client"><dt>Status</dt><dd>In pilot with the National Football Museum</dd></div>
       <div><dt>Team</dt><dd>James on product, Alex on paid media, at Influential</dd></div>
-      <div><dt>Status</dt><dd>In pilot with the National Football Museum</dd></div>
-      <div><dt>Built with</dt><dd>Claude Code, Codex, Next.js, WorkOS, Vercel, PostHog and the Meta Marketing API</dd></div>
+      <div class="c-when"><dt>When</dt><dd>June 2026 to now</dd></div>
     </dl>
   </header>
 <section class="js-ch" id="briefing" aria-labelledby="briefing-title"><div class="js-head reveal"><h2 id="briefing-title">A budget holder doesn’t want a dashboard</h2></div><div class="js-prose reveal"><p>It opens with one sentence, “Every £1 you spent brought back £2.86”, says whether anything needs you, and the account lead checks it before it reaches you. The numbers are there to back up the sentence.</p></div><div class="js-pair">
@@ -130,6 +129,7 @@
         </div>
       </a>
     </article>
+    <a class="next-name" href="braindump.html"><b>Brain Dump</b><span>In beta</span></a>
   </section>
 </main>
 
@@ -140,5 +140,6 @@
 
 <script src="assets/js/site.js" defer></script>
 <script src="assets/js/case.js" defer></script>
+<script src="assets/js/case-lab.js" defer></script>
 </body>
 </html>

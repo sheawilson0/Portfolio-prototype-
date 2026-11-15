@@ -163,6 +163,43 @@
 .t-next .media.is-hand { margin: 0; border-radius: 0; overflow: visible; min-height: 300px; }
 .t-next .media.is-hand img { position: absolute; width: min(80%, 480px); height: auto; left: 18%; bottom: -12%; object-fit: contain; filter: drop-shadow(0 40px 50px rgba(0, 50, 90, .22)); }
 
+/* ───────── Current work (Snapshot, Quit28, JumpStart): quiet and centred, like the homepage ─────────
+   The title and line sit centred, and the credits read like the homepage's About index: label on the left, words on the right. */
+:is(.sn-case, .js-case) .cs-hero { display: block; text-align: center; padding: clamp(64px, 8vw, 110px) 0 0; }
+:is(.sn-case, .js-case) .cs-hero h1 { font-size: clamp(48px, 7vw, 104px); }
+:is(.sn-case, .js-case) .cs-hero .lede { max-width: 40ch; margin: 24px auto 0; font-size: clamp(19px, 1.8vw, 23px); }
+:is(.sn-case, .js-case) .facts { display: grid; gap: 10px; width: fit-content; max-width: 100%; margin: 44px auto 0; text-align: left; }
+:is(.sn-case, .js-case) .facts > div { display: grid; grid-template-columns: 5.5em minmax(0, 26em); gap: 22px; }
+:is(.sn-case, .js-case) .facts dt { font-size: 15px; color: var(--whisper); text-align: right; }
+:is(.sn-case, .js-case) .facts dd { margin: 0; max-width: none; font-size: 15px; }
+/* Lab: how many credits to show. Team always stays. */
+body[data-credits="two"] .facts :is(.c-client, .c-when), body[data-credits="team"] .facts :is(.c-role, .c-client, .c-when) { display: none; }
+
+/* The way out: a plain underlined link, as in the homepage's contact, not a black pill. */
+.case .cs-cta .cta { gap: 28px; flex-wrap: wrap; justify-content: center; }
+.case .cs-cta .email { padding: 0; gap: 8px; background: none; color: var(--ink); box-shadow: none; font-size: clamp(18px, 1.6vw, 21px);
+  text-decoration: underline; text-decoration-color: var(--hair); text-underline-offset: 6px; transition: text-decoration-color .3s var(--ease); }
+.case .cs-cta .email:hover { box-shadow: none; text-decoration-color: currentColor; }
+.case .cs-cta .email::before { display: none; }
+.case .cs-cta .email-icon { width: 15px; height: 15px; }
+.case .cs-cta .copy { height: auto; padding: 0; background: none; border: 0; font-size: clamp(16px, 1.4vw, 18px); }
+.case .cs-cta .copy.is-soon i { display: none; }
+
+/* Lab: the next project as just its name, big, instead of the glass card. */
+.next-name { display: none; }
+body[data-next="name"] .cs-next .t-next { display: none; }
+body[data-next="name"] .cs-next { text-align: center; }
+body[data-next="name"] .next-name { display: inline-flex; flex-direction: column; align-items: center; gap: 10px; }
+.next-name b { font-family: var(--serif); font-weight: 300; font-size: clamp(48px, 7vw, 104px); line-height: 1; letter-spacing: var(--track-display); transition: color .3s var(--ease); }
+.next-name span { font-size: 15px; color: var(--whisper); }
+.next-name:hover b { color: var(--tone); }
+
+@media (max-width: 600px) {
+  :is(.sn-case, .js-case) .facts { gap: 14px; text-align: center; }
+  :is(.sn-case, .js-case) .facts > div { grid-template-columns: 1fr; gap: 2px; }
+  :is(.sn-case, .js-case) .facts dt { text-align: center; }
+}
+
 .case footer { margin-top: 110px; }
 
 /* ───────── Responsive ───────── */
