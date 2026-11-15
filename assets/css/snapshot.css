@@ -17,14 +17,13 @@
 .sn-case .film-frame { box-shadow: none; background: #0a0a0a; }
 .sn-stats { margin-top: 64px; text-align: center; }
 .sn-stats .what { max-width: none; font-size: 15px; }
-.sn-flow, .sn-ch { margin-top: clamp(100px, 12vw, 160px); }
 .sn-flow-head, .sn-head { text-align: center; }
 .sn-flow-head h2, .sn-head h2 { font-family: var(--serif); font-weight: 300; font-size: clamp(34px, 4vw, 56px); line-height: 1.08; letter-spacing: var(--track-heading); }
 .sn-steps { list-style: none; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 28px; margin-top: 48px; }
 .sn-step { min-width: 0; }
 .sn-step-shot { display: block; width: 100%; height: auto; border-radius: 20px; }
 /* One line under each screen, like the homepage captions. */
-.sn-cap { display: flex; align-items: baseline; gap: 10px; margin-top: 16px; padding: 0 4px; font-size: 15px; line-height: 1.4; color: var(--whisper); }
+.sn-cap { display: flex; justify-content: center; align-items: baseline; gap: 8px; text-align: left; margin-top: 16px; padding: 0 4px; font-size: 15px; line-height: 1.4; color: var(--whisper); }
 .sn-cap b { font-weight: 400; color: var(--ink); }
 .sn-note { margin-top: 12px; font-size: 14px; line-height: 1.5; color: var(--whisper); }
 .sn-block { max-width: 820px; margin: 48px auto 0; }
@@ -35,11 +34,9 @@
 .sn-bar i { display: block; height: 100%; background: var(--tone); border-radius: inherit; }
 .sn-bar-num { text-align: right; }
 .sn-meters { list-style: none; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 36px; margin-top: 56px; text-align: center; }
-.sn-meter-num { font-family: var(--serif); font-size: clamp(48px, 5vw, 72px); font-weight: 200; line-height: 1; letter-spacing: -.02em; }
-.sn-meter-what { margin: 14px auto 0; max-width: 24ch; font-size: 16px; line-height: 1.45; color: var(--ink-2); }
+.sn-meter-num { font-family: var(--sans); font-weight: 300; font-size: clamp(40px, 4vw, 60px); line-height: 1; letter-spacing: -.03em; font-variant-numeric: lining-nums; }
+.sn-meter-what { margin: 12px auto 0; max-width: 22ch; font-size: 15px; line-height: 1.45; color: var(--ink-2); }
 .sn-meters.is-four { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 28px; }
-/* Lab: the numbers in the sans, regular weight, instead of the light serif. */
-body[data-nums="sans"] .sn-meter-num { font-family: var(--sans); font-weight: 300; font-size: clamp(40px, 4vw, 60px); letter-spacing: -.03em; font-variant-numeric: lining-nums; }
 @media(max-width:900px) { .sn-steps { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 40px 24px; } .sn-meters.is-four { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 44px 24px; } }
 @media(max-width:600px) {
  .sn-film { padding-top: 92px; }

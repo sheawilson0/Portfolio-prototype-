@@ -67,20 +67,4 @@
     if (page.complete) update(); else page.addEventListener('load', update);
   }
 
-  /* ── Side contents (lab layout "rail") ──
-     The project's name, then each section with a heading; the one in the middle of the screen is lit. */
-  const secs = [...document.querySelectorAll('main > :is(.cs-hero, section[aria-labelledby]:not(.cs-cta, .cs-next))')];
-  if (document.body.dataset.layout && secs.length > 1) {
-    const rail = document.createElement('nav');
-    rail.className = 'cs-rail'; rail.setAttribute('aria-label', 'On this page');
-    secs.forEach((sec) => {
-      const h = sec.querySelector('h1, h2'), a = document.createElement('a');
-      if (!sec.id) sec.id = h.id ? h.id + '-sec' : 'intro';
-      a.href = sec.matches('.cs-hero') ? '#top' : '#' + sec.id; a.textContent = h.textContent;
-      rail.append(a); sec._rail = a;
-    });
-    document.body.append(rail);
-    const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { rail.querySelectorAll('.is-on').forEach((x) => x.classList.remove('is-on')); e.target._rail.classList.add('is-on'); } }), { rootMargin: '-45% 0px -50% 0px' });
-    secs.forEach((sec) => io.observe(sec));
-  }
 })();
