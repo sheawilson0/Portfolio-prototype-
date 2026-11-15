@@ -424,55 +424,55 @@ body[data-layout="peng"] .socials a::before { content: "·"; display: inline-blo
 @keyframes intro-blur { from { opacity: 0; filter: blur(10px); } }
 
 /* ───────── Page (lab: Page) ─────────
-   What the page sits on. Sky is the time-of-day gradient behind everything. The rest keep the time of day in a
-   quieter way (or not at all), and the cards go flat: no glass, no colour glow, so the work is the colour. */
-body.home { --page-bg: #f4f2ed; --panel: color-mix(in srgb, var(--ink) 5%, var(--page-bg)); }
-[data-theme="dark"] body.home { --page-bg: #0d0e12; }
-body.home[data-page="white"] { --page-bg: #fff; }
-[data-theme="dark"] body.home[data-page="white"] { --page-bg: #000; }
-/* Sky up top: the sky behind the first screen only, setting into paper where the work starts. */
-body.home[data-page="dusk"] { position: relative; }
-body.home[data-page="dusk"]::before { position: absolute; inset: 0 0 auto; height: max(115svh, 900px); transform: none;
-  background: linear-gradient(180deg, var(--sky-top, #9ec0e9) 0%, var(--sky-mid, #cdd9e9) 40%, color-mix(in srgb, var(--sky-low, #f9ede2) 50%, var(--page-bg)) 70%, var(--page-bg) 100%); }
-/* sky.js paints the sky's colour on <html> (for overscroll); under paper it should be paper. */
-html:has(> body.home:is([data-page="dusk"], [data-page="grain"])) { background-color: #f4f2ed !important; }
-html[data-theme="dark"]:has(> body.home:is([data-page="dusk"], [data-page="grain"])) { background-color: #0d0e12 !important; }
-html:has(> body.home[data-page="white"]) { background-color: #fff !important; }
-html[data-theme="dark"]:has(> body.home[data-page="white"]) { background-color: #000 !important; }
-/* One colour: the sky as a single flat colour that still changes through the day. */
+   Sky: the time-of-day gradient. One colour: the sky as one flat colour that still changes through the day. */
 body.home[data-page="tint"]::before { background: color-mix(in srgb, var(--sky-top, #9ec0e9) 35%, var(--sky-mid, #cdd9e9)); }
-body.home[data-page="tint"] { --panel: rgb(255 255 255 / .38); }
-[data-theme="dark"] body.home[data-page="tint"] { --panel: rgb(255 255 255 / .05); }
-/* Grain paper: warm paper with a fine print grain, so a plain ground still has a surface. */
-body.home[data-page="grain"]::before { background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .25 0 0 0 0 .2 0 0 0 0 .12 0 0 0 .22 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"), var(--page-bg); }
-[data-theme="dark"] body.home[data-page="grain"]::before { background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .1 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"), var(--page-bg); }
-body.home[data-page="white"]::before { background: var(--page-bg); }
-body.home[data-page]:not([data-page="sky"]) :is(.work .bleed, .contact-glow) { display: none; }
-body.home[data-page]:not([data-page="sky"]) .work .card { -webkit-backdrop-filter: none; backdrop-filter: none; box-shadow: none; border-color: transparent; background: var(--panel); }
-body.home[data-page]:not([data-page="sky"]) .work .card::after { display: none; }
-body.home[data-page="white"] .work .card { border-radius: 6px; corner-shape: round; }
+
+/* ───────── Cards (lab: Fill, Edge, Glow, Shadow) ─────────
+   Each effect on the glass cards switches on its own. Frosted blurs what's behind; Clear is a light wash with no
+   blur, so the card takes the colour of the sky behind it: a container more than a card. */
+body.home { --clear: rgb(255 255 255 / .38); }
+[data-theme="dark"] body.home { --clear: rgb(255 255 255 / .05); }
+body.home[data-fill="clear"] .work .card { -webkit-backdrop-filter: none; backdrop-filter: none;
+  background: linear-gradient(var(--clear), var(--clear)) padding-box, radial-gradient(260px circle at var(--rx, 50%) var(--ry, -400px), var(--rimc), var(--glass-edge) 72%) border-box; }
+body.home[data-fill="clear"] .work .card::after { display: none; }
+/* No edge: no lit border, and the fill runs to the very edge so no gap is left where the border was. */
+body.home[data-edge="off"] .work .item { --rim: transparent; }
+body.home[data-edge="off"] .work .card { --glass-edge: transparent; --rimc: transparent; background-clip: border-box; }
+body.home[data-glow="off"] :is(.work .bleed, .contact-glow) { display: none; }
+body.home[data-shadow="off"] .work .card { box-shadow: none; }
 
 /* ───────── Top (lab: Top) ─────────
-   Headline: the big serif line. A paragraph: no headline, just who I am and what I've made, at reading size (Peng's
-   way). Object + paragraph: the same with the last thing I shipped standing over it. Bare, left: a plain sans
-   headline set on the grid's left edge. The sun only goes with the headline. */
-.hero-obj, .intro-who { display: none; }
-body.home:not([data-hero="headline"]) .hero .stage { display: none; }
-body.home:is([data-hero="line"], [data-hero="object"]) .hero { padding-top: clamp(120px, 21vh, 210px); padding-bottom: 250px; }
-body.home[data-hero="object"] .hero { padding-top: clamp(84px, 13vh, 140px); }
-body.home:is([data-hero="line"], [data-hero="object"]) .hero h1 { display: none; }
-body.home:is([data-hero="line"], [data-hero="object"]) .intro-who { display: inline; }
-body.home:is([data-hero="line"], [data-hero="object"]) .hero .intro { margin-top: 0; max-width: 23em; font-size: clamp(19px, 1.75vw, 25px); line-height: 1.45; font-weight: 400; letter-spacing: -.012em; color: var(--ink); text-wrap: balance; }
-body.home:is([data-hero="line"], [data-hero="object"]) .hero .intro .last { white-space: normal; color: var(--ink-2); }
-body.home[data-hero="object"] .hero-obj { display: block; width: clamp(120px, 12vw, 168px); aspect-ratio: 1; margin: 0 auto 30px; color: #f6c93a; --head: currentColor;
-  filter: drop-shadow(0 18px 22px rgb(60 0 0 / .22)); }
-body.home[data-hero="left"] .hero { text-align: left; padding-top: clamp(110px, 18vh, 180px); padding-bottom: 240px; }
-body.home[data-hero="left"] .hero-copy { text-align: left; width: auto; max-width: calc(1380px - 2 * var(--gutter)); margin: 0 auto; padding: 0; }
-body.home[data-hero="left"] .hero h1 { font-family: var(--sans); font-weight: 400; font-size: clamp(36px, 4.4vw, 64px); line-height: 1.02; letter-spacing: -.04em; word-spacing: normal; max-width: 13ch; text-wrap: initial; }
-body.home[data-hero="left"] .hero h1 em { font-style: normal; letter-spacing: inherit; color: var(--whisper); }
-body.home[data-hero="left"] .hero .intro { margin: 22px 0 0; text-align: left; max-width: 30em; }
+   Headline: the big serif line. A paragraph: no headline, just who I am and what I've made, at reading size. */
+.intro-who { display: none; }
+body.home[data-hero="line"] .hero .stage, body.home[data-hero="line"] .hero h1 { display: none; }
+body.home[data-hero="line"] .hero { padding-top: clamp(120px, 21vh, 210px); padding-bottom: 250px; }
+body.home[data-hero="line"] .intro-who { display: inline; }
+body.home[data-hero="line"] .hero .intro, body[data-about="para"] .about-short { font-size: clamp(19px, 1.75vw, 25px); line-height: 1.45; font-weight: 400; letter-spacing: -.012em; color: var(--ink); }
+body.home[data-hero="line"] .hero .intro { margin-top: 0; max-width: 23em; text-wrap: balance; }
+body.home[data-hero="line"] .hero .intro .last { white-space: normal; color: var(--ink-2); }
+
+/* ───────── About, two more ways (lab: About) ─────────
+   Paragraph: the photo, then the short version at reading size, like the paragraph at the top.
+   Index: the photo and the line, then a short list of facts, a label and a value a row (Peng's work list). */
+.about-index { display: none; }
+body:is([data-about="para"], [data-about="index"]) .about { display: block; padding-top: 120px; text-align: center; }
+body:is([data-about="para"], [data-about="index"]) .about > :not(:first-child, .about-short, .about-index),
+body[data-about="para"] .about > :first-child > :not(.about-photo), body[data-about="index"] .about-where { display: none; }
+body:is([data-about="para"], [data-about="index"]) .about-photo { margin: 0 auto 28px; }
+body[data-about="para"] .about-photo { width: 76px; height: 76px; }
+body[data-about="index"] .about-photo { width: 104px; height: 104px; }
+body[data-about="para"] .about-short { display: block; max-width: 23em; margin: 0 auto; }
+body[data-about="para"] .about-short p { max-width: none; font: inherit; letter-spacing: inherit; color: var(--ink); text-wrap: pretty; }
+body[data-about="para"] .about-short p + p { color: var(--ink-2); }
+body[data-about="index"] .about-index { display: grid; gap: 12px; width: fit-content; margin: 44px auto 0; font-size: clamp(16px, 1.3vw, 19px); text-align: left; }
+.about-index div { display: grid; grid-template-columns: 8.5em minmax(0, 24em); gap: 22px; }
+.about-index dt { color: var(--whisper); text-align: right; }
+.about-index dd { color: var(--ink); }
 @media (max-width: 700px) {
-  body.home:is([data-hero="line"], [data-hero="object"]) .hero { padding-top: 120px; padding-bottom: 230px; }
-  body.home[data-hero="object"] .hero { padding-top: 96px; }
-  body.home:is([data-hero="line"], [data-hero="object"]) .hero .intro { font-size: 20px; }
+  body.home[data-hero="line"] .hero { padding-top: 120px; padding-bottom: 230px; }
+  body.home[data-hero="line"] .hero .intro, body[data-about="para"] .about-short { font-size: 20px; }
+  body:is([data-about="para"], [data-about="index"]) .about { padding-top: 64px; }
+  body[data-about="index"] .about-index { text-align: center; margin-top: 32px; }
+  .about-index div { grid-template-columns: 1fr; gap: 2px; }
+  .about-index dt { text-align: center; }
 }

@@ -6,12 +6,16 @@
   if (live && !new URLSearchParams(location.search).has('lab')) return;
   // [attribute, label, options, the recommended one]
   const ROWS = [
-    ['page', 'Page', [['sky', 'Sky'], ['dusk', 'Sky up top'], ['tint', 'One colour'], ['grain', 'Grain paper'], ['white', 'White']], 'dusk'],
-    ['hero', 'Top', [['headline', 'Headline'], ['line', 'A paragraph'], ['object', 'Object + paragraph'], ['left', 'Bare, left']], 'object'],
-    ['arc', 'Sun or moon (with Headline)', [['sun', 'Show'], ['none', 'None']], 'none'],
+    ['page', 'Page', [['sky', 'Sky'], ['tint', 'One colour']], 'sky'],
+    ['fill', 'Cards: fill', [['frost', 'Frosted'], ['clear', 'Clear']], 'clear'],
+    ['edge', 'Cards: lit edge', [['on', 'On'], ['off', 'Off']], 'off'],
+    ['glow', 'Cards: colour glow', [['on', 'On'], ['off', 'Off']], 'off'],
+    ['shadow', 'Cards: shadow', [['on', 'On'], ['off', 'Off']], 'off'],
+    ['hero', 'Top', [['headline', 'Headline'], ['line', 'A paragraph']], 'headline'],
+    ['about', 'About', [['line', 'Sentence'], ['full', 'Photo + story'], ['short', 'Short'], ['art', 'With the painting'], ['para', 'Paragraph'], ['index', 'Index']], 'para'],
   ];
   if (!ROWS.length) return; // nothing open just now
-  const KEY = 'home-lab-11'; // home-lab-11: Page, Top and Sun rows, 15 Nov
+  const KEY = 'home-lab-12'; // home-lab-12: Page, card effects, Top and About rows, 15 Nov
   const get = (k) => { try { return JSON.parse(localStorage.getItem(KEY) || '{}')[k]; } catch (e) { return null; } };
   const set = (k, v) => { try { const o = JSON.parse(localStorage.getItem(KEY) || '{}'); o[k] = v; localStorage.setItem(KEY, JSON.stringify(o)); } catch (e) {} };
   // A row lives wherever index.html put its default: on <html> (set before anything paints) or on <body>.
