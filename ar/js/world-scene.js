@@ -1,11 +1,11 @@
-// The pieces of the world: a pale sky over an endless floor, the eclipse standing on the horizon, the headline
-// hanging in the air, and the work standing on the floor as panes of glass lit from behind by their own colours.
+// The pieces of the world: the site's sky (sunrise, day, sunset, night) over an endless floor that fades into
+// its horizon, the headline hanging in the air, and the work standing on the floor as clear panes of glass.
 //
-// Units are metres. The walk heads towards -z, where the disc stands on the horizon.
+// Units are metres. The walk heads towards -z, towards the horizon (where the sun glows at sunrise and sunset).
 // Every material is unlit and works in the site's own colour space: textures are sampled raw and colours are
 // mixed the way the browser mixes them, so a hex value here looks the same as it does in site.css.
 import * as THREE from '../vendor/three/three.module.js';
-import { CORONA, PROJECTS, MORE, squircleSlab, squirclePlane, hexA, asset } from './kit.js';
+import { PROJECTS, MORE, squircleSlab, squirclePlane, hexA, asset, pipTexture, butterflyTexture } from './kit.js';
 
 const D2R = Math.PI / 180;
 export const rgb = (hex) => {
@@ -32,6 +32,23 @@ export const THEME = {
   },
 };
 
+// The world in the colours of the site's sky right now (js/sky-bridge.js): its top overhead, its horizon at the
+// end of the floor, the floor a little deeper than the horizon, and the haze the horizon's colour.
+const mixHex = (a, b, t) => {
+  const A = rgb(a), B = rgb(b);
+  return '#' + [A.x + (B.x - A.x) * t, A.y + (B.y - A.y) * t, A.z + (B.z - A.z) * t].map((v) => Math.round(v * 255).toString(16).padStart(2, '0')).join('');
+};
+export function themeFrom(s) {
+  const base = THEME[s.dark ? 'dark' : 'light'];
+  return {
+    ...base,
+    zenith: s.top, mid: s.mid, horizon: s.low, glow: s.glow, ga: s.ga || 0,
+    near: s.dark ? mixHex(s.top, s.low, .55) : mixHex(s.low, s.mid, .35), far: s.low,
+    sky: s.mid, disc: s.low,
+    poolMix: 0, poolAdd: 0, reflK: 0, ringK: 0, discReflK: 0, glowRest: 0, glowHot: 0,
+  };
+}
+
 // The glass, picked in the lab. Each has a daylight and an eclipse version: either the site's card, baked
 // ('light' or 'dark'), or see-through glass with how much tint, reflection, held light and edge it has.
 // Smoked is what's live; White is the first build's daylight card.
@@ -39,8 +56,8 @@ export const GLASS = {
   white: { day: { card: 'light' }, night: { card: 'dark' } },
   smoked: { day: { smoke: '#131820', a: .3 }, night: { card: 'dark' } },
   clear: {
-    day: { smoke: '#8b97aa', a: .045, fres: .46, light: .5, rim: 1.3, band: 2.2 },
-    night: { smoke: '#0b0e14', a: .12, fres: .4, light: .75, rim: .55, band: 1.4 },
+    day: { smoke: '#ffffff', a: .16, fres: .46, light: 0, rim: 1.1, band: 1.6 },
+    night: { smoke: '#182e5c', a: .3, fres: .4, light: 0, rim: .45, band: 1 },
   },
   tinted: {
     day: { tone: 1, a: .2, fres: .3, light: 1.1, rim: .9 },
@@ -135,27 +152,9 @@ function canvas(w, h) {
   return [c, c.getContext('2d')];
 }
 
-// The corona's colours laid out in a strip, looked up by angle. In the dark the pale stops turn dark, as on the site.
-function lutTexture(dark) {
-  const [c, g] = canvas(512, 2);
-  const lg = g.createLinearGradient(0, 0, 512, 0);
-  for (const [deg, col] of CORONA) lg.addColorStop(deg / 360, dark ? ({ '#fde9cf': '#3a2a22', '#e3ebff': '#1c2436' }[col] || col) : col);
-  g.fillStyle = lg;
-  g.fillRect(0, 0, 512, 2);
-  const t = canvasTexture(c, { mips: false });
-  t.premultiplyAlpha = false;
-  t.wrapS = THREE.RepeatWrapping;
-  return t;
-}
-const LUT = { light: null, dark: null };
-function lut(dark) {
-  const k = dark ? 'dark' : 'light';
-  return LUT[k] || (LUT[k] = lutTexture(dark));
-}
-
 /* ───────── Sky ───────── */
 export function buildSky() {
-  const uniforms = { uZenith: { value: rgb(THEME.light.zenith) }, uHorizon: { value: rgb(THEME.light.horizon) } };
+  const uniforms = { uZenith: { value: rgb('#9ec0e9') }, uMid: { value: rgb('#cdd9e9') }, uHorizon: { value: rgb('#f9ede2') } };
   const mat = new THREE.ShaderMaterial({
     uniforms,
     vertexShader: /* glsl */`
@@ -166,12 +165,14 @@ export function buildSky() {
         gl_Position = (projectionMatrix * viewMatrix * wp).xyww;
       }`,
     fragmentShader: /* glsl */`
-      uniform vec3 uZenith, uHorizon;
+      uniform vec3 uZenith, uMid, uHorizon;
       varying vec3 vDir;
       ${CHUNK}
       void main() {
+        // the site's gradient: horizon, then the middle of the sky, then its top
         float e = normalize(vDir).y;
-        vec3 col = mix(uHorizon, uZenith, pow(smoothstep(0.0, 0.6, e), 0.8));
+        vec3 col = mix(uHorizon, uMid, smoothstep(0.0, 0.16, e));
+        col = mix(col, uZenith, pow(smoothstep(0.12, 0.62, e), 0.85));
         gl_FragColor = vec4(col + (hash12(gl_FragCoord.xy) - 0.5) / 255.0, 1.0);
       }`,
     side: THREE.BackSide, depthWrite: false,
@@ -182,79 +183,39 @@ export function buildSky() {
   return {
     mesh,
     follow(camera) { mesh.position.copy(camera.position); },
-    theme(t) { setRgb(uniforms.uZenith.value, t.zenith); setRgb(uniforms.uHorizon.value, t.horizon); },
+    theme(t) { setRgb(uniforms.uZenith.value, t.zenith); setRgb(uniforms.uMid.value, t.mid || t.horizon); setRgb(uniforms.uHorizon.value, t.horizon); },
   };
 }
 
-/* ───────── The eclipse: the disc and its ring of colour, drawn in one pass ───────── */
+/* ───────── The horizon ─────────
+   Where the old disc stood there's only the sky: at sunrise and sunset a soft glow of the sun sits on the horizon,
+   as it does behind the homepage. DISC is kept as the far end of the walk, which the camera frames. */
 export const DISC = { x: 0, y: -55, z: -440, r: 150 };
-const EXTENT = 1.9; // the quad reaches this many radii from the centre
 
 export function buildEclipse() {
-  const uniforms = {
-    ...shared,
-    uDiscCol: { value: rgb(THEME.light.disc) },
-    uLut: { value: lut(false) },
-    uCoronaK: { value: 1 }, uCoronaW: { value: 1.15 }, uHaloK: { value: .1 }, uRimK: { value: .45 },
-    uHazeK: { value: .9 }, uHazeH: { value: 22 },
-  };
+  const uniforms = { ...shared, uGlow: { value: rgb('#fff1e2') }, uK: { value: 0 } };
   const mat = new THREE.ShaderMaterial({
     uniforms, vertexShader: VS,
     fragmentShader: /* glsl */`
-      uniform vec3 uDiscCol;
-      uniform sampler2D uLut;
-      uniform float uSpin, uCoronaK, uCoronaW, uHaloK, uRimK, uHazeK, uHazeH;
+      uniform vec3 uGlow;
+      uniform float uK;
       varying vec2 vUv;
-      varying vec3 vWorld;
       ${CHUNK}
-      // The site's corona mask, in disc radii: solid under the disc, gone a little past its edge
-      float coronaA(float r) {
-        if (r < .885) return 1.0;
-        if (r < .93) return mix(1.0, .86, (r - .885) / .045);
-        if (r < .99) return mix(.86, .58, (r - .93) / .06);
-        if (r < 1.05) return mix(.58, .3, (r - .99) / .06);
-        if (r < 1.11) return mix(.3, .11, (r - 1.05) / .06);
-        if (r < 1.18) return mix(.11, 0.0, (r - 1.11) / .07);
-        return 0.0;
-      }
       void main() {
-        vec2 p = (vUv - 0.5) * 2.0 * ${EXTENT.toFixed(2)};
-        float r = length(p);
-        float ang = atan(p.x, p.y);
-        vec3 cc = texture2D(uLut, vec2(fract(ang / 6.2831853 - uSpin), 0.5)).rgb;
-        float a = coronaA(1.0 + (r - 1.0) / uCoronaW) * uCoronaK;
-        a += uHaloK * exp(-pow(max(r - 1.0, 0.0) / 0.42, 2.0));
-        a = clamp(a, 0.0, 1.0);
-        float aa = fwidth(r) * 1.25;
-        float inside = 1.0 - smoothstep(1.0 - aa, 1.0 + aa, r);
-        float rim = exp(-pow((r - 0.993) / max(0.006, aa), 2.0)) * uRimK;
-        vec3 face = mix(uDiscCol, min(cc * 1.25 + 0.04, 1.0), rim);
-        vec3 col = mix(cc, face, inside);
-        float alpha = max(a, inside);
-        // where it meets the floor it sinks into the haze
-        float haze = pow(1.0 - smoothstep(0.0, uHazeH, vWorld.y), 1.6) * uHazeK;
-        col = mix(col, uFogColor, haze);
-        gl_FragColor = vec4(col * alpha, alpha);
+        vec2 p = (vUv - vec2(0.5, 0.36)) * vec2(1.0, 2.2);
+        float a = exp(-dot(p, p) * 9.0) * uK;
+        if (a < 0.003) discard;
+        gl_FragColor = vec4(uGlow * a, a);
       }`,
     transparent: true, premultipliedAlpha: true, depthWrite: false,
   });
-  const mesh = new THREE.Mesh(new THREE.PlaneGeometry(DISC.r * EXTENT * 2, DISC.r * EXTENT * 2), mat);
-  mesh.position.set(DISC.x, DISC.y, DISC.z);
+  const mesh = new THREE.Mesh(new THREE.PlaneGeometry(DISC.r * 5, DISC.r * 2.4), mat);
+  mesh.position.set(DISC.x, 0, DISC.z);
   mesh.renderOrder = -10;
-  // Its edge, picked in the lab: lit (a line of the corona's light just inside the disc, and a halo past it),
-  // or sharp, the disc straight against its corona as on the homepage
-  let edge = 'lit', last = null;
   return {
     mesh, uniforms,
-    theme(t, dark) {
-      last = t;
-      setRgb(uniforms.uDiscCol.value, t.disc);
-      uniforms.uLut.value = lut(dark);
-      uniforms.uCoronaK.value = t.coronaK; uniforms.uCoronaW.value = t.coronaW;
-      uniforms.uHaloK.value = edge === 'lit' ? t.haloK : 0;
-      uniforms.uRimK.value = edge === 'lit' ? t.rimK : 0; uniforms.uHazeK.value = t.hazeK;
-    },
-    edge(mode) { edge = mode; if (last) this.theme(last); },
+    theme(t) { setRgb(uniforms.uGlow.value, t.glow || t.horizon); uniforms.uK.value = Math.min(1, (t.ga || 0) * .9); },
+    edge() {},
   };
 }
 
@@ -272,15 +233,12 @@ export function buildGround(panes) {
     uShadowK: { value: .34 }, uPoolMix: { value: .3 }, uPoolAdd: { value: 0 },
     uReflK: { value: .75 }, uRingK: { value: .75 }, uDiscReflK: { value: .55 },
     uShade: { value: panes.map(() => new THREE.Vector4(0, 1, 0, 0)) }, uShadowMode: { value: 0 },
-    uDisc: { value: new THREE.Vector4(DISC.x, DISC.y, DISC.z, DISC.r) },
-    uDiscCol: { value: rgb(THEME.light.disc) },
-    uLut: { value: lut(false) },
   };
   const mat = new THREE.ShaderMaterial({
     uniforms, vertexShader: VS,
     fragmentShader: /* glsl */`
       #define NP ${n}
-      uniform vec3 uNear, uFar, uDiscCol;
+      uniform vec3 uNear, uFar;
       uniform vec4 uPane[NP];
       uniform vec4 uPaneK[NP];
       uniform vec3 uPaneA[NP];
@@ -289,8 +247,6 @@ export function buildGround(panes) {
       uniform vec4 uShade[NP];
       uniform float uShadowMode;
       uniform float uShadowK, uPoolMix, uPoolAdd, uReflK, uRingK, uDiscReflK, uSpin;
-      uniform vec4 uDisc;
-      uniform sampler2D uLut;
       varying vec3 vWorld;
       ${CHUNK}
       float band(float x, float h, float s) { return 1.0 - smoothstep(h - s, h + s, abs(x)); }
@@ -342,24 +298,6 @@ export function buildGround(panes) {
           col += lc * a * uPoolAdd;
         }
 
-        // The eclipse, softly reflected: follow the view ray up off the floor to the disc's plane
-        vec3 V = toP / max(dist, 1e-4);
-        vec3 R = vec3(V.x, -V.y, V.z);
-        if (R.z < -0.001) {
-          float tt = (uDisc.z - P.z) / R.z;
-          vec3 Q = P + R * tt;
-          vec2 d = (Q.xy - uDisc.xy) / uDisc.w;
-          d.y = (d.y - 0.3) * 0.7 + 0.3; // reflections stretch towards you
-          float r = length(d);
-          float ang = atan(d.x, d.y);
-          vec3 cc = texture2D(uLut, vec2(fract(ang / 6.2831853 - uSpin), 0.5)).rgb;
-          float ring = exp(-pow((r - 1.03) / 0.17, 2.0));
-          float disc = 1.0 - smoothstep(0.8, 1.04, r);
-          float fres = pow(1.0 - abs(V.y), 10.0);
-          col = mix(col, cc, clamp(ring * uRingK * fres * uReflK, 0.0, 1.0));
-          col = mix(col, uDiscCol, clamp(disc * uDiscReflK * fres * uReflK, 0.0, 1.0));
-        }
-
         col = fogMix(col, dist);
         gl_FragColor = vec4(col + (hash12(gl_FragCoord.xy) - 0.5) / 255.0, 1.0);
       }`,
@@ -386,10 +324,9 @@ export function buildGround(panes) {
     reflect(on) { reflect = on; if (last) this.theme(...last); },
     theme(t, dark) {
       last = [t, dark];
-      setRgb(uniforms.uNear.value, t.near); setRgb(uniforms.uFar.value, t.far); setRgb(uniforms.uDiscCol.value, t.disc);
+      setRgb(uniforms.uNear.value, t.near); setRgb(uniforms.uFar.value, t.far);
       uniforms.uShadowK.value = t.shadowK; uniforms.uPoolMix.value = t.poolMix; uniforms.uPoolAdd.value = t.poolAdd;
       uniforms.uReflK.value = reflect ? t.reflK : 0; uniforms.uRingK.value = t.ringK; uniforms.uDiscReflK.value = t.discReflK;
-      uniforms.uLut.value = lut(dark);
     },
   };
 }
@@ -444,7 +381,7 @@ export function buildType(lines, { height, size = 200 } = {}) {
 
 /* ───────── The work ───────── */
 const IMG = (n) => `assets/media/home/${n}.webp`;
-const MORE_COLORS = { cipher: ['#0ec980', '#1ab796', '#7cf0c0'], amp: ['#ff6a2b', '#c33f1f', '#ffb347'], captr: ['#0f88f0', '#0a5fd0', '#5ab4ff'] };
+const MORE_COLORS = { cipher: ['#0ec980', '#1ab796', '#7cf0c0'], amp: ['#ff6a2b', '#c33f1f', '#ffb347'] };
 
 // Each pane: its size, the site's colour blobs (x, y are the centre as fractions of the pane from the top left,
 // w the width as a fraction of the pane, ar the aspect, rot in degrees) and the pictures in front of the glass.
@@ -467,17 +404,21 @@ const COMPOSE = {
       { src: IMG('jumpstart-export'), dark: IMG('jumpstart-export-dark'), w: .98, x: 1.1, y: -.68, rot: 4, z: .26, r: .04 },
     ],
   },
-  heart: {
-    w: 2.5, h: 2.9,
-    blobs: [{ x: .56, y: .38, w: 1.0, ar: 1.5, rot: -22 }, { x: .64, y: .52, w: .62, ar: 1.4, rot: 16 }, { x: .3, y: .7, w: .8, ar: 1.9, rot: 8 }],
-    layers: [{ src: IMG('heart-health-hand'), w: 2.28, x: .06, bottom: 0.015, z: .16, alpha: true, fade: .1, heart: true }],
-  },
-  brain: {
-    w: 2.2, h: 2.9,
-    blobs: [{ x: .5, y: .44, w: 1.1, ar: 1.5, rot: -12 }, { x: .3, y: .66, w: .7, ar: 1.8, rot: 20 }, { x: .72, y: .58, w: .6, ar: 1.3, rot: -24 }],
+  quit28: {
+    w: 2.9, h: 2.7,
+    blobs: [],
     layers: [
-      { src: IMG('brain-voice'), h: 1.76, x: -.42, y: .1, rot: -8, z: .08, alpha: true },
-      { src: IMG('brain-home'), h: 2.02, x: .3, y: -.06, rot: 3, z: .2, alpha: true, cycle: [IMG('brain-ai-input'), IMG('brain-card-selection')] },
+      { src: IMG('quit28-calendar'), w: 1.9, x: -.42, y: .22, rot: -3, z: .08, alpha: true },
+      { src: IMG('quit28-iphone'), h: 2.04, x: .76, y: -.08, rot: 2, z: .24, alpha: true },
+    ],
+  },
+  // Pip, frame by frame, and Meridian's butterfly from its own engine: the homepage's Shipped tile
+  shipped: {
+    w: 2.6, h: 2.6,
+    blobs: [],
+    layers: [
+      { live: 'fly', w: 1.5, h: 1.5, x: -.48, y: .34, z: .1 },
+      { live: 'pip', w: 1.11, h: 1.2, x: .56, y: -.46, z: .22 },
     ],
   },
   // the photos are 4:3 (Captr's 3:2 is extended to 4:3 with its own backdrop), 1.62 m wide, with 0.14 m all round
@@ -508,7 +449,7 @@ function worksFor(card) {
 
 // Where they stand: alternating either side of a path that bends gently on its way to the disc
 export const pathX = (z) => 2.2 * Math.sin((z + 6) / 26);
-const PLACE = { snapshot: -18, jumpstart: -34, heart: -50, brain: -65, cipher: -79, amp: -86, captr: -93 };
+const PLACE = { snapshot: -18, quit28: -34, jumpstart: -50, shipped: -65, cipher: -79, amp: -86 };
 export function placeWorks(card = 'layered') {
   return worksFor(card).map((def, i) => {
     const side = i % 2 === 0 ? 1 : -1;
@@ -821,9 +762,16 @@ export async function buildPane(place, dark, glassKey = 'smoked') {
   const box = { x0: Infinity, x1: -Infinity, y0: Infinity, y1: -Infinity }; // in the pane's own metres, from the floor
   let heart = null;
   let cycler = null;
+  const live = [];
   for (const L of def.layers) {
     const startDark = dark && !!L.dark;
-    let tex = await rawTexture(startDark ? L.dark : L.src);
+    let tex;
+    if (L.live) {
+      const made = L.live === 'pip' ? await pipTexture() : await butterflyTexture();
+      tex = made.texture;
+      tex.colorSpace = THREE.NoColorSpace; tex.premultiplyAlpha = true; tex.needsUpdate = true;
+      live.push(made);
+    } else tex = await rawTexture(startDark ? L.dark : L.src);
     if (L.aspect) { const ext = extendTo(tex, L.aspect); if (ext !== tex) tex = own(ext); }
     const aspect = tex.image.width / tex.image.height;
     const w = L.w ?? L.h * aspect, h = L.h ?? L.w / aspect;
@@ -839,6 +787,7 @@ export async function buildPane(place, dark, glassKey = 'smoked') {
     mesh.renderOrder = 2;
     holder.add(mesh);
 
+    if (L.live) { pictures.push({ mesh, mat, shadow: null, src: {}, tex: {} }); continue; }
     const shd = design.shadow || {};
     const sh = shadowCanvas(tex.image, { rounded: L.alpha ? 0 : L.r / Math.min(w, h), blur: shd.blur ?? (L.alpha ? 14 : 18) });
     const smat = tintMaterial(own(canvasTexture(sh.canvas)), .3);
@@ -921,7 +870,7 @@ export async function buildPane(place, dark, glassKey = 'smoked') {
           if (p.tex[k]) p.mat.uniforms.uMap.value = p.tex[k];
           else rawTexture(p.src[k]).then((tx) => { p.tex[k] = tx; if (this.dark === isDark) p.mat.uniforms.uMap.value = tx; });
         }
-        p.shadow.uniforms.uK.value = t.layerShadow * shadowK;
+        if (p.shadow) p.shadow.uniforms.uK.value = t.layerShadow * shadowK;
       }
       this.t = t;
     },
@@ -944,6 +893,7 @@ export async function buildPane(place, dark, glassKey = 'smoked') {
       return out;
     },
     tick(dt, hot, hover) {
+      for (const m of live) m.tick(dt);
       const k = 1 - Math.exp(-dt * 5);
       state.hot += (hot - state.hot) * k;
       state.hover += (hover - state.hover) * (1 - Math.exp(-dt * 8));

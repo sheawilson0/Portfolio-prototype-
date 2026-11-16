@@ -3,11 +3,15 @@
 // materials, so everything here is real geometry: the pockets are holes in the base, the disc stands in a slot,
 // and every picture has a back. Built in millimetres, returned in metres.
 import * as THREE from 'three';
-import { PROJECTS, buildEclipse, buildPiece, squircleShape, toTexture, textCanvas, bleedCanvas, fontsReady } from './kit.js';
+import { PROJECTS, SKY, buildSkyPane, buildPiece, squircleShape, toTexture, fontsReady } from './kit.js';
 
 const BASE = { w: 250, d: 170, h: 20, r: 24 };
 const POCKET = { size: 46, r: 9, z: 18, depth: 13, xs: [-84, -28, 28, 84] };
-const DISC = { r: 56, y: 38, z: -46, t: 7 };
+const PANE = { w: 168, h: 104, z: -48, t: 7, sink: 12 }; // the sky, standing in its slot at the back
+
+// The base in the sky's colours: warm like the horizon by day, the night's blue after dark
+const tone = (dark) => (dark ? { top: '#16294f', edge: '#13244a', ink: 'rgba(242,240,235,.66)', name: 'rgba(242,240,235,.48)', rim: '#1d3561', deep: '#0b1733', floor: SKY.night }
+  : { top: '#fbf3ea', edge: '#f4ebe1', ink: 'rgba(10,10,10,.6)', name: 'rgba(10,10,10,.44)', rim: '#e3d6c8', deep: '#9fb4d3', floor: SKY.day });
 
 function canvas(w, h) {
   const c = document.createElement('canvas');
@@ -15,54 +19,46 @@ function canvas(w, h) {
   return [c, c.getContext('2d')];
 }
 
-// What's printed on the base: the line from the homepage along the front, a name under each pocket
+// What's printed on the base: a name under each pocket and mine along the front
 function baseTopCanvas(dark) {
   const k = 10; // px per mm
+  const T = tone(dark);
   const [c, g] = canvas(BASE.w * k, BASE.d * k);
-  g.fillStyle = dark ? '#0c0d11' : '#f8f7f4';
+  g.fillStyle = T.top;
   g.fillRect(0, 0, c.width, c.height);
   const X = (mm) => (mm + BASE.w / 2) * k, Y = (mm) => (mm + BASE.d / 2) * k; // z grows towards the front
-  g.fillStyle = dark ? 'rgba(242,240,235,.62)' : 'rgba(10,10,10,.62)';
+  g.fillStyle = T.ink;
   g.font = '400 50px "DM Sans"';
   g.textAlign = 'center';
   PROJECTS.forEach((p, i) => g.fillText(p.name, X(POCKET.xs[i]), Y(POCKET.z + POCKET.size / 2 + 8)));
-  const head = textCanvas([[['Always making ', '300 150px Spectral'], ['something.', 'italic 300 150px Spectral']]], { color: dark ? '#f2f0eb' : '#0a0a0a', scale: 1, tracking: -3 });
-  g.drawImage(head, X(0) - head.width / 2, Y(67) - head.height * .72);
-  g.fillStyle = dark ? 'rgba(242,240,235,.44)' : 'rgba(10,10,10,.46)';
-  g.font = 'italic 400 46px Spectral';
-  g.fillText('Shea Wilson', X(0), Y(79));
+  g.fillStyle = T.name;
+  g.font = 'italic 400 64px Spectral';
+  g.fillText('Shea Wilson', X(0), Y(73));
   return c;
 }
 
 // The inside of a pocket: the base's own colour at the rim, going dark, with the work's light coming up
 // from the floor so the walls and the glow blend into one
-function linerCanvas(tone, dark) {
+function linerCanvas(dark) {
+  const T = tone(dark);
   const [c, g] = canvas(8, 256);
   const lg = g.createLinearGradient(0, 0, 0, 256);
-  if (dark) { lg.addColorStop(0, '#2a2b31'); lg.addColorStop(.45, '#141519'); }
-  else { lg.addColorStop(0, '#bdbab4'); lg.addColorStop(.4, '#6d6a66'); }
-  lg.addColorStop(.78, mix(tone, '#101014', .72));
-  lg.addColorStop(1, mix(tone, '#101014', .4));
+  lg.addColorStop(0, T.rim); lg.addColorStop(.55, T.deep); lg.addColorStop(1, T.floor.low);
   g.fillStyle = lg;
   g.fillRect(0, 0, 8, 256);
   return c;
 }
-function mix(a, b, t) {
-  const pa = parseInt(a.slice(1), 16), pb = parseInt(b.slice(1), 16);
-  const ch = (s) => Math.round(((pa >> s) & 255) * (1 - t) + ((pb >> s) & 255) * t);
-  return `rgb(${ch(16)},${ch(8)},${ch(0)})`;
-}
 
-// The light on a pocket's floor: the project's colours run together, soft to the edges
-function floorCanvas(colors) {
+// The floor of a pocket: a little patch of horizon, warm in the middle
+function floorCanvas(dark) {
+  const S = tone(dark).floor;
   const [c, g] = canvas(256, 256);
-  g.fillStyle = '#0c0c10';
+  g.fillStyle = S.low;
   g.fillRect(0, 0, 256, 256);
-  g.filter = 'blur(22px)';
-  g.drawImage(bleedCanvas(colors, { w: 256, h: 256 }), -30, -30, 316, 316);
-  g.globalAlpha = .7;
-  g.drawImage(bleedCanvas([...colors].reverse(), { w: 256, h: 256 }), 10, 10, 236, 236);
-  g.filter = 'none';
+  const rg = g.createRadialGradient(128, 128, 0, 128, 128, 150);
+  rg.addColorStop(0, S.glow); rg.addColorStop(1, S.low);
+  g.fillStyle = rg;
+  g.fillRect(0, 0, 256, 256);
   return c;
 }
 
@@ -177,7 +173,7 @@ function shrinkSoftTextures(root, max = 384) {
       for (const key of ['map', 'emissiveMap']) {
         const t = m[key];
         const img = t?.image;
-        if (!t || done.has(t) || !(img instanceof HTMLCanvasElement) || !/Corona|light|Glow/.test(m.name)) continue;
+        if (!t || done.has(t) || !(img instanceof HTMLCanvasElement) || !/Glow/.test(m.name)) continue;
         if (Math.max(img.width, img.height) <= max) continue;
         const k = max / Math.max(img.width, img.height);
         const c = document.createElement('canvas');
@@ -204,8 +200,7 @@ export async function buildDeskModel({ dark = false, forQuickLook = false } = {}
   /* The base, with the pockets and the slot cut through it */
   const shape = squircleShape(BASE.w, BASE.d, BASE.r);
   const pocketShapes = POCKET.xs.map((x) => ({ x, z: POCKET.z, shape: squircleShape(POCKET.size, POCKET.size, POCKET.r) }));
-  const chord = 2 * Math.sqrt(DISC.r ** 2 - (DISC.r - DISC.y) ** 2);
-  const slotShape = { x: 0, z: DISC.z, shape: squircleShape(chord + 8, DISC.t + 5, 3.5) };
+  const slotShape = { x: 0, z: PANE.z, shape: squircleShape(PANE.w + 6, PANE.t + 4, 3.5) };
   for (const { x, z, shape: s } of [...pocketShapes, slotShape]) {
     const hole = new THREE.Path(s.getPoints(8).map((p) => new THREE.Vector2(p.x + x, p.y - z)).reverse());
     shape.holes.push(hole);
@@ -229,18 +224,18 @@ export async function buildDeskModel({ dark = false, forQuickLook = false } = {}
   const topTex = toTexture(baseTopCanvas(dark));
   const base = new THREE.Mesh(baseGeo, [
     new THREE.MeshStandardMaterial({ name: 'BasePrint', color: 0xffffff, map: topTex, roughness: dark ? .62 : .82 }),
-    new THREE.MeshStandardMaterial({ name: 'BaseEdge', color: dark ? '#111217' : '#f1efea', roughness: dark ? .6 : .85 }),
+    new THREE.MeshStandardMaterial({ name: 'BaseEdge', color: tone(dark).edge, roughness: dark ? .6 : .85 }),
   ]);
   base.name = 'Base';
   mm.add(base);
 
   /* Inside the pockets: dark walls and the work's own colour at the floor */
-  const linerMat = (tone, name) => new THREE.MeshStandardMaterial({ name, color: 0xffffff, map: toTexture(linerCanvas(tone, dark)), roughness: .9 });
+  const linerMat = (name) => new THREE.MeshStandardMaterial({ name, color: 0xffffff, map: toTexture(linerCanvas(dark)), roughness: .9 });
   PROJECTS.forEach((p, i) => {
     const s = squircleShape(POCKET.size - .6, POCKET.size - .6, POCKET.r);
     const pts = s.getPoints(8);
     pts.pop();
-    const liner = new THREE.Mesh(linerGeometry(pts.map((q) => new THREE.Vector2(q.x, -q.y)), POCKET.depth), linerMat(p.tone, `Pocket_${p.id}`));
+    const liner = new THREE.Mesh(linerGeometry(pts.map((q) => new THREE.Vector2(q.x, -q.y)), POCKET.depth), linerMat(`Pocket_${p.id}`));
     liner.position.set(POCKET.xs[i], 0, POCKET.z);
     liner.name = `Pocket_${p.id}`;
     mm.add(liner);
@@ -248,45 +243,34 @@ export async function buildDeskModel({ dark = false, forQuickLook = false } = {}
     const floorGeo = new THREE.ShapeGeometry(s, 1);
     const fp = floorGeo.attributes.position, fu = floorGeo.attributes.uv;
     for (let k = 0; k < fp.count; k++) fu.setXY(k, fp.getX(k) / POCKET.size + .5, fp.getY(k) / POCKET.size + .5);
-    const floorTex = toTexture(floorCanvas(p.colors));
+    const floorTex = toTexture(floorCanvas(dark));
     const floor = new THREE.Mesh(floorGeo, new THREE.MeshStandardMaterial({ name: `Glow_${p.id}`, color: 0x000000, emissive: 0xffffff, emissiveMap: floorTex, roughness: 1 }));
     floor.rotation.x = -Math.PI / 2;
     floor.position.set(POCKET.xs[i], -POCKET.depth + .2, POCKET.z);
     mm.add(floor);
   });
 
-  // The slot's inside, dark, so the disc goes down into shadow
+  // The slot's inside, so the sky goes down into the base
   {
     const pts = slotShape.shape.getPoints(8);
     pts.pop();
-    const liner = new THREE.Mesh(linerGeometry(pts.map((q) => new THREE.Vector2(q.x, -q.y)), BASE.h - 2), linerMat('#ff6a1a', 'Slot'));
-    liner.position.set(0, 0, DISC.z);
+    const liner = new THREE.Mesh(linerGeometry(pts.map((q) => new THREE.Vector2(q.x, -q.y)), BASE.h - 2), linerMat('Slot'));
+    liner.position.set(0, 0, PANE.z);
     mm.add(liner);
   }
 
-  /* The eclipse, standing in its slot */
-  const eclipse = buildEclipse({ radius: DISC.r, thickness: DISC.t, dark, glow: false });
-  eclipse.group.position.set(0, DISC.y, DISC.z);
-  // Cut the ring flat where it meets the base, so none of it hangs below the plinth
-  {
-    const g = new THREE.CircleGeometry(DISC.r * 1.42, 160);
-    const cp = g.attributes.position;
-    for (let k = 0; k < cp.count; k++) if (cp.getY(k) < -DISC.y) cp.setY(k, -DISC.y);
-    eclipse.corona.geometry.dispose();
-    eclipse.corona.geometry = g;
-  }
-  eclipse.corona.material = glowing(eclipse.corona.material);
-  eclipse.corona.material.name = 'Corona';
-  eclipse.rim.material = glowing(eclipse.rim.material);
-  eclipse.rim.material.transparent = false;
-  eclipse.rim.material.name = 'Rim';
-  eclipse.disc.material.name = dark ? 'Eclipse' : 'Disc';
-  // The ring's back, so it isn't a hole from behind
-  const back = new THREE.Mesh(eclipse.corona.geometry, glowing(eclipse.corona.material));
-  back.rotation.y = Math.PI;
-  back.position.z = eclipse.corona.position.z - .3;
-  eclipse.group.add(back);
-  mm.add(eclipse.group);
+  /* The sky, standing in its slot: the homepage's hero as an object */
+  const pane = buildSkyPane({ w: PANE.w, h: PANE.h, r: 12, depth: PANE.t, sky: dark ? SKY.night : SKY.day });
+  pane.group.position.set(0, PANE.h / 2 - PANE.sink, PANE.z);
+  pane.faceMat.name = 'SkyFace';
+  pane.backMat.name = 'SkyBack';
+  pane.edgeMat.name = 'SkyEdge';
+  pane.group.traverse((o) => {
+    if (!o.isMesh) return;
+    if (Array.isArray(o.material)) o.material = o.material.map((m) => (m.isMeshBasicMaterial ? glowing(m) : m));
+    else if (o.material.isMeshBasicMaterial) o.material = glowing(o.material);
+  });
+  mm.add(pane.group);
 
   /* The work, hovering over the pockets it came out of */
   const turn = [.2, .07, -.07, -.2];
@@ -305,10 +289,10 @@ export async function buildDeskModel({ dark = false, forQuickLook = false } = {}
       if (m.isMeshBasicMaterial) {
         // Screenshots are opaque (their corners are geometry); only the phones and canvases carry alpha
         const src = m.map?.image?.src || '';
-        if (src && !/snapshot-phone|brain-home|brain-voice/.test(src)) { m.transparent = false; m.alphaTest = 0; m.depthWrite = true; }
+        if (src && !/snapshot-phone|quit28-iphone|quit28-calendar|pip/.test(src)) { m.transparent = false; m.alphaTest = 0; m.depthWrite = true; }
         o.material = glowing(m);
-        o.material.name = `${p.id}_${o === piece.userData.glow ? 'light' : 'picture'}`;
-        if (o !== piece.userData.glow && m.map) {
+        o.material.name = `${p.id}_picture`;
+        if (m.map) {
           // A back for every picture: its silhouette, in a dark satin
           const b = new THREE.Mesh(o.geometry, new THREE.MeshStandardMaterial({ name: `${p.id}_back`, color: dark ? '#1a1c22' : '#2a2c33', map: m.map, transparent: m.transparent, alphaTest: m.alphaTest, roughness: .45 }));
           b.rotation.y = Math.PI;

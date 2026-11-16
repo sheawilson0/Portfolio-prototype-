@@ -14,24 +14,11 @@ body { overflow-x: clip; transition: background-color .6s var(--ease), color .6s
 #veil { position: fixed; inset: 0; z-index: 5; background: var(--bg); opacity: 0; pointer-events: none; }
 body.is-pointing { cursor: pointer; }
 
-/* ───────── Top bar: the name home, the theme ───────── */
-.bar { position: fixed; z-index: 20; left: 0; right: 0; top: 0; display: flex; align-items: center; justify-content: space-between;
-  padding: calc(16px + var(--safe-t)) var(--gutter) 0; pointer-events: none; }
+/* ───────── Top bar: the sound switch, beside the nav pill ───────── */
+.bar { position: fixed; z-index: 51; left: auto; right: 0; top: 0; display: flex; align-items: center; justify-content: flex-end;
+  padding: calc(22px + var(--safe-t)) var(--gutter) 0; pointer-events: none; }
 .bar > * { pointer-events: auto; }
-.logo { font-size: 22px; }
-.theme { width: 44px; height: 44px; margin-right: -4px; border-radius: 50%; display: grid; place-items: center; transition: opacity .6s var(--ease); }
-:root:not([data-ready="1"]) .theme { opacity: 0; pointer-events: none; }
-/* The homepage's theme toggle, as is */
-.tt { position: relative; width: 18px; height: 18px; border-radius: 50%; }
-.tt-ring { position: absolute; inset: -3px; border-radius: 50%;
-  background: conic-gradient(from 0deg, #ed1652, #ff6a1a, #ffb22c, #43d9ff, #8a3cff, #3a17e0, #ed1652);
-  -webkit-mask: radial-gradient(closest-side, transparent 62%, #000 72%, transparent 100%); mask: radial-gradient(closest-side, transparent 62%, #000 72%, transparent 100%);
-  transition: transform 1s var(--ease); }
-.tt-disc { position: absolute; inset: 1px; border-radius: 50%; background: #fff; overflow: hidden; box-shadow: 0 0 0 .5px rgba(10, 10, 10, .12); }
-.tt-moon { position: absolute; inset: 0; border-radius: 50%; background: #05070b; transform: translateX(-115%); transition: transform .8s var(--ease-io); }
-.theme:hover .tt-ring { transform: rotate(180deg); }
 .bar-end { display: flex; align-items: center; gap: 2px; margin-right: -4px; }
-.bar-end .theme { margin-right: 0; }
 .snd { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; color: var(--ink-2); transition: color .3s var(--ease), opacity .6s var(--ease); }
 .snd[hidden] { display: none; }
 .snd:hover { color: var(--ink); }
@@ -41,7 +28,6 @@ body.is-pointing { cursor: pointer; }
 .snd.is-muted .snd-wave { opacity: 0; transform: scale(.7); }
 .snd.is-muted .snd-x { opacity: 1; }
 :root:not([data-ready="1"]) .snd { opacity: 0; pointer-events: none; }
-.theme[aria-pressed="true"] .tt-moon { transform: none; }
 
 /* The theme spreads from the toggle like the homepage: a soft umbra over the finished change */
 @property --umbra { syntax: '<length>'; inherits: false; initial-value: 0px; }
@@ -85,7 +71,7 @@ body.is-pointing { cursor: pointer; }
 .email:hover { box-shadow: 0 16px 44px rgba(10, 10, 10, .26); }
 @property --sweep { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
 .email::before { content: ""; position: absolute; inset: -3px; border-radius: 999px; padding: 2px; opacity: 0; pointer-events: none;
-  background: conic-gradient(from var(--sweep), #ed1652, #ff6a1a, #ffb22c, #43d9ff, #8a3cff, #3a17e0, #ed1652);
+  background: linear-gradient(180deg, var(--sky-top, #9ec0e9), var(--sky-low, #f9ede2));
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; }
 .talk.is-live .email::before { animation: sweep 1.8s var(--ease-io) .3s both; }
 .talk.is-live .email:hover::before { animation: orbit 2.6s linear infinite; opacity: .95; }
@@ -249,7 +235,7 @@ body.is-pointing { cursor: pointer; }
 .lab-opts button[aria-pressed="true"] { color: var(--bg); background: var(--ink); border-color: transparent; }
 .lab-row.is-locked .lab-opts { opacity: .45; }
 .lab-opts button:disabled { cursor: default; }
-.lab-live { width: 5px; height: 5px; border-radius: 50%; flex: none; background: conic-gradient(#ed1652, #ff6a1a, #ffb22c, #43d9ff, #8a3cff, #3a17e0, #ed1652); }
+.lab-live { width: 5px; height: 5px; border-radius: 50%; flex: none; background: var(--ink); }
 .lab-opts .lab-live { position: absolute; top: 4px; right: 5px; }
 /* The rows already decided, folded away under the ones still open */
 .lab-done { border-top: 1px solid var(--hair); }

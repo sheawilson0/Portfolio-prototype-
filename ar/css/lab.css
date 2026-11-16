@@ -1,16 +1,18 @@
-/* The 3D lab shares the homepage's tokens: white daylight, glass, Spectral over DM Sans.
-   Only what these pages need is here; nothing that moves carries a blur filter. */
+/* The 3D lab wears the site as it is now: the time-of-day sky (assets/js/sky.js, painted by js/sky-bridge.js),
+   clear cards, Spectral over DM Sans, and the homepage's nav pill. Nothing that moves carries a blur filter. */
 :root {
   color-scheme: light;
   --bg: #ffffff;
   --ink: #0a0a0a;
   --ink-2: rgba(10, 10, 10, .64);
-  --whisper: rgba(10, 10, 10, .46);
+  --whisper: rgba(10, 10, 10, .52);
   --hair: rgba(10, 10, 10, .08);
-  --glass: rgba(255, 255, 255, .62);
-  --glass-strong: rgba(255, 255, 255, .8);
-  --glass-edge: rgba(255, 255, 255, .92);
-  --glass-line: rgba(10, 10, 10, .07);
+  --glass: rgba(255, 255, 255, .38);
+  --glass-strong: rgba(255, 255, 255, .62);
+  --glass-edge: rgba(255, 255, 255, .5);
+  --glass-line: rgba(10, 10, 10, .06);
+  --nav-glass: rgb(243 247 252 / .42);
+  --pane: rgb(255 255 255 / .34);
   --ease: cubic-bezier(.2, .9, .25, 1);
   --ease-io: cubic-bezier(.65, 0, .35, 1);
   --serif: 'Spectral', Georgia, serif;
@@ -22,19 +24,35 @@
 }
 [data-theme="dark"] {
   color-scheme: dark;
-  --bg: #05070b;
+  --bg: #0a1631;
   --ink: #f2f0eb;
-  --ink-2: rgba(242, 240, 235, .68);
-  --whisper: rgba(242, 240, 235, .44);
-  --hair: rgba(242, 240, 235, .09);
-  --glass: rgba(18, 21, 28, .55);
-  --glass-strong: rgba(18, 20, 27, .8);
-  --glass-edge: rgba(255, 255, 255, .09);
+  --ink-2: rgba(242, 240, 235, .7);
+  --whisper: rgba(242, 240, 235, .52);
+  --hair: rgba(242, 240, 235, .1);
+  --glass: rgba(24, 46, 92, .34);
+  --glass-strong: rgba(24, 46, 92, .62);
+  --glass-edge: rgba(255, 255, 255, .08);
   --glass-line: rgba(255, 255, 255, .08);
+  --nav-glass: rgb(40 60 105 / .38);
+  --pane: rgb(24 46 92 / .4);
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
-html { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; background: var(--bg); touch-action: manipulation; /* pinch yes, double-tap zoom no */ }
-body { background: var(--bg); color: var(--ink); font-family: var(--sans); font-weight: 300; }
+html { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; background: var(--sky-top, #9ec0e9); touch-action: manipulation; /* pinch yes, double-tap zoom no */ }
+body { background: transparent; color: var(--ink); font-family: var(--sans); font-weight: 300; }
+/* The sky, fixed behind everything, as on the homepage: top, middle, horizon */
+body::before { content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none; transform: translateZ(0);
+  background: linear-gradient(180deg, var(--sky-top, #9ec0e9) 0%, var(--sky-mid, #cdd9e9) 48%, var(--sky-low, #f9ede2) 92%); transition: background .6s linear; }
+
+/* The homepage's nav: one frosted pill in the middle, SW and two links */
+.nav { position: fixed; inset: 0 0 auto; z-index: 50; padding: calc(18px + var(--safe-t)) var(--gutter) 0; display: flex; justify-content: center; pointer-events: none; }
+.nav-inner { pointer-events: auto; height: 52px; display: inline-flex; align-items: center; gap: 26px; padding: 0 24px; border-radius: 19px; corner-shape: squircle;
+  background: var(--nav-glass); -webkit-backdrop-filter: blur(14px) saturate(1.6); backdrop-filter: blur(14px) saturate(1.6); }
+@supports not (corner-shape: squircle) { .nav-inner { border-radius: 16px; } }
+.nav-inner .logo { font-size: 22px; }
+.nav-inner .links { display: flex; align-items: center; gap: 26px; font-size: 14px; font-weight: 400; }
+.nav-inner .links a, .nav-inner .links button { color: var(--ink-2); transition: color .3s var(--ease); }
+.nav-inner .links :is(a, button):hover { color: var(--ink); }
+@media (pointer: coarse) { .nav-inner .links :is(a, button), .nav-inner .logo { min-height: 44px; display: inline-flex; align-items: center; } }
 a { color: inherit; text-decoration: none; }
 button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; }
 img, video, canvas { display: block; }
@@ -63,12 +81,9 @@ img, video, canvas { display: block; }
 .icon-btn { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; color: var(--ink); }
 .icon-btn svg { width: 16px; height: 16px; }
 
-/* The ring of colour, for small marks */
+/* A small dot of the sky, for hints */
 .ring { --size: 18px; position: relative; width: var(--size); height: var(--size); border-radius: 50%; flex: none; }
-.ring::before { content: ""; position: absolute; inset: -3px; border-radius: 50%;
-  background: conic-gradient(from 0deg, #ed1652, #ff6a1a, #ffb22c, #43d9ff, #8a3cff, #3a17e0, #ed1652);
-  -webkit-mask: radial-gradient(closest-side, transparent 62%, #000 72%, transparent 100%); mask: radial-gradient(closest-side, transparent 62%, #000 72%, transparent 100%); }
-.ring::after { content: ""; position: absolute; inset: 1px; border-radius: 50%; background: var(--bg); box-shadow: 0 0 0 .5px rgba(10, 10, 10, .12); }
+.ring { --size: 10px; background: linear-gradient(180deg, var(--sky-top, #9ec0e9), var(--sky-low, #f9ede2)); box-shadow: 0 0 0 1px var(--glass-line); }
 
 /* Bottom sheet for a project */
 .sheet { position: fixed; left: 12px; right: 12px; bottom: calc(12px + var(--safe-b)); z-index: 40; max-width: 520px; margin: 0 auto; padding: 22px 22px 20px; border-radius: 30px;
@@ -89,10 +104,10 @@ img, video, canvas { display: block; }
   border-radius: 30px; overflow: hidden; translate: 0 calc(100% + 40px); transition: translate .7s var(--ease); -webkit-tap-highlight-color: transparent; }
 .pp.is-open { translate: 0 0; }
 /* Smoked glass rather than white: a cool grey tint you can see the scene through */
-.pp.glass { background: rgba(228, 230, 236, .6); border: 1px solid rgba(255, 255, 255, .6);
+.pp.glass { background: rgb(243 247 252 / .62); border: 1px solid rgba(255, 255, 255, .5);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, .75), 0 18px 50px rgba(10, 14, 30, .16);
   -webkit-backdrop-filter: blur(30px) saturate(1.7) brightness(1.02); backdrop-filter: blur(30px) saturate(1.7) brightness(1.02); }
-[data-theme="dark"] .pp.glass { background: rgba(14, 16, 22, .6); border-color: rgba(255, 255, 255, .1);
+[data-theme="dark"] .pp.glass { background: rgb(22 36 68 / .66); border-color: rgba(255, 255, 255, .1);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, .07), 0 24px 60px rgba(0, 0, 0, .5); }
 .pp .pp-actions { border-top-color: rgba(10, 10, 10, .06); }
 .pp.is-dragging { transition: none; }

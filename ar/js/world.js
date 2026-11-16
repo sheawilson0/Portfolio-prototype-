@@ -3,7 +3,8 @@
 // work, and on to the disc itself, where the page ends the way the homepage does.
 import * as THREE from '../vendor/three/three.module.js';
 import { fontsReady } from './kit.js';
-import { THEME, TEX, MOTION, shared, rgb, DISC, buildSky, buildGround, buildEclipse, buildType, buildPane, placeWorks, pathX } from './world-scene.js';
+import { themeFrom, TEX, MOTION, shared, rgb, DISC, buildSky, buildGround, buildEclipse, buildType, buildPane, placeWorks, pathX } from './world-scene.js';
+import { sky as skyNow, onSky } from './sky-bridge.js';
 import { createLab } from './world-lab.js';
 import { createSound } from './world-sound.js';
 
@@ -20,8 +21,7 @@ const band = (x, a, b) => 1 - smooth(clamp((x - a) / (b - a), 0, 1));
 const D2R = Math.PI / 180;
 const V3 = THREE.Vector3;
 
-let dark = q.has('theme') ? q.get('theme') === 'dark' : root.dataset.theme === 'dark';
-if (dark) root.dataset.theme = 'dark'; else delete root.dataset.theme;
+let dark = root.dataset.theme === 'dark'; // the site's sky decides (assets/js/sky.js)
 MOTION.on = !reduced;
 
 // The lab's choices (what's live, unless the lab is on and says otherwise), and sound to go with them
@@ -739,7 +739,7 @@ const ARROW_IN = '<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" str
 const ARROW_OUT = '<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.5l5-5M4.5 3.5h4v4"/></svg>';
 // The homepage's second buttons, where it has one
 const EXTRA = { snapshot: { label: 'Open live site', href: 'https://snapshot.smokingendshere.com/' } };
-const verb = (p) => (p.external ? 'Open live site' : 'View case study');
+const verb = (p) => p.cta || (p.external ? 'Open live site' : 'View case study');
 
 let capFor = -1;
 function captionHeights() {
@@ -888,7 +888,7 @@ addEventListener('pointerup', (e) => {
 // A tap for every button and link on top of the world (the lab's own, the theme and the sound switch have theirs)
 addEventListener('click', (e) => {
   const b = e.target.closest && e.target.closest('a, button');
-  if (b && b !== themeBtn && b !== sndBtn && !lab.isOver(b)) sound.tap();
+  if (b && b !== sndBtn && !lab.isOver(b)) sound.tap();
 });
 
 addEventListener('keydown', (e) => {
@@ -930,38 +930,21 @@ sndBtn.addEventListener('click', () => {
   if (!sound.muted) setTimeout(() => sound.arrive(Math.round(sCam)), 250);
 });
 
-/* ───────── Daylight and eclipse ───────── */
-const themeBtn = $('#theme');
-const metaTheme = document.querySelector('meta[name="theme-color"]');
-function applyTheme(on) {
-  dark = on;
-  if (on) root.dataset.theme = 'dark'; else delete root.dataset.theme;
-  const t = THEME[on ? 'dark' : 'light'];
-  shared.uFogColor.value.copy(rgb(t.horizon));
-  sky.theme(t);
-  eclipse.theme(t, on);
-  ground.theme(t, on);
-  headline.theme(t);
-  panes.forEach((p) => p.theme(t, on));
-  themeBtn.setAttribute('aria-pressed', String(on));
-  themeBtn.setAttribute('aria-label', on ? 'Switch to light mode' : 'Switch to dark mode');
-  metaTheme.setAttribute('content', on ? '#05070b' : '#ffffff');
+/* ───────── The sky ─────────
+   The world wears the site's sky for this minute (or ?t=, or the time bar): its colours, and light or dark. */
+let theme = themeFrom(skyNow());
+function applyTheme(s = skyNow()) {
+  theme = themeFrom(s);
+  dark = s.dark;
+  shared.uFogColor.value.copy(rgb(theme.horizon));
+  sky.theme(theme);
+  eclipse.theme(theme, dark);
+  ground.theme(theme, dark);
+  headline.theme(theme);
+  panes.forEach((p) => p.theme(theme, dark));
+  if (ready) frame(performance.now(), true);
 }
-themeBtn.addEventListener('click', (e) => {
-  const next = !dark;
-  sound.theme(next);
-  const r = themeBtn.getBoundingClientRect();
-  root.style.setProperty('--vx', `${e.clientX || r.left + r.width / 2}px`);
-  root.style.setProperty('--vy', `${e.clientY || r.top + r.height / 2}px`);
-  const swap = () => {
-    applyTheme(next);
-    try { localStorage.setItem('theme', next ? 'dark' : 'light'); } catch (err) {}
-    frame(performance.now(), true);
-  };
-  if (!document.startViewTransition || reduced) { swap(); return; }
-  root.classList.add('theme-switching');
-  document.startViewTransition(swap).finished.finally(() => root.classList.remove('theme-switching'));
-});
+onSky((s) => { const wasDark = dark; applyTheme(s); if (ready && wasDark !== dark) sound.theme(dark); });
 
 /* ───────── Heart Health plays its recording when you're near it ───────── */
 let heartPane = panes.find((p) => p.heart);
@@ -995,8 +978,7 @@ async function setCard(card) {
   const n = ++cardBuild;
   const next = await buildPanes(card);
   if (n !== cardBuild) { next.forEach((p) => p.dispose()); return; }
-  const t = THEME[dark ? 'dark' : 'light'];
-  next.forEach((p) => { p.theme(t, dark); upload(p.group); });
+  next.forEach((p) => { p.theme(theme, dark); upload(p.group); });
   await fade(1, 160);
   if (n !== cardBuild) { next.forEach((p) => p.dispose()); return; }
   const s = Math.round(sCam);
@@ -1191,7 +1173,7 @@ function frame(now, force = false) {
 // The walk is measured from its own styles (the stage fills the screen, each stretch of track has its length);
 // a slow stylesheet can land after this script starts, so wait for it
 for (let k = 0; k < 300 && getComputedStyle(stage).position !== 'fixed'; k++) await new Promise((r) => setTimeout(r, 16));
-applyTheme(dark);
+applyTheme();
 eclipse.edge(opts.edge === 'lit' ? 'lit' : 'sharp');
 ground.reflect(opts.edge !== 'plain');
 ground.shadows(opts.shadow);

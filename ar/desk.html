@@ -8,25 +8,19 @@
 <meta name="theme-color" content="#ffffff">
 <link rel="icon" href="../favicon.ico" sizes="48x48">
 <link rel="apple-touch-icon" href="../apple-touch-icon.png">
-<script>try { if (localStorage.getItem('theme') === 'dark') document.documentElement.dataset.theme = 'dark'; } catch (e) {}</script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=Spectral:ital,wght@0,200;0,300;1,300;1,400&display=swap" rel="stylesheet">
+<script src="/assets/js/sky.js"></script>
+<link rel="stylesheet" href="/assets/fonts/portfolio.css">
 <link rel="stylesheet" href="css/lab.css">
 <script type="module" src="vendor/model-viewer/model-viewer.min.js"></script>
 <style>
   html, body { min-height: 100%; }
   body { min-height: 100svh; display: grid; grid-template-rows: auto 1fr auto; }
-  header { display: flex; align-items: center; justify-content: space-between; padding: calc(20px + var(--safe-t)) var(--gutter) 0; }
+  header.nav + main { padding-top: 96px; }
   main { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(300px, .65fr); align-items: center; gap: 0 40px; padding: 0 var(--gutter); max-width: 1380px; width: 100%; margin: 0 auto; }
 
   .stage { position: relative; height: min(78svh, 760px); min-height: 420px; }
   model-viewer { width: 100%; height: 100%; --poster-color: transparent; --progress-bar-color: transparent; background: transparent; }
   model-viewer::part(default-progress-bar) { display: none; }
-  /* The work's own light behind the model, like the cards on the homepage */
-  .stage-glow { position: absolute; inset: 14% 10% 22%; z-index: -1; filter: blur(60px); opacity: .32; pointer-events: none;
-    background: radial-gradient(closest-side at 30% 60%, #ed1652, transparent), radial-gradient(closest-side at 50% 40%, #ffb22c, transparent 80%), radial-gradient(closest-side at 72% 58%, #8a3cff, transparent); }
-  [data-theme="dark"] .stage-glow { opacity: .45; }
   .loading { position: absolute; left: 50%; top: 50%; translate: -50% -50%; display: inline-flex; align-items: center; gap: 10px; font-size: 14px; color: var(--whisper); transition: opacity .5s var(--ease); pointer-events: none; }
   .loading .ring { animation: spin 1.6s linear infinite; }
   @keyframes spin { to { rotate: 1turn; } }
@@ -65,19 +59,8 @@
   @media (max-width: 759px) { .pp { max-height: min(52svh, 520px); } }
   @media (prefers-reduced-motion: reduce) { .spot i { animation: none; } }
 
-  footer { display: flex; justify-content: space-between; gap: 16px; padding: 18px var(--gutter) calc(22px + var(--safe-b)); font-size: 13px; color: var(--whisper); }
+  footer { display: flex; justify-content: center; padding: 18px var(--gutter) calc(28px + var(--safe-b)); font-size: 14px; color: var(--whisper); }
   footer a:hover { color: var(--ink); }
-
-  .theme-toggle { position: relative; width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; }
-  .tt { position: relative; width: 18px; height: 18px; border-radius: 50%; }
-  .tt-ring { position: absolute; inset: -3px; border-radius: 50%;
-    background: conic-gradient(from 0deg, #ed1652, #ff6a1a, #ffb22c, #43d9ff, #8a3cff, #3a17e0, #ed1652);
-    -webkit-mask: radial-gradient(closest-side, transparent 62%, #000 72%, transparent 100%); mask: radial-gradient(closest-side, transparent 62%, #000 72%, transparent 100%);
-    transition: transform 1s var(--ease); }
-  .tt-disc { position: absolute; inset: 1px; border-radius: 50%; background: #fff; overflow: hidden; box-shadow: 0 0 0 .5px rgba(10, 10, 10, .12); }
-  .tt-moon { position: absolute; inset: 0; border-radius: 50%; background: #05070b; transform: translateX(-115%); transition: transform .8s var(--ease-io); }
-  .theme-toggle:hover .tt-ring { transform: rotate(180deg); }
-  [data-theme="dark"] .tt-moon { transform: none; }
 
   @media (max-width: 900px) {
     main { grid-template-columns: 1fr; padding-bottom: 10px; }
@@ -91,27 +74,23 @@
 </head>
 <body>
 
-<header>
-  <a class="logo" href="../" aria-label="Shea Wilson, homepage">Shea Wilson</a>
-  <button class="theme-toggle" type="button" id="theme" aria-label="Switch to the eclipse" aria-pressed="false"><span class="tt"><span class="tt-ring"></span><span class="tt-disc"><span class="tt-moon"></span></span></span></button>
-</header>
+<header class="nav"><div class="nav-inner"><a class="logo" href="../" aria-label="Shea Wilson, homepage">SW</a><nav class="links" aria-label="Main"><a href="./">3D</a><a href="../#contact">Contact</a></nav></div></header>
 
 <main>
   <div class="stage" id="stage">
-    <div class="stage-glow" aria-hidden="true"></div>
     <model-viewer id="mv"
-      src="assets/models/desk-light.glb"
-      ios-src="assets/models/desk-light.usdz#callToAction=Open%20the%20site&checkoutTitle=Shea%20Wilson&checkoutSubtitle=Design%20engineer"
-      alt="A small white plinth with four pockets cut into it. Over each pocket floats one of Shea Wilson’s projects: Smoking Snapshot, JumpStart, Heart Health and Brain Dump. Behind them a disc rises out of a slot, ringed with colour, and the plinth reads Always making something."
+      src="assets/models/desk-light.glb?v=2"
+      ios-src="assets/models/desk-light.usdz?v=2#callToAction=Open%20the%20site&checkoutTitle=Shea%20Wilson&checkoutSubtitle=Design%20engineer"
+      alt="A small plinth with four pockets cut into it. Over each pocket floats one of Shea Wilson’s projects: Smoking Snapshot, Quit28, JumpStart, and Pip and Meridian’s butterfly for Shipped. Behind them stands a panel of sky that reads Always making something."
       ar ar-modes="webxr scene-viewer quick-look" ar-placement="floor"
       camera-controls touch-action="pan-y" auto-rotate auto-rotate-delay="1200" rotation-per-second="12deg" interaction-prompt="none"
       camera-orbit="-18deg 68deg 105%" min-camera-orbit="auto 20deg 0.16m" max-camera-orbit="auto 88deg auto" field-of-view="28deg"
       shadow-intensity=".9" shadow-softness=".9" environment-image="neutral" exposure="1.02" tone-mapping="neutral">
       <button slot="ar-button" hidden></button>
       <button class="spot" slot="hotspot-snapshot" data-project="snapshot" data-position="-0.084m 0.082m 0.016m" data-normal="0 0 1" data-visibility-attribute="visible" style="--c:#ed1652" aria-label="Smoking Snapshot"><i></i></button>
-      <button class="spot" slot="hotspot-jumpstart" data-project="jumpstart" data-position="-0.028m 0.082m 0.016m" data-normal="0 0 1" data-visibility-attribute="visible" style="--c:#4fae86" aria-label="JumpStart"><i></i></button>
-      <button class="spot" slot="hotspot-heart" data-project="heart" data-position="0.028m 0.082m 0.016m" data-normal="0 0 1" data-visibility-attribute="visible" style="--c:#43d9ff" aria-label="Heart Health"><i></i></button>
-      <button class="spot" slot="hotspot-brain" data-project="brain" data-position="0.084m 0.082m 0.016m" data-normal="0 0 1" data-visibility-attribute="visible" style="--c:#8a3cff" aria-label="Brain Dump"><i></i></button>
+      <button class="spot" slot="hotspot-quit28" data-project="quit28" data-position="-0.028m 0.082m 0.016m" data-normal="0 0 1" data-visibility-attribute="visible" style="--c:#00a7fa" aria-label="Quit28"><i></i></button>
+      <button class="spot" slot="hotspot-jumpstart" data-project="jumpstart" data-position="0.028m 0.082m 0.016m" data-normal="0 0 1" data-visibility-attribute="visible" style="--c:#4fae86" aria-label="JumpStart"><i></i></button>
+      <button class="spot" slot="hotspot-shipped" data-project="shipped" data-position="0.084m 0.082m 0.016m" data-normal="0 0 1" data-visibility-attribute="visible" style="--c:#f6c93a" aria-label="Shipped"><i></i></button>
     </model-viewer>
     <p class="loading" id="loading"><span class="ring" style="--size:14px"></span>Loading the model</p>
     <p class="hint pill glass" id="hint"><span class="ring" style="--size:12px"></span>Tap a project to find out more</p>
@@ -136,33 +115,25 @@
   </div>
 </main>
 
-<footer>
-  <span>© 2026 Shea Wilson</span>
-  <a href="./">More ways to see it</a>
-</footer>
+<footer><a href="./">More ways to see it</a></footer>
 
 <script type="module">
   import qrcode from './vendor/qr/qrcode.mjs';
   import { projectPanel } from './js/project-panel.js';
+  import { onSky } from './js/sky-bridge.js';
   const mv = document.getElementById('mv');
   const root = document.documentElement;
   const q = new URLSearchParams(location.search);
-  let dark = root.dataset.theme === 'dark';
+  let dark = null;
   const banner = '#callToAction=Open%20the%20site&checkoutTitle=Shea%20Wilson&checkoutSubtitle=Design%20engineer';
 
   function setModel() {
     const name = dark ? 'desk-dark' : 'desk-light';
-    mv.src = `assets/models/${name}.glb`;
-    mv.iosSrc = `assets/models/${name}.usdz${banner}`;
-    document.getElementById('theme').setAttribute('aria-pressed', String(dark));
+    mv.src = `assets/models/${name}.glb?v=2`;
+    mv.iosSrc = `assets/models/${name}.usdz?v=2${banner}`;
   }
-  if (dark) setModel();
-  document.getElementById('theme').addEventListener('click', () => {
-    dark = !dark;
-    if (dark) root.dataset.theme = 'dark'; else delete root.dataset.theme;
-    try { localStorage.setItem('theme', dark ? 'dark' : 'light'); } catch (e) {}
-    setModel();
-  });
+  // Day or night, as the site's sky says
+  onSky((s) => { if (s.dark !== dark) { dark = s.dark; setModel(); } });
 
   mv.addEventListener('load', () => { document.getElementById('stage').classList.add('is-loaded'); root.dataset.ready = '1'; });
   // Tap a project (its marker, its screens or its pocket) for the panel; the camera glides over to it
@@ -208,7 +179,7 @@
   mv.addEventListener('click', (e) => {
     if (!down || Math.hypot(e.clientX - down.x, e.clientY - down.y) > 6 || e.target.closest?.('.spot')) return;
     const name = mv.materialFromPoint(e.clientX, e.clientY)?.name || '';
-    const m = /^(snapshot|jumpstart|heart|brain)_|^(?:Glow|Pocket)_(snapshot|jumpstart|heart|brain)$/.exec(name);
+    const m = /^(snapshot|quit28|jumpstart|shipped)_|^(?:Glow|Pocket)_(snapshot|quit28|jumpstart|shipped)$/.exec(name);
     const id = m && (m[1] || m[2]);
     if (id) panel.open(id); else panel.close();
   });

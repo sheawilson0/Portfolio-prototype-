@@ -280,32 +280,6 @@ function setHint(text) {
 reducedQ.addEventListener?.('change', (e) => { reduced = e.matches; syncHint(); wake(); });
 fineQ.addEventListener?.('change', syncHint);
 
-/* ───────── Theme: the homepage's toggle and its soft umbra ───────── */
-
-const themeBtn = $('.theme');
-const metaTheme = $('meta[name="theme-color"]');
-function syncTheme() {
-  const dark = root.dataset.theme === 'dark';
-  themeBtn.setAttribute('aria-pressed', String(dark));
-  themeBtn.setAttribute('aria-label', dark ? 'Switch to light mode' : 'Switch to dark mode');
-  metaTheme.setAttribute('content', dark ? '#05070b' : '#ffffff');
-}
-syncTheme();
-themeBtn.addEventListener('click', (e) => {
-  const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
-  const apply = () => {
-    if (next === 'dark') root.dataset.theme = 'dark'; else delete root.dataset.theme;
-    try { localStorage.setItem('theme', next); } catch (err) { /* private mode */ }
-    syncTheme();
-  };
-  const r = themeBtn.getBoundingClientRect();
-  root.style.setProperty('--vx', `${e.clientX || r.left + r.width / 2}px`);
-  root.style.setProperty('--vy', `${e.clientY || r.top + r.height / 2}px`);
-  if (!document.startViewTransition || reduced) { apply(); return; }
-  root.classList.add('theme-switching');
-  document.startViewTransition(apply).finished.finally(() => root.classList.remove('theme-switching'));
-});
-
 /* ───────── Save contact ─────────
    The button is a plain link to the vCard, so the platform does the saving:
    - iPhone: Safari (and Chrome, Firefox and Edge there) shows the contact card with Create New Contact when it opens a

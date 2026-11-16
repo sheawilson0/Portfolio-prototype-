@@ -6,6 +6,7 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { buildHorizon } from './horizon.js';
 import { CARD, asset, environment, loadTexture, squircleShape, squirclePlane, buildShadow } from './kit.js';
 import { projectPanel } from './project-panel.js';
+import { sky, onSky } from './sky-bridge.js';
 
 const q = new URLSearchParams(location.search);
 const $ = (id) => document.getElementById(id);
@@ -25,8 +26,8 @@ scene.environment = environment(renderer, RoomEnvironment);
 scene.environmentIntensity = .9;
 const camera = new THREE.PerspectiveCamera(35, 1, 1, 4000);
 
-let dark = q.has('disc') ? q.get('disc') === 'dark' : (() => { try { return localStorage.getItem('theme') === 'dark'; } catch (e) { return false; } })();
-const horizon = await buildHorizon({ dark });
+const horizon = await buildHorizon({ sky: sky() });
+onSky((s) => horizon.setSky(s));
 const cardSpace = new THREE.Group(); // millimetres, y up out of the card
 cardSpace.add(horizon.root);
 const key = new THREE.DirectionalLight('#ffffff', 1.6);
@@ -202,8 +203,7 @@ async function startPreview() {
   mode = 'preview';
   body.classList.add('is-preview', 'is-live');
   body.classList.remove('is-scanning');
-  stage.style.background = 'var(--bg)';
-  renderer.setClearColor(0xffffff, 0);
+  renderer.setClearColor(0xffffff, 0); // the page's sky shows through
   cardSpace.rotation.set(0, 0, 0);
   cardSpace.scale.setScalar(1);
   scene.add(cardSpace);
@@ -374,16 +374,6 @@ function noCard() {
 $('nocard').addEventListener('click', noCard);
 $('nocard-live').addEventListener('click', noCard);
 $('close').addEventListener('click', () => { location.href = q.get('back') || '../'; });
-// The site's own theme toggle: a white disc by day, an eclipse by night
-const themeBtn = $('theme');
-const showTheme = () => { themeBtn.setAttribute('aria-pressed', String(dark)); themeBtn.setAttribute('aria-label', dark ? 'Switch to a white disc' : 'Switch to an eclipse'); };
-showTheme();
-themeBtn.addEventListener('click', () => {
-  dark = !dark;
-  horizon.setDark(dark);
-  try { localStorage.setItem('theme', dark ? 'dark' : 'light'); } catch (e) {}
-  showTheme();
-});
 $('replay').addEventListener('click', () => {
   closeSheet();
   horizon.reset();
