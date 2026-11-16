@@ -2,6 +2,43 @@
   "_about": "Everything Shea has shipped, newest first. d = date, t = title, l = one line, p = project, k = personal | work | uni. img and href are optional. wraps: true keeps a card blurred until it can go public; write its t and l so they give nothing away. draft: true hides an entry until Shea has checked it. o is how the picture stands on the timeline: icon (an app icon), cutout (a transparent object), phone (a screenshot in a phone), screen (a screenshot in a window). No img: a tile with the first letter. minor: true marks small updates; the street can shrink or hide them. w/h are the source image dimensions. Images in shipped/ with w/h have 480w, 800w and 1200w WebP variants. After editing run node tools/sync-shipped.mjs to refresh the first-paint data in shipped/index.html.",
   "ships": [
     {
+      "d": "2026-11-16",
+      "p": "Portfolio",
+      "k": "personal",
+      "t": "This site, in 26 seconds",
+      "l": "A launch film recorded from the live site, with every cut on the beat.",
+      "img": "/assets/media/shipped/drafts/launch-film.webp",
+      "o": "screen",
+      "w": 1920,
+      "h": 1080,
+      "video": "/assets/media/shipped/drafts/launch-film.mp4",
+      "draft": true
+    },
+    {
+      "d": "2026-11-16",
+      "p": "Portfolio",
+      "k": "personal",
+      "t": "The 3D lab, moved into the sky",
+      "l": "No more black and rainbow. It follows the sky now, with new desk models and card art.",
+      "img": "/assets/media/shipped/drafts/ar-sky.webp",
+      "o": "screen",
+      "w": 1280,
+      "h": 800,
+      "draft": true
+    },
+    {
+      "d": "2026-11-15",
+      "p": "Meridian",
+      "k": "uni",
+      "t": "Letting Meridian breathe",
+      "l": "Seven rounds in a day to make it calmer, then I built the side list for real.",
+      "img": "/assets/media/shipped/drafts/breathe.webp",
+      "o": "screen",
+      "w": 1260,
+      "h": 1000,
+      "draft": true
+    },
+    {
       "d": "2026-11-15",
       "p": "Two Shores",
       "k": "personal",

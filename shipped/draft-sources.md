@@ -111,3 +111,30 @@ Local review film: [open](../assets/media/shipped/browser-rooms.mp4)
 Scanned dated January–August histories across ~/Developer and ~/Developer/Influential (shared JumpStart histories deduplicated), ~/Meridian and the portfolio. Meridian's available product history starts later. Passed over upstream Cadence/Megaphone history without clear original-design evidence, maintenance changes, duplicate Snapshot work, and June JumpStart PNG explorations whose README identifies an image-model loop. Inspected March homepage versions: their expiring Figma asset links make them weaker candidates than the recovered original case-study visuals. No generated or redrawn images added.
 
 Worktree served on free port 6148. Review renders 31 cards including six labelled drafts; public renders 25. Every new raster has 480w/800w/1200w WebP variants and source dimensions. Embedded first-paint JSON matches shipped.json. Work visual stays locked even in draft review; inspect its local link above. Existing private exclusion in .vercelignore retained unchanged.
+
+## New since 15 November · 16 November 2026
+
+Three drafts, all draft: true. Newest entry before this run was 15 Nov (Two Shores); same-day work not already listed was included.
+
+### 2026-11-16 · This site, in 26 seconds · strong
+personal. A launch film recorded from the live site, with every cut on the beat.
+Evidence: ~/Developer/portfolio-launch-video (not a git repo): README and out/ renders dated 16 Nov 03:18. Made to post on X and LinkedIn; Shea hasn't reviewed it yet, so drop this if the film changes or doesn't go out.
+Visual source: ~/Developer/portfolio-launch-video/out/sheawilson-launch-16x9.mp4. Poster is its first frame; the clip is its first 8 seconds, scaled to 960×540, h264, yuv420p, no audio, faststart, 323716 bytes. Shows only the public site.
+Local review image: [open](../assets/media/shipped/drafts/launch-film.webp)
+Local review film: [open](../assets/media/shipped/drafts/launch-film.mp4)
+
+### 2026-11-16 · The 3D lab, moved into the sky · maybe
+personal. No more black and rainbow. It follows the sky now, with new desk models and card art.
+Evidence: portfolio-ar, branch ar-sky: 5af51fc (three quieter directions), 0e5c920 (old kept at /ar/v1/) and a275e71 (redesign), 16 Nov. Not merged or live yet, so no href; drop it if the redesign doesn't ship.
+Visual source: ar-sky branch served unchanged on a temporary local port, /ar/world.html at 1280×800, Smoking Snapshot stop. Source capture: /Users/sheawilson/.t3/userdata/browser-artifacts/browser-screenshot-localhost-mwj1fr06-7449f0da.png
+Local review image: [open](../assets/media/shipped/drafts/ar-sky.webp)
+
+### 2026-11-15 · Letting Meridian breathe · strong
+uni. Seven rounds in a day to make it calmer, then I built the side list for real.
+Evidence: ~/Meridian: 532ecd2 to 48463f3 (rounds one to seven, 15 Nov 18:04 to 22:35), 4084856 (journey page verdict, 23:54) and 53cc326 (side list built at /side, 16 Nov 00:17). Journey page: public/design/breathe-journey/ (UXD501 process record).
+Visual source: Meridian's round-seven board, http://localhost:4980/design/breathe-7/#try, big window on its New screen, rendered at 1.25× and cropped to the page area (1260×1000). The sidebar is cropped out because every round shows real to-dos and a family member's name. No people's names or messages in the frame. Source capture: /Users/sheawilson/.t3/userdata/browser-artifacts/browser-screenshot-localhost-mwj1f0vz-da9a3a22.png
+Local review image: [open](../assets/media/shipped/drafts/breathe.webp)
+
+### Coverage and checks for this batch
+
+Scanned git histories since 15 Nov across ~/Developer (including Influential), ~/Meridian and the portfolio, plus folders changed since then. Passed over: Two Shores (already listed), the Quit28 weekly-report automation and deploy triage tool (maintenance), the SEH calculator starter (internal template), the On track uni tracker (shows marks and deadlines), the final-year idea boards (planning), the Pip avatar (made with an image model) and homepage tweaks from 15 Nov (covered by the launch film). No changes since 15 Nov in Cadence, browser-lab, Quit28's product, Smoking Snapshot or JumpStart.
