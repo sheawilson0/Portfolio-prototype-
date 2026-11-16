@@ -43,8 +43,6 @@
 .sky-dot { cursor: pointer; border-radius: 50%; outline: none; transition: color .5s var(--ease), text-shadow .6s var(--ease); }
 .sky-dot:hover, .sky-dot:focus-visible { color: var(--p2, #ff6a1a); text-shadow: 0 0 .3em color-mix(in srgb, var(--p2, #ff6a1a) 70%, transparent); }
 :root.sun-on .sky-dot { color: var(--sun-c, #ffc65c); }
-footer .sky-open { color: inherit; transition: color .3s var(--ease); }
-footer .sky-open:hover { color: var(--ink); }
 
 /* ───────── The toggle's hint ───────── */
 .tt-hint { position: absolute; top: calc(100% + 10px); right: -4px; display: grid; gap: 3px; justify-items: end; padding: 8px 12px; border-radius: 12px;

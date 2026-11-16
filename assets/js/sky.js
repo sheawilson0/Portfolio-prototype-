@@ -317,11 +317,15 @@
         em.append(dot);
       }
     }
-    const foot = document.querySelector('footer nav');
-    if (foot && !foot.querySelector('.sky-open')) {
-      const b = document.createElement('button'); b.type = 'button'; b.className = 'sky-open'; b.textContent = 'Change the time of day';
-      b.addEventListener('click', () => openBar());
-      foot.prepend(b);
+    // The footer's corner pill shows the sky's time; pressing it opens the time bar.
+    const foot = document.querySelector('footer');
+    if (foot) {
+      let b = foot.querySelector('.sky-open');
+      if (!b) { b = document.createElement('button'); b.type = 'button'; b.className = 'sky-open'; b.addEventListener('click', () => openBar()); foot.append(b); }
+      if (last) {
+        const m = last.n.min, h = Math.floor(m / 60), t = `${h % 12 || 12}:${String(m % 60).padStart(2, '0')} ${h < 12 ? 'am' : 'pm'}`;
+        if (b.textContent !== t) { b.textContent = t; b.setAttribute('aria-label', `Change the time of day. It's ${t} here`); }
+      }
     }
     const toggle = document.querySelector('.theme-toggle');
     if (toggle && last) {
