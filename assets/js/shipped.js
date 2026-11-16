@@ -199,8 +199,13 @@
   function streetSky(on = () => true) {
     const html = document.documentElement, body = document.body;
     // Pulling past the top or bottom shows the colour behind the page: make it the sky's colour at that end.
-    let ends = null;
-    const behind = () => { if (ends) html.style.backgroundColor = scrollY > (html.scrollHeight - innerHeight) / 2 ? ends[1] : ends[0]; };
+    let ends = null, midpoint = 0;
+    // Colour changes must not synchronously measure the freshly invalidated page.
+    const measure = () => { midpoint = (html.scrollHeight - innerHeight) / 2; };
+    new ResizeObserver(measure).observe(body);
+    addEventListener('resize', measure);
+    measure();
+    const behind = () => { if (ends) html.style.backgroundColor = scrollY > midpoint ? ends[1] : ends[0]; };
     addEventListener('scroll', behind, { passive: true });
     function paint() {
       if (!on()) { ['--sky-top', '--sky-mid', '--sky-low', '--sky-sun', '--sky-sun-a'].forEach((k) => body.style.removeProperty(k)); ends = null; html.style.backgroundColor = ''; return; }
@@ -279,6 +284,7 @@
       track.classList.remove('has-open');
       const target = focusId && items.find((el) => el.id === focusId);
       requestAnimationFrame(() => {
+        measureStreet();
         // Opens on the newest thing I can show, not a locked one.
         const newest = [...items].reverse().find((el) => !el.classList.contains('is-wraps'));
         if (target) { go(target, false); open(target); } else if (newest) go(newest, false); else track.scrollLeft = track.scrollWidth;
@@ -288,7 +294,12 @@
 
     // The focus line is the middle of the screen.
     const line = () => track.scrollLeft + track.clientWidth / 2;
-    const mid = (el) => el.offsetLeft + el.offsetWidth / 2;
+    // Item positions do not change as details unfold. Read them on resize/render,
+    // before scrolling starts, rather than forcing layout after every focus change.
+    let centres = new Map();
+    const measureStreet = () => { centres = new Map(items.map(el => [el, el.offsetLeft + el.offsetWidth / 2])); };
+    const mid = (el) => centres.get(el) ?? 0;
+    new ResizeObserver(() => { measureStreet(); queue(); }).observe(track);
     let opened = null, steer = null;
     // Going to something by click or key "steers": the open card waits until we arrive.
     const go = (el, smooth = true) => {
