@@ -87,3 +87,57 @@ Inspected the READMEs and recent git history across ~/Developer (including Influ
 ## Verification
 
 Worktree served on free port 6137. Headless Chromium checks cover public/review card counts, draft labels, phone width, search, query-preserving navigation, homepage count, embedded JSON equality and all 480/800/1200 WebP variants. Source captures were inspected for private content. No generated product images.
+
+## Older work review · 16 November 2026
+
+Six additional drafts, all before 10 August. Dates below are the dated portfolio publication or prototype commits, not invented original project completion dates. The uni concepts predate their case studies; Cipher's guide itself says May 2025. No January/February 2026 release could be established from the available histories.
+
+### 2026-06-10 · A friendlier way into a report · strong
+work. An early prototype with alerts, summaries and a separate view for clients.
+Evidence: ~/Developer/JumpStart, f67a1dc, 10 Jun: working prototype built from the existing pitch deck and MVP spec. This is the prototype, distinct from August's pilot. Does not claim authorship of the source pitch or original brief.
+Visual source: jumpstart-prototype.html at f67a1dc, rendered unchanged at 1440×900; Client login → View client portal. Demo data only (the page labels it Prototype mode). Source capture: /Users/sheawilson/.t3/userdata/browser-artifacts/browser-screenshot-localhost-mwim5ab3-92831a77.png. The captured raster is 1430×900.
+Local review image: [open](../assets/media/shipped/drafts/private/older-reporting.webp)
+Approval: work-owned prototype. Generic title/project/copy, draft: true and wraps: true. Visual and variants stay in the excluded private folder.
+
+### 2026-04-08 · Cipher’s guidelines, on the site · maybe
+uni. The mark, type and colour, brought together in a downloadable guide.
+Evidence: portfolio 14544c2, 8 Apr: adds the guidelines download. The document is v1.0, May 2025; this entry dates its addition to the portfolio, not its creation. Separate process deliverable from the app case study.
+Visual source: portfolio, 14544c2:Cipher Brand Guidelines.pdf, page 16 (Primary Logo), rendered unchanged with pdftoppm at 1600×900.
+Local review image: [open](../assets/media/shipped/drafts/older-cipher-guidelines.webp)
+
+### 2026-04-06 · Amp, in a case study · strong
+uni. A music player concept with one control for volume, devices and shortcuts.
+Evidence: portfolio 803f08a, 4 Apr: case study; b4da1ef, 6 Apr: higher-resolution hero and feature imagery. No claim of a shipped music service.
+Visual source: portfolio b4da1ef:amp-screens.png, 1000×1000. Original mockup copied as supplied, with no changes to artwork.
+Local review image: [open](../assets/media/shipped/drafts/older-amp.webp)
+
+### 2026-04-04 · Brain Dump, explained · strong
+personal. Type or talk, then sort the mess into tasks, routines and ideas.
+Evidence: portfolio 2e2e37d, 4 Apr: adds Brain Dump case study. Original home capture recovered from 803f08a:braindump-home.png, 631×1306. Case study says Shea built the app for himself. The screenshot includes Shea's own first name and ordinary task examples; no inbox, client data or other people's names.
+Visual source: portfolio 803f08a:braindump-home.png, copied unchanged.
+Local review image: [open](../assets/media/shipped/drafts/older-braindump.webp)
+
+### 2026-04-04 · A closer look at Cipher · strong
+uni. A banking concept, from the green mark to the app and website.
+Evidence: portfolio 803f08a, 4 Apr: builds out the Cipher case study. A concept at Ulster, not a live bank. Dates the case study, not the original coursework.
+Visual source: portfolio 803f08a:cipher-bento.png, 1920×1080, copied unchanged. Original concept fixture portraits/names are part of the supplied design, not live banking data.
+Local review image: [open](../assets/media/shipped/drafts/older-cipher.webp)
+
+### 2026-04-04 · Tasks, made for a watch · strong
+uni. A case study for my wrist-sized to-do concept, with colour showing what comes first.
+Evidence: portfolio 803f08a, 4 Apr: adds Captr case study. Earlier 5 Mar homepage already shows Captr; April dates the fuller case study, not the original concept.
+Visual source: portfolio 803f08a:Captrhome.jpg, 1200×800, copied unchanged.
+Local review image: [open](../assets/media/shipped/drafts/older-captr.webp)
+
+### 2026-10-31 · A phone browser with no bar · replacement visual
+personal. Existing public entry; title and copy unchanged.
+Before: pale static phone capture, 780×1688. After: 11.55-second muted looping recording of the running Browser lab V3, plus a crisp 390×844 tab-switcher poster. Shows the full page without an address bar, a recipe peek over the page, the tab switcher and Rooms settings. All pages are the prototype's fictional fixtures. Limited the recording session's tabs to shop, recipe, search and wiki pages; no inboxes, real people or private browsing. Used the prototype's own functions to open these existing states, with no artwork or UI changes.
+Visual source: ~/Developer/browser-lab/v3/flick.html?phone&sb&nocoach, local service on port 4740. Recorded with T3 preview; h264, yuv420p, no audio stream, faststart, 480×1038, 256248 bytes. Poster source: /Users/sheawilson/.t3/userdata/browser-artifacts/browser-screenshot-localhost-mwim457u-84c1b0d8.png.
+Local review image: [open](../assets/media/shipped/browser-rooms.webp)
+Local review film: [open](../assets/media/shipped/browser-rooms.mp4)
+
+### Coverage and checks for this batch
+
+Scanned dated January–August histories across ~/Developer and ~/Developer/Influential (shared JumpStart histories deduplicated), ~/Meridian and the portfolio. Meridian's available product history starts later. Passed over upstream Cadence/Megaphone history without clear original-design evidence, maintenance changes, duplicate Snapshot work, and June JumpStart PNG explorations whose README identifies an image-model loop. Inspected March homepage versions: their expiring Figma asset links make them weaker candidates than the recovered original case-study visuals. No generated or redrawn images added.
+
+Worktree served on free port 6148. Review renders 31 cards including six labelled drafts; public renders 25. Every new raster has 480w/800w/1200w WebP variants and source dimensions. Embedded first-paint JSON matches shipped.json. Work visual stays locked even in draft review; inspect its local link above. Existing private exclusion in .vercelignore retained unchanged.

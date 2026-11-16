@@ -118,8 +118,9 @@
       "l": "Rooms, peek previews and a tab switcher, tuned from real people testing it.",
       "img": "/assets/media/shipped/browser-rooms.webp",
       "o": "phone",
-      "w": 780,
-      "h": 1688
+      "w": 390,
+      "h": 844,
+      "video": "/assets/media/shipped/browser-rooms.mp4"
     },
     {
       "d": "2026-10-28",
@@ -389,6 +390,84 @@
       "l": "Puts the brand's assets inside PowerPoint. Pip, its helper, is my own sprite: twelve moods drawn frame by frame.",
       "img": "/assets/media/shipped/pip.webp",
       "o": "sprite"
+    },
+    {
+      "d": "2026-06-10",
+      "p": "Client work",
+      "k": "work",
+      "t": "A friendlier way into a report",
+      "l": "An early prototype with alerts, summaries and a separate view for clients.",
+      "img": "/assets/media/shipped/drafts/private/older-reporting.webp",
+      "o": "screen",
+      "w": 1430,
+      "h": 900,
+      "draft": true,
+      "wraps": true
+    },
+    {
+      "d": "2026-04-08",
+      "p": "Cipher",
+      "k": "uni",
+      "t": "Cipher’s guidelines, on the site",
+      "l": "The mark, type and colour, brought together in a downloadable guide.",
+      "img": "/assets/media/shipped/drafts/older-cipher-guidelines.webp",
+      "o": "screen",
+      "w": 1600,
+      "h": 900,
+      "draft": true,
+      "href": "/assets/media/cipher/cipher-brand-guidelines.pdf"
+    },
+    {
+      "d": "2026-04-06",
+      "p": "Amp",
+      "k": "uni",
+      "t": "Amp, in a case study",
+      "l": "A music player concept with one control for volume, devices and shortcuts.",
+      "img": "/assets/media/shipped/drafts/older-amp.webp",
+      "o": "cutout",
+      "w": 1000,
+      "h": 1000,
+      "draft": true,
+      "href": "/amp.html"
+    },
+    {
+      "d": "2026-04-04",
+      "p": "Brain Dump",
+      "k": "personal",
+      "t": "Brain Dump, explained",
+      "l": "Type or talk, then sort the mess into tasks, routines and ideas.",
+      "img": "/assets/media/shipped/drafts/older-braindump.webp",
+      "o": "cutout",
+      "w": 631,
+      "h": 1306,
+      "draft": true,
+      "href": "/braindump.html"
+    },
+    {
+      "d": "2026-04-04",
+      "p": "Cipher",
+      "k": "uni",
+      "t": "A closer look at Cipher",
+      "l": "A banking concept, from the green mark to the app and website.",
+      "img": "/assets/media/shipped/drafts/older-cipher.webp",
+      "o": "screen",
+      "w": 1920,
+      "h": 1080,
+      "draft": true,
+      "href": "/cipher.html"
+    },
+    {
+      "d": "2026-04-04",
+      "p": "Captr",
+      "k": "uni",
+      "t": "Tasks, made for a watch",
+      "l": "A case study for my wrist-sized to-do concept, with colour showing what comes first.",
+      "img": "/assets/media/shipped/drafts/older-captr.webp",
+      "o": "screen",
+      "w": 1200,
+      "h": 800,
+      "draft": true,
+      "href": "/captr.html"
     }
   ]
 }
