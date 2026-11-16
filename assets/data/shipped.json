@@ -2,6 +2,18 @@
   "_about": "Everything Shea has shipped, newest first. d = date, t = title, l = one line, p = project, k = personal | work | uni. img and href are optional. wraps: true keeps a card blurred until it can go public; write its t and l so they give nothing away. draft: true hides an entry until Shea has checked it. o is how the picture stands on the timeline: icon (an app icon), cutout (a transparent object), phone (a screenshot in a phone), screen (a screenshot in a window). No img: a tile with the first letter. minor: true marks small updates; the street can shrink or hide them. w/h are the source image dimensions. Images in shipped/ with w/h have 480w, 800w and 1200w WebP variants. After editing run node tools/sync-shipped.mjs to refresh the first-paint data in shipped/index.html.",
   "ships": [
     {
+      "d": "2026-11-15",
+      "p": "Two Shores",
+      "k": "personal",
+      "t": "Three ways through the same street",
+      "l": "A Belfast street, tried side-on, in isometric pixels and in 3D.",
+      "draft": true,
+      "img": "/assets/media/shipped/drafts/two-shores.webp",
+      "o": "screen",
+      "w": 1440,
+      "h": 900
+    },
+    {
       "d": "2026-11-11",
       "p": "Client work",
       "k": "work",
@@ -19,6 +31,18 @@
       "o": "line"
     },
     {
+      "d": "2026-11-10",
+      "p": "Meridian",
+      "k": "personal",
+      "t": "Meridian, in thirteen seconds",
+      "l": "A short film that moves from Home to the agents and Stash.",
+      "draft": true,
+      "img": "/assets/media/shipped/drafts/meridian-film.webp",
+      "o": "screen",
+      "w": 1920,
+      "h": 1080
+    },
+    {
       "d": "2026-11-09",
       "p": "Cadence",
       "k": "personal",
@@ -28,6 +52,31 @@
       "o": "screen",
       "w": 1060,
       "h": 760
+    },
+    {
+      "d": "2026-11-09",
+      "p": "Cadence",
+      "k": "personal",
+      "t": "Two ways to make Cadence clearer",
+      "l": "A status line or a reading page. I compared both before the next design.",
+      "draft": true,
+      "img": "/assets/media/shipped/drafts/cadence-rounds.webp",
+      "o": "screen",
+      "w": 1280,
+      "h": 800
+    },
+    {
+      "d": "2026-11-09",
+      "p": "Client work",
+      "k": "work",
+      "t": "A family of products",
+      "l": "Six rounds of marks and colour, brought together for a first look.",
+      "draft": true,
+      "img": "/assets/media/shipped/drafts/private/brand-rounds.webp",
+      "o": "screen",
+      "w": 1280,
+      "h": 800,
+      "wraps": true
     },
     {
       "d": "2026-11-05",
@@ -60,6 +109,19 @@
       "minor": true
     },
     {
+      "d": "2026-11-03",
+      "p": "Final year",
+      "k": "uni",
+      "t": "Finding the line",
+      "l": "Nine rounds behind Meridian’s mascot, with what I kept and dropped.",
+      "draft": true,
+      "img": "/assets/media/shipped/drafts/finding-the-line.webp",
+      "o": "screen",
+      "w": 1280,
+      "h": 800,
+      "href": "https://uni.sheawilson.uk/02/"
+    },
+    {
       "d": "2026-11-02",
       "p": "Client work",
       "k": "work",
@@ -88,6 +150,18 @@
       "minor": true
     },
     {
+      "d": "2026-10-28",
+      "p": "Ornament lab",
+      "k": "personal",
+      "t": "An agent that feels painted",
+      "l": "Three looks for the same seven states: oil, manuscript and stained glass.",
+      "draft": true,
+      "img": "/assets/media/shipped/drafts/ornament.webp",
+      "o": "screen",
+      "w": 1280,
+      "h": 800
+    },
+    {
       "d": "2026-10-25",
       "p": "Meridian",
       "k": "personal",
@@ -108,6 +182,31 @@
       "o": "cutout",
       "w": 1300,
       "h": 1218
+    },
+    {
+      "d": "2026-10-15",
+      "p": "Client work",
+      "k": "work",
+      "t": "A design system in motion",
+      "l": "From construction lines to finished screens, in a short film.",
+      "draft": true,
+      "img": "/assets/media/shipped/drafts/private/design-film.webp",
+      "o": "screen",
+      "w": 1920,
+      "h": 1080,
+      "wraps": true
+    },
+    {
+      "d": "2026-10-13",
+      "p": "UI Words",
+      "k": "personal",
+      "t": "Find the shape before the word",
+      "l": "Three layouts for looking up interface terms, with examples you can try.",
+      "draft": true,
+      "img": "/assets/media/shipped/drafts/ui-words.webp",
+      "o": "screen",
+      "w": 1280,
+      "h": 1100
     },
     {
       "d": "2026-10-12",
@@ -206,6 +305,20 @@
       "h": 750
     },
     {
+      "d": "2026-09-28",
+      "p": "Smoking Snapshot",
+      "k": "work",
+      "t": "Smoking Snapshot, the film",
+      "l": "The calculator became a 32-second film, cut to the beat.",
+      "draft": true,
+      "img": "/assets/media/shipped/drafts/snapshot-film.webp",
+      "o": "screen",
+      "w": 1600,
+      "h": 900,
+      "href": "/snapshot.html",
+      "video": "/assets/media/snapshot/film/snapshot-film-wide.mp4"
+    },
+    {
       "d": "2026-09-26",
       "p": "Portfolio",
       "k": "personal",
@@ -256,6 +369,30 @@
       "minor": true
     },
     {
+      "d": "2026-09-10",
+      "p": "Overworld",
+      "k": "personal",
+      "t": "My projects as floating islands",
+      "l": "A small world where a raised lantern means an agent needs me.",
+      "draft": true,
+      "img": "/assets/media/shipped/drafts/overworld.webp",
+      "o": "screen",
+      "w": 1280,
+      "h": 800
+    },
+    {
+      "d": "2026-09-08",
+      "p": "Scope Note",
+      "k": "personal",
+      "t": "Put a price on the work",
+      "l": "An offline tool for turning a design brief into a scope and a quote.",
+      "draft": true,
+      "img": "/assets/media/shipped/drafts/scope-note.webp",
+      "o": "screen",
+      "w": 1405,
+      "h": 768
+    },
+    {
       "d": "2026-09-05",
       "p": "Client work",
       "k": "work",
@@ -274,6 +411,19 @@
       "o": "screen",
       "w": 1070,
       "h": 800
+    },
+    {
+      "d": "2026-08-27",
+      "p": "Client work",
+      "k": "work",
+      "t": "An awareness tool, explored",
+      "l": "Different ways to take someone from a first tap to a clear takeaway.",
+      "draft": true,
+      "img": "/assets/media/shipped/drafts/private/awareness.webp",
+      "o": "screen",
+      "w": 1280,
+      "h": 800,
+      "wraps": true
     },
     {
       "d": "2026-08-17",

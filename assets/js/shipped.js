@@ -151,7 +151,8 @@
 
   const initial = document.querySelector('#shipped-data');
   (initial ? Promise.resolve(JSON.parse(initial.textContent)) : fetch('/assets/data/shipped.json').then(r => r.json())).then(({ ships }) => {
-    ships = ships.filter((s) => !s.draft).sort((a, b) => b.d.localeCompare(a.d));
+    const drafts = new URLSearchParams(location.search).has('drafts') && !!document.querySelector('[data-street]');
+    ships = ships.filter((s) => drafts || !s.draft).sort((a, b) => b.d.localeCompare(a.d));
     if (!ships.length) return;
     home(ships);
     street(ships);
@@ -258,7 +259,7 @@
         const open = s.href && !s.wraps ? `<a class="st-open" href="${esc(s.href)}">Open<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 6h7M6.5 3l3 3-3 3"/></svg></a>` : '';
         return `<li class="st-item${s.wraps ? ' is-wraps' : ''}${s.minor ? ' is-minor' : ''}" id="${key}">
           <button class="st-hit" type="button" aria-expanded="false" aria-label="${title}, ${short(s.d)}"></button>
-          <time datetime="${s.d}">${when(s.d)}</time>
+          <time datetime="${s.d}">${when(s.d)}${s.draft ? ' <span class="st-draft">Draft</span>' : ''}</time>
           <span class="st-stand">${object(s)}</span>
           <div class="st-words">
             <h2>${title}</h2>

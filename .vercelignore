@@ -10,3 +10,7 @@ ar/README.md
 
 # Local performance notes
 /perf
+
+# Private draft evidence stays in the local review checkout.
+/assets/media/shipped/drafts/private
+/shipped/draft-sources.md
