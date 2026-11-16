@@ -10,7 +10,6 @@
 <link rel="apple-touch-icon" href="../apple-touch-icon.png">
 <script>
   document.documentElement.classList.add('js');
-  try { if (localStorage.getItem('theme') === 'dark') document.documentElement.dataset.theme = 'dark'; } catch (e) {}
   if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
   // If the 3D can't start, say so instead of loading forever. Only our own scripts count: browsers with
   // built-in assistants and extensions put their own code on every page, and their errors aren't ours.
@@ -30,9 +29,8 @@
     if (ours((stack.match(/https?:\/\/[^\s)]+/) || [])[0])) fail(String(r && r.message || r));
   });
 </script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=Spectral:ital,wght@0,200;0,300;1,300;1,400&display=swap" rel="stylesheet">
+<script src="/assets/js/sky.js"></script>
+<link rel="stylesheet" href="/assets/fonts/portfolio.css">
 <link rel="stylesheet" href="css/lab.css">
 <link rel="stylesheet" href="css/world.css">
 <link rel="modulepreload" href="vendor/three/three.module.js">
@@ -42,11 +40,10 @@
 <div id="stage" aria-hidden="true"></div>
 <div id="veil" aria-hidden="true"></div>
 
+<header class="nav"><div class="nav-inner"><a class="logo" href="../" aria-label="Shea Wilson, homepage">SW</a><nav class="links" aria-label="Main"><a href="./">3D</a><a href="../#contact">Contact</a></nav></div></header>
 <header class="bar">
-  <a class="logo" href="../" aria-label="Shea Wilson, homepage">Shea Wilson</a>
   <div class="bar-end">
     <button class="snd" id="snd" type="button" aria-pressed="true" aria-label="Sound off" hidden><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 7.75h2.75L10 4.5v11l-3.75-3.25H3.5z"/><path class="snd-wave" d="M13 7.4a3.6 3.6 0 0 1 0 5.2"/><path class="snd-wave snd-wave-2" d="M15.2 5.4a6.6 6.6 0 0 1 0 9.2"/><path class="snd-x" d="M13.25 8l4 4M17.25 8l-4 4"/></svg></button>
-    <button class="theme" id="theme" type="button" aria-pressed="false" aria-label="Switch to dark mode"><span class="tt"><span class="tt-ring"></span><span class="tt-disc"><span class="tt-moon"></span></span></span></button>
   </div>
 </header>
 
@@ -55,7 +52,7 @@
 <main id="track"></main>
 
 <section class="intro" id="intro">
-  <p class="lede">I’m Shea, a design engineer. I designed and built Smoking Snapshot for an NHS campaign, where it was used more than 1,000 times. Right now I’m building a reporting product that’s in pilot with the National Football Museum.</p>
+  <p class="lede">I’m Shea, a design engineer at Influential and a Digital Design student at Ulster University. I designed and built Smoking Snapshot and Quit28 for an NHS campaign.</p>
   <p class="hint"><span class="ring" style="--size:12px"></span>Scroll to walk through</p>
 </section>
 

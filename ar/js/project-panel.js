@@ -44,7 +44,7 @@ export function projectPanel({ projects = PROJECTS, onChange = () => {} } = {}) 
     body.innerHTML = `<h2 id="pp-name">${esc(p.name)}</h2><p class="pp-line">${esc(p.line)}</p>${media}${stats}${story}${facts}`;
     const main = p.external
       ? `<a class="btn is-primary" href="${p.href}" target="_blank" rel="noopener">Open live site${icon.out}</a>`
-      : `<a class="btn is-primary" href="${p.href}">View case study${icon.go}</a>`;
+      : `<a class="btn is-primary" href="${p.href}">${p.cta || 'View case study'}${icon.go}</a>`;
     const live = d.live ? `<a class="btn" href="${d.live}" target="_blank" rel="noopener">Open live site${icon.out}</a>` : '';
     actions.innerHTML = main + live;
     scroller.scrollTop = 0;

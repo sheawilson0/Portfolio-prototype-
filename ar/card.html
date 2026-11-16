@@ -8,9 +8,8 @@
 <meta name="theme-color" content="#ffffff">
 <link rel="icon" href="../favicon.ico" sizes="48x48">
 <link rel="apple-touch-icon" href="../apple-touch-icon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=Spectral:ital,wght@0,200;0,300;1,300;1,400&display=swap" rel="stylesheet">
+<script src="/assets/js/sky.js"></script>
+<link rel="stylesheet" href="/assets/fonts/portfolio.css">
 <link rel="stylesheet" href="css/lab.css">
 <link rel="modulepreload" href="vendor/three/three.module.js">
 <script type="importmap">{ "imports": { "three": "./vendor/three/three.module.js", "three/addons/": "./vendor/three/addons/" } }</script>
@@ -23,22 +22,19 @@
 
   /* Stage: camera behind, 3D in front. The video is sized in script to cover the screen. */
   /* Sized to the large viewport, so Safari's toolbar sliding in and out doesn't resize the scene */
-  #stage { position: fixed; left: 0; top: 0; width: 100%; height: 100lvh; overflow: hidden; background: var(--bg); }
+  #stage { position: fixed; left: 0; top: 0; width: 100%; height: 100lvh; overflow: hidden; }
   #stage video { position: absolute; object-fit: fill; }
   #stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
   body.is-ar #stage { background: #000; }
 
   /* Intro */
   #intro { position: fixed; inset: 0; z-index: 20; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0; padding: calc(28px + var(--safe-t)) 24px calc(28px + var(--safe-b));
-    background: var(--bg); text-align: center; transition: opacity .6s var(--ease), visibility 0s linear .6s; }
+    text-align: center; transition: opacity .6s var(--ease), visibility 0s linear .6s; }
   #intro.is-gone, #intro.is-starting { opacity: 0; visibility: hidden; pointer-events: none; }
-  #intro .logo { position: absolute; top: calc(22px + var(--safe-t)); left: 24px; }
   .mock { position: relative; width: min(78vw, 360px); aspect-ratio: 85 / 55; perspective: 900px; margin-bottom: 44px; }
   .mock-card { position: absolute; inset: 0; border-radius: 4.5%/7%; overflow: hidden; transform: rotateX(34deg) rotateZ(-8deg); transform-origin: 50% 60%;
     box-shadow: 0 1px 2px rgba(0,0,0,.08), 0 30px 60px rgba(10,20,60,.18); animation: bob 5s var(--ease-io) infinite alternate; }
   .mock-card img { width: 100%; height: 100%; object-fit: cover; }
-  .mock-glow { position: absolute; left: 10%; right: 10%; top: 10%; bottom: -10%; z-index: -1; filter: blur(34px); opacity: .5;
-    background: radial-gradient(closest-side at 30% 50%, #ed1652, transparent), radial-gradient(closest-side at 55% 45%, #4fae86, transparent), radial-gradient(closest-side at 80% 55%, #8a3cff, transparent); }
   @keyframes bob { to { transform: rotateX(28deg) rotateZ(-6deg) translateY(-8px); } }
   #intro h1 { font-family: var(--serif); font-weight: 300; font-size: clamp(38px, 10vw, 56px); line-height: 1.04; letter-spacing: -.03em; word-spacing: -.03em; }
   #intro h1 em { font-style: italic; letter-spacing: -.02em; }
@@ -54,11 +50,10 @@
   .frame { width: min(76vw, 440px); aspect-ratio: 85 / 55; border-radius: 22px; corner-shape: squircle; position: relative;
     box-shadow: 0 0 0 200vmax rgba(0, 0, 0, .18); }
   .frame::before { content: ""; position: absolute; inset: 0; border-radius: inherit; corner-shape: inherit; padding: 2px;
-    background: conic-gradient(from var(--sweep, 0deg), #ed1652, #ff6a1a, #ffb22c, #43d9ff, #8a3cff, #3a17e0, #ed1652);
+    background: rgba(255, 255, 255, .92);
     -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude;
-    animation: orbit 3s linear infinite; opacity: .95; }
-  @property --sweep { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
-  @keyframes orbit { to { --sweep: 360deg; } }
+    animation: breathe 2.4s var(--ease-io) infinite alternate; }
+  @keyframes breathe { from { opacity: .55; } to { opacity: 1; } }
 
   /* Heads-up: close and replay at the top, one hint at the bottom */
   #hud { position: fixed; inset: 0; z-index: 30; pointer-events: none; opacity: 0; transition: opacity .5s var(--ease); }
@@ -78,16 +73,6 @@
   #hud .nocard { position: absolute; left: 50%; bottom: calc(76px + var(--safe-b)); translate: -50% 10px; opacity: 0; pointer-events: none; white-space: nowrap;
     transition: opacity .5s var(--ease), translate .6s var(--ease); }
   body.is-scanning.has-waited #hud .nocard { opacity: 1; translate: -50% 0; pointer-events: auto; }
-  /* The homepage's theme toggle, as is */
-  .tt { position: relative; width: 18px; height: 18px; border-radius: 50%; }
-  .tt-ring { position: absolute; inset: -3px; border-radius: 50%;
-    background: conic-gradient(from 0deg, #ed1652, #ff6a1a, #ffb22c, #43d9ff, #8a3cff, #3a17e0, #ed1652);
-    -webkit-mask: radial-gradient(closest-side, transparent 62%, #000 72%, transparent 100%); mask: radial-gradient(closest-side, transparent 62%, #000 72%, transparent 100%);
-    transition: transform 1s var(--ease); }
-  .tt-disc { position: absolute; inset: 1px; border-radius: 50%; background: #fff; overflow: hidden; box-shadow: 0 0 0 .5px rgba(10, 10, 10, .12); }
-  .tt-moon { position: absolute; inset: 0; border-radius: 50%; background: #05070b; transform: translateX(-115%); transition: transform .8s var(--ease-io); }
-  .theme:hover .tt-ring { transform: rotate(180deg); }
-  .theme[aria-pressed="true"] .tt-moon { transform: none; }
 </style>
 </head>
 <body>
@@ -95,8 +80,8 @@
 <div id="stage" aria-hidden="true"></div>
 
 <section id="intro">
-  <a class="logo" href="../" aria-label="Shea Wilson, homepage">Shea Wilson</a>
-  <div class="mock" aria-hidden="true"><div class="mock-glow"></div><div class="mock-card"><img src="print/card-back.webp" alt=""></div></div>
+  <header class="nav"><div class="nav-inner"><a class="logo" href="../" aria-label="Shea Wilson, homepage">SW</a><nav class="links" aria-label="Main"><a href="./">3D</a><a href="../#contact">Contact</a></nav></div></header>
+  <div class="mock" aria-hidden="true"><div class="mock-card"><img src="print/card-back.webp" alt=""></div></div>
   <h1>The card, <em>in 3D.</em></h1>
   <p class="lede">Point your camera at the side with the four projects. They lift off the card, and you can tap one to open it.</p>
   <div class="actions">
@@ -119,7 +104,6 @@
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8"/></svg>
     </button>
     <span class="bar-right">
-    <button class="round glass theme" id="theme" type="button" aria-pressed="false" aria-label="Switch to an eclipse"><span class="tt"><span class="tt-ring"></span><span class="tt-disc"><span class="tt-moon"></span></span></span></button>
     <button class="chip glass" id="replay" type="button">
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8a5 5 0 1 0 1.6-3.7M3 2.5v2.8h2.8"/></svg>
       Play again

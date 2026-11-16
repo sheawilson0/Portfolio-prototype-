@@ -2,8 +2,8 @@
 // Units are millimetres of the printed card (85 x 55), so the same scene sits on the card, on a desk or in the world.
 import * as THREE from '../vendor/three/three.module.js';
 
-import { asset, SITE, CARD, CORONA, SPECTRUM, PROJECTS, MORE } from './projects.js';
-export { asset, SITE, CARD, CORONA, SPECTRUM, PROJECTS, MORE };
+import { asset, SITE, CARD, SKY, PROJECTS, MORE } from './projects.js';
+export { asset, SITE, CARD, SKY, PROJECTS, MORE };
 
 export async function fontsReady() {
   if (!document.fonts) return;
@@ -24,42 +24,6 @@ export function toTexture(c, { srgb = true } = {}) {
   if (srgb) t.colorSpace = THREE.SRGBColorSpace;
   t.anisotropy = 4;
   return t;
-}
-
-// The ring of colour. `inner` and `outer` are fractions of the radius: fully lit at inner, gone at outer.
-export function coronaCanvas({ size = 1024, inner = 0.62, outer = 1, stops = CORONA, soft = true, hole = 0 } = {}) {
-  const [c, g] = canvas(size, size);
-  const r = size / 2;
-  const cg = g.createConicGradient(-Math.PI / 2, r, r);
-  for (const [deg, col] of stops) cg.addColorStop(deg / 360, col);
-  g.fillStyle = cg;
-  g.fillRect(0, 0, size, size);
-  g.globalCompositeOperation = 'destination-in';
-  const rg = g.createRadialGradient(r, r, 0, r, r, r * outer);
-  const i = inner / outer;
-  if (soft) {
-    rg.addColorStop(0, 'rgba(0,0,0,1)');
-    rg.addColorStop(i, 'rgba(0,0,0,1)');
-    rg.addColorStop(i + (1 - i) * 0.2, 'rgba(0,0,0,.84)');
-    rg.addColorStop(i + (1 - i) * 0.42, 'rgba(0,0,0,.52)');
-    rg.addColorStop(i + (1 - i) * 0.66, 'rgba(0,0,0,.24)');
-    rg.addColorStop(i + (1 - i) * 0.86, 'rgba(0,0,0,.07)');
-    rg.addColorStop(1, 'rgba(0,0,0,0)');
-  } else {
-    rg.addColorStop(0, 'rgba(0,0,0,1)');
-    rg.addColorStop(1, 'rgba(0,0,0,1)');
-  }
-  g.fillStyle = rg;
-  g.fillRect(0, 0, size, size);
-  // The middle sits behind the disc; cut it out so the ring doesn't read as a solid wheel from behind
-  if (hole) {
-    g.globalCompositeOperation = 'destination-out';
-    const hg = g.createRadialGradient(r, r, 0, r, r, r * hole);
-    hg.addColorStop(0, 'rgba(0,0,0,1)'); hg.addColorStop(.96, 'rgba(0,0,0,1)'); hg.addColorStop(1, 'rgba(0,0,0,0)');
-    g.fillStyle = hg;
-    g.fillRect(0, 0, size, size);
-  }
-  return c;
 }
 
 // A soft round light: white in the middle, nothing at the edge. Tint it with the material colour.
@@ -215,81 +179,123 @@ export function environment(renderer, RoomEnvironment) {
 
 /* ───────── The objects ───────── */
 
-// The white disc with its lit rim, standing upright, and the ring of colour behind it
-export function buildEclipse({ radius = 26, thickness = 3, dark = false, glow = true } = {}) {
-  const group = new THREE.Group();
-  group.name = 'eclipse';
-
-  // A coin with a rounded edge, turned on a lathe so the rim catches light
-  const profile = [];
-  const e = thickness / 2;
-  profile.push(new THREE.Vector2(0, -e));
-  for (let k = 0; k <= 10; k++) {
-    const a = -Math.PI / 2 + (k / 10) * Math.PI;
-    profile.push(new THREE.Vector2(radius - e + Math.cos(a) * e, Math.sin(a) * e));
+// The homepage's hero as an object: a standing slab whose face is the sky (top, middle, horizon) with
+// "Always making something." on it. It replaces the old disc and its ring of colour. setSky() repaints it.
+export function skyCanvas(s, { w = 1024, h = 640, headline = true, name = false } = {}) {
+  const [c, g] = canvas(w, h);
+  const lg = g.createLinearGradient(0, 0, 0, h);
+  lg.addColorStop(0, s.top); lg.addColorStop(.48, s.mid); lg.addColorStop(.92, s.low); lg.addColorStop(1, s.low);
+  g.fillStyle = lg;
+  g.fillRect(0, 0, w, h);
+  if (s.ga) { // the glow on the horizon at sunrise and sunset
+    const rg = g.createRadialGradient(w / 2, h * 1.08, 0, w / 2, h * 1.08, w * .62);
+    rg.addColorStop(0, hexA(s.glow, Math.min(1, s.ga))); rg.addColorStop(1, hexA(s.glow, 0));
+    g.fillStyle = rg; g.fillRect(0, 0, w, h);
   }
-  profile.push(new THREE.Vector2(0, e));
-  const discGeo = new THREE.LatheGeometry(profile, 96);
-  discGeo.rotateX(Math.PI / 2);
-  const discMat = new THREE.MeshPhysicalMaterial({
-    color: dark ? '#05070b' : '#ffffff', roughness: dark ? .32 : .55, metalness: 0, clearcoat: dark ? .8 : .25, clearcoatRoughness: .3,
-    sheen: dark ? 0 : .4, sheenColor: new THREE.Color('#fff4ea'), sheenRoughness: .6,
-  });
-  const disc = new THREE.Mesh(discGeo, discMat);
-  disc.name = 'disc';
-  group.add(disc);
-
-  // The ring of colour, a little larger than the disc, just behind it
-  const coronaTex = toTexture(coronaCanvas({ size: 1024, inner: .74, outer: 1, hole: .69 }));
-  const coronaMat = new THREE.MeshBasicMaterial({ map: coronaTex, transparent: true, depthWrite: false, side: THREE.DoubleSide, toneMapped: false });
-  const corona = new THREE.Mesh(new THREE.CircleGeometry(radius * 1.42, 96), coronaMat);
-  corona.position.z = -thickness * .5 - .4;
-  corona.name = 'corona';
-  corona.renderOrder = -1;
-  group.add(corona);
-
-  // Extra light for dark rooms and camera feeds: the same ring added on top, softer and wider
-  let halo = null;
-  if (glow) {
-    const haloTex = toTexture(coronaCanvas({ size: 512, inner: .5, outer: 1, hole: .5 }));
-    halo = new THREE.Mesh(new THREE.CircleGeometry(radius * 1.9, 64),
-      new THREE.MeshBasicMaterial({ map: haloTex, transparent: true, opacity: .55, blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false }));
-    halo.position.z = -thickness * .5 - .8;
-    halo.renderOrder = -2;
-    halo.name = 'halo';
-    group.add(halo);
+  if (headline) {
+    const size = Math.round(h * .17);
+    const t = textCanvas([[['Always making ', `300 ${size}px Spectral`], ['something.', `italic 300 ${size}px Spectral`]]], { color: s.ink || '#0a0a0a', scale: 1, tracking: -size * .02 });
+    const k = Math.min(1, (w * .84) / t.width);
+    g.drawImage(t, (w - t.width * k) / 2, h * (name ? .3 : .36), t.width * k, t.height * k);
+    if (name) {
+      g.font = `italic 400 ${Math.round(h * .062)}px Spectral`;
+      g.fillStyle = s.dark ? 'rgba(242,240,235,.6)' : 'rgba(10,10,10,.5)';
+      g.textAlign = 'center';
+      g.fillText('Shea Wilson', w / 2, h * .74);
+    }
   }
-
-  // A thin line of colour round the rim, like the lit border on the cards
-  const rimTex = toTexture(ringStripCanvas());
-  rimTex.wrapS = THREE.RepeatWrapping;
-  const rim = new THREE.Mesh(new THREE.TorusGeometry(radius - .1, .34, 8, 160),
-    new THREE.MeshBasicMaterial({ map: rimTex, transparent: true, opacity: .9, toneMapped: false }));
-  rim.position.z = -e * .55;
-  rim.name = 'rim';
-  group.add(rim);
-
-  // Daylight or eclipse: the same switch as the site's theme toggle
-  const setDark = (on) => {
-    discMat.color.set(on ? '#05070b' : '#ffffff');
-    discMat.roughness = on ? .32 : .55;
-    discMat.clearcoat = on ? .8 : .25;
-    discMat.sheen = on ? 0 : .4;
-    if (halo) halo.userData.boost = on ? 1.6 : 1;
-  };
-  setDark(dark);
-
-  return { group, disc, corona, halo, rim, radius, setDark, spin(dt) { corona.rotation.z -= dt * .07; if (halo) halo.rotation.z -= dt * .05; rim.rotation.z -= dt * .07; } };
+  return c;
 }
 
-// The corona's colours laid out in a strip, for anything that wraps round (the rim torus)
-function ringStripCanvas() {
-  const [c, g] = canvas(1024, 4);
-  const lg = g.createLinearGradient(0, 0, 1024, 0);
-  for (const [deg, col] of CORONA) lg.addColorStop(deg / 360, col);
-  g.fillStyle = lg;
-  g.fillRect(0, 0, 1024, 4);
-  return c;
+export function buildSkyPane({ w = 40, h = 25, r = 3.4, depth = 1.6, sky = SKY.day, name = false } = {}) {
+  const group = new THREE.Group();
+  group.name = 'sky';
+  const px = 1024;
+  const face = toTexture(skyCanvas(sky, { w: px, h: Math.round(px * h / w), name }));
+  const backTex = toTexture(skyCanvas(sky, { w: 256, h: Math.round(256 * h / w), headline: false }));
+  const faceMat = new THREE.MeshBasicMaterial({ map: face, toneMapped: false });
+  const backMat = new THREE.MeshBasicMaterial({ map: backTex, toneMapped: false });
+  const edgeMat = new THREE.MeshStandardMaterial({ color: sky.dark ? '#1c3159' : '#f6f1ea', roughness: .5, metalness: 0 });
+  const slab = new THREE.Mesh(squircleSlab(w, h, r, depth), [faceMat, edgeMat]);
+  group.add(slab);
+  // The front face is the extrusion's top cap; draw the back as its own plane so it isn't mirrored text
+  const back = new THREE.Mesh(squirclePlane(w - .2, h - .2, r), backMat);
+  back.rotation.y = Math.PI;
+  back.position.z = -depth / 2 - .01;
+  group.add(back);
+  const setSky = (s) => {
+    const c = face.image; const nc = skyCanvas(s, { w: c.width, h: c.height, name });
+    c.getContext('2d').drawImage(nc, 0, 0); face.needsUpdate = true;
+    const b = backTex.image; b.getContext('2d').drawImage(skyCanvas(s, { w: b.width, h: b.height, headline: false }), 0, 0); backTex.needsUpdate = true;
+    edgeMat.color.set(s.dark ? '#1c3159' : '#f6f1ea');
+  };
+  return { group, slab, faceMat, backMat, edgeMat, w, h, setSky };
+}
+
+// Pip, the sprite I drew for the PowerPoint add-in: 6 frames across, 12 moods down. Idle is row 3, hello row 2.
+// Each frame is copied onto a small canvas of its own, so any material (and any exporter) can show it.
+export async function pipTexture({ still = false } = {}) {
+  const sheet = (await loadTexture('assets/media/shipped/pip.png')).image;
+  const [c, g] = canvas(96 * 4, 104 * 4);
+  g.imageSmoothingEnabled = false;
+  const t = toTexture(c);
+  t.magFilter = THREE.NearestFilter;
+  let row = 3, frames = 6, fps = 6 / 5.4, clock = 0, shown = -1;
+  const show = (f) => {
+    if (f === shown) return;
+    shown = f;
+    g.clearRect(0, 0, c.width, c.height);
+    g.drawImage(sheet, f * 96, row * 104, 96, 104, 0, 0, c.width, c.height);
+    t.needsUpdate = true;
+  };
+  show(0);
+  return {
+    texture: t,
+    mood(r, n = 6, seconds = 5.4) { row = r; frames = n; fps = n / seconds; clock = 0; shown = -1; show(0); },
+    tick(dt) { if (still) return; clock += dt; show(Math.floor(clock * fps) % frames); },
+  };
+}
+
+// Meridian's butterfly, live: the real mascot engine (assets/js/meridian-line.js) drawn into a texture.
+// Falls back to Meridian's icon where the engine isn't on the page (the exported models).
+let lineReady = null;
+function loadLine() {
+  if (typeof Line !== 'undefined') return Promise.resolve(true);
+  if (!lineReady) lineReady = new Promise((ok) => { const sc = document.createElement('script'); sc.src = asset('assets/js/meridian-line.js'); sc.onload = () => ok(typeof Line !== 'undefined'); sc.onerror = () => ok(false); document.head.append(sc); });
+  return lineReady;
+}
+export async function butterflyTexture({ size = 512, live = true } = {}) {
+  const [c, g] = canvas(size, size);
+  const tex = toTexture(c);
+  const fallback = async () => ({ texture: await loadTexture('assets/media/shipped/icons/meridian.webp'), tick() {} });
+  if (!live || !(await loadLine())) return fallback();
+  const host = document.createElement('div');
+  host.style.cssText = 'position:fixed;left:-9999px;top:0;width:200px;height:200px;color:#f6c93a;pointer-events:none';
+  host.setAttribute('aria-hidden', 'true');
+  document.body.append(host);
+  // eslint-disable-next-line no-undef
+  const m = Line.mount(host, { eyeset: 'pen', mood: 'idle', follow: false, label: 'Meridian' });
+  const ser = new XMLSerializer();
+  const img = new Image();
+  let busy = false, since = 0;
+  let first;
+  const ready = new Promise((ok) => { first = ok; });
+  const draw = () => {
+    if (busy) return;
+    busy = true;
+    const now = performance.now();
+    m.draw(now / 1000, now);
+    const xml = ser.serializeToString(m.svg)
+      .replace(/var\(--head, currentColor\)/g, '#f6c93a').replace(/currentColor/g, '#f6c93a')
+      .replace(/var\(--eye, #121214\)/g, '#121214').replace(/var\(--shine, #fff7de\)/g, '#fff7de')
+      .replace('<svg', `<svg width="${size}" height="${size}"`);
+    img.onload = () => { g.clearRect(0, 0, size, size); g.drawImage(img, 0, 0, size, size); tex.needsUpdate = true; busy = false; first(); };
+    img.onerror = () => { busy = false; first(); };
+    img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(xml);
+  };
+  draw();
+  await ready;
+  return { texture: tex, tick(dt) { since += dt; if (since > 1 / 15) { since = 0; draw(); } } };
 }
 
 // A pane of glass for a product: frosted, with a bright edge and the project's light behind it
@@ -384,38 +390,24 @@ export async function buildPiece(project, { dark = false, video = true, backs = 
     b.position.set(3, 15, 0); b.rotation.z = THREE.MathUtils.degToRad(1.5);
     const c = add(buildPicture(exp, { w: 14, h: 10.1, r: 1.2, back: B('screen') }), 1.4);
     c.position.set(10, 8.5, 4); c.rotation.z = THREE.MathUtils.degToRad(4);
-  } else if (project.id === 'heart') {
-    // The iPad screen plays the real recording; the tablet is a dark slab with a thin bezel
-    const tab = buildPane({ w: 32, h: 24, r: 2.6, depth: 1.4, tone: '#1b2a33', opacity: 1, dark: true });
-    tab.faceMat.color.set('#0b0d12'); tab.faceMat.opacity = 1; tab.faceMat.transparent = false; tab.faceMat.depthWrite = true;
-    tab.group.position.set(0, 16, 0);
-    tab.group.rotation.z = THREE.MathUtils.degToRad(-7);
-    add(tab.group, 0);
-    let tex;
-    if (video) {
-      const v = videoTexture([['assets/media/heart/heart-screen.mp4', 'video/mp4'], ['assets/media/heart/heart-screen.webm', 'video/webm']]);
-      tex = v.texture;
-      group.userData.video = v.video;
-    } else {
-      tex = await loadTexture('ar/assets/heart-frame.webp');
-    }
-    const screen = buildPicture(tex, { w: 29.4, h: 21.8, r: 1.4 });
-    screen.material.alphaTest = 0;
-    screen.material.transparent = false;
-    screen.position.z = .75;
-    tab.group.add(screen);
-  } else if (project.id === 'brain') {
-    const [home, voice] = await Promise.all([loadTexture('assets/media/home/brain-home.webp'), loadTexture('assets/media/home/brain-voice.webp')]);
-    const v = add(buildPicture(voice, { w: 13, h: 26.9, back: B('phone') }), -1);
-    v.position.set(-6, 15, -3); v.rotation.z = THREE.MathUtils.degToRad(-8);
-    const hm = add(buildPicture(home, { w: 14.5, h: 30, back: B('phone') }), 1);
-    hm.position.set(4, 16, 2); hm.rotation.z = THREE.MathUtils.degToRad(3);
+  } else if (project.id === 'quit28') {
+    // The 28-day calendar pinned behind, the phone on Day 1 in front
+    const [cal, phone] = await Promise.all([loadTexture('assets/media/home/quit28-calendar.webp'), loadTexture('assets/media/home/quit28-iphone.webp')]);
+    const c = add(buildPicture(cal, { w: 30, h: 24.3, back: B('screen') }), -1.2);
+    c.position.set(-6, 18, -3); c.rotation.z = THREE.MathUtils.degToRad(-3);
+    const ph = add(buildPicture(phone, { w: 14.5, h: 30.1, back: B('phone') }), 1);
+    ph.position.set(7, 16, 3); ph.rotation.z = THREE.MathUtils.degToRad(2);
+  } else if (project.id === 'shipped') {
+    // Pip, frame by frame, and Meridian's butterfly, live: the two characters from the homepage's Shipped tile
+    const [pip, fly] = await Promise.all([pipTexture({ still: !video }), butterflyTexture()]);
+    const f = add(buildPicture(fly.texture, { w: 27, h: 27 }), -.8);
+    f.position.set(-7, 19, -2);
+    const p = add(buildPicture(pip.texture, { w: 20.3, h: 22 }), 1);
+    p.position.set(8.5, 11, 2);
+    group.userData.tick = (dt) => { pip.tick(dt); fly.tick(dt); };
+    group.userData.pip = pip;
   }
 
-  const glow = buildGlow(project.colors, { w: 64, h: 52, opacity: dark ? .9 : .62 });
-  glow.position.set(0, 16, -7);
-  group.add(glow);
-  group.userData.glow = glow;
   group.userData.layers = layers;
 
   // An invisible box that catches taps anywhere on the piece

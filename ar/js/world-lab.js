@@ -49,11 +49,11 @@ export const LAB = {
     ],
   },
   glass: {
-    name: 'Glass', key: 'g', live: 'smoked', done: true,
+    name: 'Glass', key: 'g', live: 'clear', done: true,
     options: [
       ['white', 'White', 'White frosted cards in daylight.'],
       ['smoked', 'Smoked', 'Smoked glass you can see the world through.'],
-      ['clear', 'Clear', 'Barely tinted, with a bright edge.'],
+      ['clear', 'Clear', 'What’s live: clear, like the homepage’s cards, with a bright edge.'],
       ['tinted', 'Tinted', 'Each project’s own colour.'],
       ['ink', 'Ink', 'Black glass in daylight too.'],
     ],
@@ -82,7 +82,7 @@ export const LAB = {
     ],
   },
   ending: {
-    name: 'Ending', key: 'n', live: 'face', done: true,
+    name: 'Ending', key: 'n', live: 'sky', done: true,
     options: [
       ['face', 'On the disc', 'What’s live: “Let’s talk.” on the disc’s face.'],
       ['sky', 'Above it', '“Let’s talk.” in the sky above a low eclipse.'],

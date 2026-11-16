@@ -2,13 +2,13 @@
 // of the card, z towards the card's bottom edge. The card itself is not drawn here (in AR it's the real one).
 //
 // What happens: the four printed tiles peel off the paper, turn into the layered product shots and float in an
-// arc, leaving lit pockets in the card. The eclipse rises out of a slot behind them.
+// arc, leaving pockets in the card. The sky, with the homepage's line on it, rises out of a slot behind them.
 //
 // It leans towards whoever's looking: from low down everything stands up; from overhead (a card held up to the
 // camera) the pieces tip back to face you, so it never collapses into a view of the tops of things.
 import * as THREE from 'three';
 import {
-  PROJECTS, CARD, buildEclipse, buildPiece, buildLabel, buildShadow, squircleShape, squirclePlane, bleedCanvas,
+  PROJECTS, CARD, SKY, buildSkyPane, buildPiece, buildLabel, buildShadow, squircleShape, squirclePlane,
   toTexture, loadTexture, fontsReady,
 } from './kit.js';
 
@@ -27,15 +27,15 @@ const clamp = (x, a, b) => Math.min(b, Math.max(a, x));
 const span = (t, a, b) => clamp((t - a) / (b - a), 0, 1);
 const D2R = Math.PI / 180;
 
-// The work's colours run together into one soft light, for the floor of each pocket
-function softLight(colors) {
+// A patch of horizon for the floor of each pocket: the sky's warm low colour, brighter in the middle
+function softLight(s) {
   const c = document.createElement('canvas');
-  c.width = c.height = 256;
+  c.width = c.height = 128;
   const g = c.getContext('2d');
-  g.filter = 'blur(18px)';
-  g.drawImage(bleedCanvas(colors, { w: 256, h: 256 }), -24, -24, 304, 304);
-  g.globalAlpha = .65;
-  g.drawImage(bleedCanvas([...colors].reverse(), { w: 256, h: 256 }), 12, 12, 232, 232);
+  const rg = g.createRadialGradient(64, 64, 0, 64, 64, 64);
+  rg.addColorStop(0, s.glow); rg.addColorStop(.6, s.low); rg.addColorStop(1, 'rgba(0,0,0,0)');
+  g.fillStyle = rg;
+  g.fillRect(0, 0, 128, 128);
   return c;
 }
 
@@ -54,38 +54,28 @@ function fade(group, a) {
   });
 }
 
-export async function buildHorizon({ cardImage = 'ar/print/card-back.webp', pockets = true, headline = true, haloStrength = .28, dark = true } = {}) {
+export async function buildHorizon({ cardImage = 'ar/print/card-back.webp', pockets = true, sky = SKY.day } = {}) {
   await fontsReady();
   const root = new THREE.Group();
   root.name = 'horizon';
   const clip = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
 
-  /* The eclipse, rising out of a slot behind the work. It hinges on the slot, so it can lean back. */
-  const DISC = { r: 20, z: -14, y: 10 };
+  /* The sky, rising out of a slot behind the work. It hinges on the slot, so it can lean back. */
+  const PANE = { w: 44, h: 26, z: -14, y: 14 }; // y: how far its middle stands above the card
   const hinge = new THREE.Group();
-  hinge.position.set(0, 0, DISC.z);
+  hinge.position.set(0, 0, PANE.z);
   root.add(hinge);
-  const eclipse = buildEclipse({ radius: DISC.r, thickness: 2.4, dark });
-  eclipse.group.position.y = -DISC.r - 3;
-  hinge.add(eclipse.group);
-  eclipse.group.traverse((o) => { if (o.material) o.material.clippingPlanes = [clip]; });
-
-  // Light from the ring on the paper round the slot
-  const pool = new THREE.Mesh(new THREE.PlaneGeometry(90, 44), new THREE.MeshBasicMaterial({
-    map: toTexture(bleedCanvas(['#ff6a1a', '#ed1652', '#8a3cff'], { w: 512, h: 256 })), transparent: true, opacity: 0,
-    depthWrite: false, toneMapped: false,
-  }));
-  pool.rotation.x = -Math.PI / 2;
-  pool.position.set(0, .06, DISC.z + 2);
-  pool.renderOrder = -4;
-  root.add(pool);
+  const pane = buildSkyPane({ w: PANE.w, h: PANE.h, r: 3.4, depth: 1.6, sky });
+  pane.group.position.y = -PANE.h / 2 - 2;
+  hinge.add(pane.group);
+  pane.group.traverse((o) => { if (o.material) for (const m of [].concat(o.material)) m.clippingPlanes = [clip]; });
 
   /* Pockets: a stencil the shape of each opening, and the inside of a box that only draws through it */
   const pocketGroup = new THREE.Group();
   root.add(pocketGroup);
   const stencilTest = { stencilWrite: true, stencilRef: 1, stencilFunc: THREE.EqualStencilFunc,
     stencilFail: THREE.KeepStencilOp, stencilZFail: THREE.KeepStencilOp, stencilZPass: THREE.KeepStencilOp };
-  const makePocket = ({ w, h, r, x, z, depth, colors }) => {
+  const makePocket = ({ w, h, r, x, z, depth }) => {
     const shape = squircleShape(w, h, r);
     const mask = new THREE.Mesh(new THREE.ShapeGeometry(shape, 1), new THREE.MeshBasicMaterial({
       colorWrite: false, depthWrite: false, stencilWrite: true, stencilRef: 1, stencilFunc: THREE.AlwaysStencilFunc,
@@ -112,7 +102,7 @@ export async function buildHorizon({ cardImage = 'ar/print/card-back.webp', pock
 
     // The work's own light, down in the pocket
     const glow = new THREE.Mesh(new THREE.PlaneGeometry(w * 1.3, h * 1.3), new THREE.MeshBasicMaterial({
-      map: toTexture(softLight(colors)), transparent: true, opacity: 0, blending: THREE.AdditiveBlending,
+      map: toTexture(softLight(sky)), transparent: true, opacity: 0,
       depthWrite: false, depthTest: false, toneMapped: false, ...stencilTest,
     }));
     glow.rotation.x = -Math.PI / 2;
@@ -121,8 +111,7 @@ export async function buildHorizon({ cardImage = 'ar/print/card-back.webp', pock
     pocketGroup.add(mask, inside, glow);
     return { mask, inside, glow };
   };
-  const chord = 2 * Math.sqrt(DISC.r ** 2 - (DISC.r - DISC.y) ** 2);
-  const slot = pockets ? makePocket({ w: chord + 3, h: 4, r: 2, x: 0, z: DISC.z, depth: 7, colors: ['#ff6a1a', '#ed1652', '#8a3cff'] }) : null;
+  const slot = pockets ? makePocket({ w: PANE.w + 3, h: 4, r: 2, x: 0, z: PANE.z, depth: 7 }) : null;
 
   /* The work: a flat copy of each printed tile that lifts off, and the miniature it turns into */
   const cardTex = await loadTexture(cardImage);
@@ -155,22 +144,14 @@ export async function buildHorizon({ cardImage = 'ar/print/card-back.webp', pock
     flatHolder.add(flat);
     root.add(flatHolder);
 
-    const pocket = pockets ? makePocket({ w: TILE.size, h: TILE.size, r: TILE.radius, x: at.x, z: at.z, depth: 5, colors: project.colors }) : null;
+    const pocket = pockets ? makePocket({ w: TILE.size, h: TILE.size, r: TILE.radius, x: at.x, z: at.z, depth: 5 }) : null;
     const shadow = buildShadow({ w: 30, h: 16, strength: .34 });
     root.add(shadow);
-    const label = buildLabel([[[project.name, '400 40px "DM Sans"']]], { height: 5.2, color: '#0a0a0a' });
+    const label = buildLabel([[[project.name, '400 40px "DM Sans"']]], { height: 5.2, color: '#0a0a0a' }); // over the paper, so always dark
     label.position.set(0, -1.8, 6);
     piece.add(label);
 
     pieces.push({ project, piece, holder, flat, flatHolder, pocket, shadow, at, final: FINAL[i], scale: .7, i, hover: 0 });
-  }
-
-  /* The line from the homepage, set in the air above the disc, hinged with it */
-  let head = null;
-  if (headline) {
-    head = buildLabel([[['Always making ', '300 64px Spectral'], ['something.', 'italic 300 64px Spectral']]], { height: 6.4, color: '#0a0a0a', tracking: -1.2 });
-    head.position.set(0, 38, 1);
-    hinge.add(head);
   }
 
   /* Where the viewer is, in card space, smoothed so tracking jitter doesn't shake the lean */
@@ -198,7 +179,7 @@ export async function buildHorizon({ cardImage = 'ar/print/card-back.webp', pock
     pocketGroup.visible = time >= 0;
     const elevDeg = view.elev / D2R;
     const pieceLean = clamp(elevDeg - 24, 0, 66) * D2R; // tip back once you're looking from above
-    const discLean = clamp(elevDeg - 38, 0, 36) * D2R;
+    const paneLean = clamp(elevDeg - 38, 0, 36) * D2R;
     const turnToViewer = clamp(view.az * .3, -.4, .4);
 
     for (const s of pieces) {
@@ -227,21 +208,11 @@ export async function buildHorizon({ cardImage = 'ar/print/card-back.webp', pock
       if (s.pocket) s.pocket.glow.material.opacity = span(p, .2, .8) * (.8 + .2 * Math.sin(time * 2 + s.i));
     }
 
-    // The disc rises, the ring comes up with it and its light spreads on the paper
+    // The sky rises out of its slot
     const d = ease.out(span(time, .45, 1.9));
-    eclipse.group.position.y = THREE.MathUtils.lerp(-DISC.r - 3, DISC.y, d);
-    hinge.rotation.x = -discLean * d;
-    const ring = span(time, .7, 1.9);
-    eclipse.corona.material.opacity = ring;
-    if (eclipse.halo) eclipse.halo.material.opacity = haloStrength * (eclipse.halo.userData.boost || 1) * ring;
-    eclipse.rim.material.opacity = .9 * ring;
-    pool.material.opacity = .3 * ring;
+    pane.group.position.y = THREE.MathUtils.lerp(-PANE.h / 2 - 2, PANE.y, d);
+    hinge.rotation.x = -paneLean * d;
     if (slot) slot.glow.material.opacity = .9 * span(time, .3, 1);
-    if (head) {
-      const h = ease.out(span(time, 1.5, 2.3));
-      fade(head, h);
-      head.position.y = 35 + 3 * h;
-    }
   }
 
   function tick(dt, camera) {
@@ -250,7 +221,7 @@ export async function buildHorizon({ cardImage = 'ar/print/card-back.webp', pock
       t += dt;
       if (t > 2.4) played = true;
       for (const s of pieces) s.hover += ((selected === s ? 1 : 0) - s.hover) * Math.min(1, dt * 8);
-      eclipse.spin(dt);
+      for (const s of pieces) s.piece.userData.tick?.(dt);
     }
     pose(t);
     // Keep the cut at the card's surface wherever the card is
@@ -263,9 +234,9 @@ export async function buildHorizon({ cardImage = 'ar/print/card-back.webp', pock
   return {
     root,
     pieces,
-    eclipse,
+    pane,
     view,
-    setDark: (on) => eclipse.setDark(on),
+    setSky: (next) => pane.setSky(next),
     get started() { return t >= 0; },
     get settled() { return played; },
     start({ skip = false } = {}) { t = skip ? 3 : 0; played = skip; },

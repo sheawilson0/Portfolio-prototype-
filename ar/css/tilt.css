@@ -7,8 +7,8 @@
 :root {
   --pale-a: #fde9cf;
   --pale-b: #e3ebff;
-  --stock: #ffffff;
-  --stock-edge: #e4e1da;
+  --stock: #fbf8f4;
+  --stock-edge: #e4ddd3;
   --disc: #ffffff;
   --rim: rgba(10, 10, 10, .075);
   --tile-bg: #ffffff;
@@ -25,11 +25,11 @@
 [data-theme="dark"] {
   --pale-a: #3a2a22;
   --pale-b: #1c2436;
-  --stock: #0b0e14;
-  --stock-edge: #1d212a;
+  --stock: #13244a;
+  --stock-edge: #1d3561;
   --disc: #030409;
   --rim: rgba(255, 255, 255, .09);
-  --tile-bg: #11141b;
+  --tile-bg: #1c3159;
   --tile-rim: rgba(255, 255, 255, .08);
   --shadow: 0, 0, 0;
   --shadow-a: .55;
@@ -46,19 +46,8 @@ body { min-height: 100%; min-height: 100svh; display: grid; grid-template-rows: 
 .theme-switching *, .theme-switching *::before, .theme-switching *::after { transition: none !important; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
-/* ───────── Top: the name, and the homepage's theme toggle ───────── */
-.top { position: relative; z-index: 4; display: flex; align-items: center; justify-content: space-between;
-  min-height: calc(58px + var(--safe-t)); padding: calc(10px + var(--safe-t)) calc(var(--gutter) - 12px) 0 var(--gutter); }
-.theme { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; }
-.tt { position: relative; width: 18px; height: 18px; border-radius: 50%; }
-.tt-ring { position: absolute; inset: -3px; border-radius: 50%;
-  background: conic-gradient(from 0deg, #ed1652, #ff6a1a, #ffb22c, #43d9ff, #8a3cff, #3a17e0, #ed1652);
-  -webkit-mask: radial-gradient(closest-side, transparent 62%, #000 72%, transparent 100%); mask: radial-gradient(closest-side, transparent 62%, #000 72%, transparent 100%);
-  transition: transform 1s var(--ease); }
-.tt-disc { position: absolute; inset: 1px; border-radius: 50%; background: #fff; overflow: hidden; box-shadow: 0 0 0 .5px rgba(10, 10, 10, .12); }
-.tt-moon { position: absolute; inset: 0; border-radius: 50%; background: #05070b; transform: translateX(-115%); transition: transform .8s var(--ease-io); }
-.theme:hover .tt-ring { transform: rotate(180deg); }
-[data-theme="dark"] .tt-moon { transform: none; }
+/* ───────── Top: the homepage's nav pill ───────── */
+.top { position: relative; z-index: 4; display: flex; justify-content: center; min-height: calc(70px + var(--safe-t)); padding: calc(18px + var(--safe-t)) var(--gutter) 0; }
 
 ::view-transition-old(root), ::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
 ::view-transition-new(root) {
@@ -107,6 +96,7 @@ body { min-height: 100%; min-height: 100svh; display: grid; grid-template-rows: 
 /* The work's light, spilling onto the wall round the edges. Soft edges from gradients, never a blur. */
 .glow { position: absolute; inset: -22% -16%; pointer-events: none; opacity: 0; transition: opacity .8s var(--ease); will-change: transform; }
 .glow.is-on { opacity: var(--glow-o); }
+.glow { display: none; } /* the homepage's cards are clear now: no coloured light under the card */
 .glow i { position: absolute; left: var(--x); top: var(--y); width: var(--w); aspect-ratio: var(--ar, 1.5); rotate: var(--rot, 0deg); border-radius: 50%; opacity: var(--o, 1);
   background: radial-gradient(closest-side, color-mix(in srgb, var(--c) 78%, transparent) 0%, color-mix(in srgb, var(--c) 54%, transparent) 26%,
     color-mix(in srgb, var(--c) 30%, transparent) 48%, color-mix(in srgb, var(--c) 12%, transparent) 70%, color-mix(in srgb, var(--c) 3%, transparent) 88%, transparent 100%); }
@@ -157,25 +147,9 @@ body { min-height: 100%; min-height: 100svh; display: grid; grid-template-rows: 
   will-change: transform; translate: calc(var(--lx) - var(--ox, 0px)) calc(var(--ly) - var(--oy, 0px));
   background: radial-gradient(closest-side, var(--hi) 0%, var(--hi-2) 14%, transparent 30%, transparent 38%, var(--lo-2) 66%, var(--lo) 100%); }
 
-/* ───────── Front: the horizon from the homepage and the print ───────── */
-.corona { position: absolute; left: calc(50% - var(--mm) * 77.88); top: calc(var(--mm) * 20.12); width: calc(var(--mm) * 155.76); aspect-ratio: 1; border-radius: 50%;
-  background: conic-gradient(from -64deg, #ed1652 0deg, #ff6a1a 36deg, #ffb22c 64deg, var(--pale-a) 96deg, var(--pale-b) 140deg, #43d9ff 182deg, var(--pale-b) 220deg,
-    #8a3cff 256deg, var(--pale-a) 292deg, #3a17e0 326deg, #ed1652 360deg);
-  /* The print's falloff outside the disc (its edge is at 84.7%). Inside, where the print never shows it, the ring
-     fades out, so when the disc slides over it you see a little more glow rather than a saturated seam. */
-  -webkit-mask: radial-gradient(closest-side, transparent 77%, rgba(0, 0, 0, .5) 82%, rgba(0, 0, 0, .58) 84%, rgba(0, 0, 0, .3) 89%, rgba(0, 0, 0, .11) 94%, transparent 100%);
-          mask: radial-gradient(closest-side, transparent 77%, rgba(0, 0, 0, .5) 82%, rgba(0, 0, 0, .58) 84%, rgba(0, 0, 0, .3) 89%, rgba(0, 0, 0, .11) 94%, transparent 100%); }
-[data-theme="dark"] .corona { opacity: .92; }
-
-/* The disc is its own cut layer, clipped to the card's corners */
-.disc { inset: 0; border-radius: var(--r); overflow: hidden; }
-.disc-shape { position: absolute; left: calc(50% - var(--mm) * 66); top: calc(var(--mm) * 32); width: calc(var(--mm) * 132); aspect-ratio: 1; border-radius: 50%;
-  background: var(--disc); transition: background-color .6s var(--ease); }
-.disc::after { content: ""; position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 0 0 .5px var(--rim); pointer-events: none;
-  -webkit-mask: radial-gradient(circle calc(var(--mm) * 66) at 50% calc(var(--mm) * 98), #000 calc(100% - 1px), transparent 100%);
-          mask: radial-gradient(circle calc(var(--mm) * 66) at 50% calc(var(--mm) * 98), #000 calc(100% - 1px), transparent 100%); }
-.disc.glint { -webkit-mask: radial-gradient(circle calc(var(--mm) * 66) at 50% calc(var(--mm) * 98), #000 calc(100% - .75px), transparent 100%);
-                      mask: radial-gradient(circle calc(var(--mm) * 66) at 50% calc(var(--mm) * 98), #000 calc(100% - .75px), transparent 100%); }
+/* ───────── Front: the homepage's sky, as it is right now ───────── */
+.base.sky { background: linear-gradient(180deg, var(--sky-top, #9ec0e9) 0%, var(--sky-mid, #cdd9e9) 48%, var(--sky-low, #f9ede2) 92%); }
+.who { top: calc(var(--mm) * 13) !important; }
 
 .who { left: 0; right: 0; top: calc(var(--mm) * 11.4); height: calc(var(--mm) * 11.6); text-align: center; }
 .name { font-family: var(--serif); font-style: italic; font-weight: 400; font-size: calc(var(--mm) * 6.4); letter-spacing: -.012em; line-height: 1; }
@@ -198,18 +172,19 @@ body { min-height: 100%; min-height: 100svh; display: grid; grid-template-rows: 
 .tile.glint { clip-path: inset(0 round var(--tr)); }
 .tile::after { content: ""; position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 0 0 calc(var(--mm) * .18) var(--tile-rim); pointer-events: none; }
 .tile .lit { --ox: calc(var(--mm) * (6 + var(--i) * 18.8)); --oy: calc(var(--mm) * 13.6); }
-.wash { position: absolute; inset: -30%; z-index: -1; opacity: .78;
-  background: radial-gradient(closest-side at 50% 42%, var(--a), color-mix(in srgb, var(--a) 40%, transparent) 60%, transparent),
-    radial-gradient(closest-side at 70% 70%, var(--b), color-mix(in srgb, var(--b) 35%, transparent) 60%, transparent 90%),
-    radial-gradient(closest-side at 28% 72%, var(--c), color-mix(in srgb, var(--c) 35%, transparent) 60%, transparent 90%); }
-[data-theme="dark"] .wash { opacity: .9; }
+.wash { position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg, var(--sky-top, #9ec0e9), var(--sky-mid, #cdd9e9) 55%, var(--sky-low, #f9ede2)); opacity: .85; }
 .tile img { position: absolute; display: block; max-width: none; height: auto; }
-.t-snap .res { width: 118%; left: -26%; top: 14%; rotate: -5deg; border-radius: calc(var(--mm) * .9); box-shadow: 0 calc(var(--mm) * .6) calc(var(--mm) * 1.6) rgba(20, 0, 80, .25); }
-.t-snap .phone { height: 116%; width: auto; left: 44%; top: 8%; filter: drop-shadow(0 calc(var(--mm) * .8) calc(var(--mm) * 1.2) rgba(20, 0, 80, .3)); }
+.t-snap .res { width: 118%; left: -26%; top: 14%; rotate: -5deg; border-radius: calc(var(--mm) * .9); box-shadow: 0 calc(var(--mm) * .6) calc(var(--mm) * 1.6) rgba(20, 30, 80, .2); }
+.t-snap .phone { height: 116%; width: auto; left: 44%; top: 8%; filter: drop-shadow(0 calc(var(--mm) * .8) calc(var(--mm) * 1.2) rgba(20, 30, 80, .25)); }
 .t-jump .rep { width: 132%; left: -8%; top: 22%; rotate: 2deg; border-radius: calc(var(--mm) * .8); box-shadow: 0 calc(var(--mm) * .6) calc(var(--mm) * 1.8) rgba(0, 40, 20, .2); }
-.t-heart { background: #06161b; }
-.t-heart .scr { width: 150%; left: -18%; top: 16%; rotate: -7deg; border-radius: calc(var(--mm) * .9); box-shadow: 0 calc(var(--mm) * .8) calc(var(--mm) * 2) rgba(0, 0, 0, .4); }
-.t-brain .ph { height: 118%; width: auto; left: 16%; top: 10%; rotate: 3deg; filter: drop-shadow(0 calc(var(--mm) * .8) calc(var(--mm) * 1.4) rgba(50, 0, 110, .35)); }
+.t-quit .cal { width: 112%; left: -22%; top: 18%; rotate: -3deg; }
+.t-quit .phone { height: 118%; width: auto; left: 46%; top: 9%; rotate: 2deg; filter: drop-shadow(0 calc(var(--mm) * .8) calc(var(--mm) * 1.2) rgba(20, 30, 80, .25)); }
+.t-ship .fly { position: absolute; width: 62%; height: 62%; left: 2%; top: 6%; color: #f6c93a; }
+.t-ship .pip { position: absolute; width: calc(var(--mm) * 9.6); height: calc(var(--mm) * 10.4); left: 50%; top: 32%;
+  background: url('../../assets/media/shipped/pip.png') no-repeat 0 calc(var(--mm) * -31.2) / calc(var(--mm) * 57.6) auto; image-rendering: pixelated;
+  animation: pip-idle 5.4s steps(6) infinite; }
+@keyframes pip-idle { to { background-position: calc(var(--mm) * -57.6) calc(var(--mm) * -31.2); } }
+@media (prefers-reduced-motion: reduce) { .t-ship .pip { animation: none; } }
 .img-dark { display: none !important; }
 [data-theme="dark"] .img-dark { display: block !important; }
 [data-theme="dark"] .img-light { display: none !important; }
