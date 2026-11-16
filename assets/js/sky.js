@@ -56,20 +56,21 @@
     'Asia/Kolkata': [19.08, 72.88], 'Asia/Shanghai': [31.23, 121.47], 'Australia/Sydney': [-33.87, 151.21], 'Australia/Melbourne': [-37.81, 144.96],
     'Pacific/Auckland': [-36.85, 174.76], 'Africa/Johannesburg': [-26.2, 28.05],
   };
-  // Asking the browser for its time zone name costs about 7 ms the first time, too much before first paint.
-  // So the first paint uses the place saved last visit, or a guess from the UTC offset, and the name is looked
-  // up once the page is idle (a repaint follows only if the place turns out different).
-  const idle = window.requestIdleCallback || ((f) => setTimeout(f, 200));
+  // Resolve the visitor's place before painting, including their first visit. Deferring
+  // this lookup could show an offset-based dawn briefly before the real local sky.
+  const idle = (f) => {
+    const queue = () => (window.requestIdleCallback || ((cb) => setTimeout(cb, 200)))(f);
+    if (document.readyState === 'complete') queue();
+    else addEventListener('load', queue, { once: true });
+  };
   const std = Math.max(new Date(2026, 0, 1).getTimezoneOffset(), new Date(2026, 6, 1).getTimezoneOffset());
   let LAT = 50, LON = -std / 4;
   try { const c = JSON.parse(localStorage.getItem('sky-place') || 'null'); if (c && c.std === std) { LAT = c.lat; LON = c.lon; } } catch (e) {}
+  try {
+    [LAT, LON] = PLACES[Intl.DateTimeFormat().resolvedOptions().timeZone] || [LAT === 50 ? 45 : LAT, -std / 4];
+  } catch (e) {}
   idle(() => {
-    const [lat, lon] = PLACES[Intl.DateTimeFormat().resolvedOptions().timeZone] || [LAT === 50 ? 45 : LAT, -std / 4];
-    try { localStorage.setItem('sky-place', JSON.stringify({ std, lat, lon })); } catch (e) {}
-    if (lat === LAT && lon === LON) return;
-    LAT = lat; LON = lon;
-    SUNS.clear(); ANCHORS.clear(); SEASON_BY_DATE.clear();
-    paint(true);
+    try { localStorage.setItem('sky-place', JSON.stringify({ std, lat: LAT, lon: LON })); } catch (e) {}
   });
 
   // The clock is the visitor's own, so the browser's local time is enough (no Intl formatting, which is slow).
@@ -127,8 +128,20 @@
   const hm = (s) => { const [h, m] = s.split(':').map(Number); return h * 60 + (m || 0); };
   const toHM = (m) => `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`;
   const wrap = (m) => ((m % 1440) + 1440) % 1440;
-  const hex = (h) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16));
-  const mix = (a, b, t) => '#' + hex(a).map((v, i) => Math.round(v + (hex(b)[i] - v) * t).toString(16).padStart(2, '0')).join('');
+  // Reuse parsed colours during sunrise searches and the time-of-day sweep. Bound the cache
+  // so a long-running tab cannot retain every interpolated colour it has ever displayed.
+  const colours = new Map();
+  const hex = (h) => {
+    if (!colours.has(h)) {
+      if (colours.size >= 2048) colours.clear();
+      colours.set(h, [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16)));
+    }
+    return colours.get(h);
+  };
+  const mix = (a, b, t) => {
+    const A = hex(a), B = hex(b);
+    return '#' + A.map((v, i) => Math.round(v + (B[i] - v) * t).toString(16).padStart(2, '0')).join('');
+  };
   const smooth = (t) => t * t * (3 - 2 * t);
   const lum = (h) => hex(h).map((v) => { v /= 255; return v <= .04045 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4; }).reduce((a, v, i) => a + v * [.2126, .7152, .0722][i], 0);
 
@@ -223,10 +236,30 @@
   // Only the values that changed are written, and a paint in the same minute with nothing new does nothing,
   // so the 10-second tick costs next to nothing between changes.
   const written = new Map();
-  const set = (k, v) => { if (written.get(k) !== v) { written.set(k, v); root.style.setProperty(k, v); } };
-  const unset = () => { VARS.forEach((v) => root.style.removeProperty(v)); written.clear(); };
-  let paintKey = '';
+  const pending = new Map();
+  const set = (k, v) => { if (written.get(k) !== v) { written.set(k, v); pending.set(k, v); } };
+  const unset = () => { VARS.forEach((v) => { if (written.has(v)) { written.delete(v); pending.set(v, ''); } }); };
+  const flush = () => {
+    if (!pending.size) return;
+    // Build off-document, preserving properties owned by other scripts, then invalidate styles once.
+    const style = document.createElement('span').style;
+    style.cssText = root.style.cssText;
+    pending.forEach((v, k) => v ? style.setProperty(k, v) : style.removeProperty(k));
+    root.style.cssText = style.cssText;
+    pending.clear();
+  };
+  let paintFrame = 0, forcePaint = false;
   function paint(force) {
+    forcePaint ||= !!force;
+    if (paintFrame) return;
+    paintFrame = requestAnimationFrame(() => {
+      paintFrame = 0;
+      const force = forcePaint; forcePaint = false;
+      paintNow(force);
+    });
+  }
+  let paintKey = '';
+  function paintNow(force) {
     const n = now();
     const m = effective();
     const key = `${n.min}|${n.ymd}|${m}|${barOpen}`;
@@ -255,6 +288,7 @@
     const meta = document.querySelector('meta[name="theme-color"]'), metaC = m === 'sky' ? L.bg : theme === 'dark' ? '#05070b' : '#ffffff';
     if (meta && meta.content !== metaC && !DAYLIGHT) meta.setAttribute('content', metaC); // a daylight page paints its own
     if (root.dataset.top === 'sky') { const st = street(n.min, n.ymd, m); set('--sky-top', st.top); set('--sky-mid', st.mid); }
+    flush();
     last = { n, L, theme, mode: m };
     favicon();
     decorate();
@@ -655,9 +689,10 @@
 
   /* ───────── Go ───────── */
   if (embed && params.has('sun')) root.classList.add('sun-on');
-  paint();
+  paintNow(); // synchronous: the visitor's sky is set before the first paint
   document.addEventListener('DOMContentLoaded', () => {
-    paint(true); // the same minute, but now the page's pieces exist
+    decorate(); // colours are already set; only the page's pieces were missing
+    document.dispatchEvent(new Event('sky:paint'));
     if (params.has('bar')) openBar();
     const toggle = document.querySelector('.theme-toggle');
     if (!toggle) return;
