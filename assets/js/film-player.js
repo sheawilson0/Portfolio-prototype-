@@ -1,8 +1,7 @@
 // Film player: a silent looping video with its music and its sound effects as separate tracks, played through
 // Web Audio so they can fade in and out. No player controls: the film plays while it's on screen and loops.
 // Tapping the film, or the corner sound button, turns the sound on or off. Browsers only allow sound after a
-// tap, so it starts with the first tap or key press anywhere on the page. Both tracks are fetched and decoded
-// as soon as the film first plays, so they're ready the moment that tap comes. No dependencies.
+// tap. The audio context and streaming tracks wait until the visitor asks for sound. No dependencies.
 //
 // <figure class="film" data-film data-wide="wide.mp4" data-tall="tall.mp4" data-wide-poster="…" data-tall-poster="…"
 //   data-music="music.m4a" data-sfx="sfx.m4a">
@@ -24,54 +23,45 @@
     const tall = matchMedia('(max-width: 720px), (max-aspect-ratio: 4/5)').matches;
     let speed = 1, restarts = 0;
 
-    // Audio: one context, a gain per track, sources restarted only on play, seek, loop or a real drift.
-    const ctx = AC ? new AC() : null;
+    // Audio: one lazy context and gain per streamed track, following the picture.
+    let ctx = null;
     const tracks = {};
     for (const key of ['music', 'sfx']) {
-      const gain = ctx ? ctx.createGain() : null;
-      if (gain) { gain.gain.value = 0; gain.connect(ctx.destination); }
-      tracks[key] = { key, on: true, level: key === 'music' ? 1 : .8, url: '', buffer: null, gain }; // effects a touch under the music so the two never clip
-      if (gain) gain.gain.value = tracks[key].level;
+      tracks[key] = { key, on: true, level: key === 'music' ? 1 : .8, url: '', audio: null, gain: null }; // effects a touch under the music so the two never clip
     }
-    let armed = false; // the sound files wait for the film's first frame, so they don't hold up the page
-    let anchor = null; // the context time and film time the sounds started from
-
+    let armed = false; // only a request for sound may fetch or decode audio
     const latency = () => (ctx ? (ctx.outputLatency || 0) + (ctx.baseLatency || 0) : 0);
-    const stopTrack = t => { if (t.source) { try { t.source.stop(); } catch (e) {} t.source.disconnect(); t.source = null; } };
-    const stop = () => { Object.values(tracks).forEach(stopTrack); anchor = null; };
-    // one track joins the running sounds at the anchor's position, so the other is untouched
+    const stopTrack = t => { t.audio?.pause(); };
+    const stop = () => Object.values(tracks).forEach(stopTrack);
+    // Stream on demand instead of downloading and decoding both complete files first.
+    // Each track seeks to the live picture when ready, including after a buffering pause.
+    const syncTrack = t => {
+      const a = t.audio;
+      if (!a || !a.readyState || video.paused || !t.on) return;
+      const at = video.currentTime + latency() * speed;
+      if (Math.abs(a.currentTime - at) > RESYNC) a.currentTime = at;
+    };
     const startTrack = t => {
-      stopTrack(t);
-      if (!anchor || !t.buffer) return;
-      const at = anchor.film + (ctx.currentTime - anchor.ctx) * speed;
-      if (at >= t.buffer.duration) return;
-      const s = ctx.createBufferSource(); s.buffer = t.buffer; s.playbackRate.value = speed; s.connect(t.gain);
-      s.start(0, Math.max(0, at)); t.source = s;
+      if (!t.audio || !t.on || video.paused) return;
+      t.audio.playbackRate = speed;
+      syncTrack(t);
+      t.audio.play().catch(() => {});
     };
     const start = () => {
-      stop();
-      if (!ctx || video.paused || ctx.state !== 'running') return;
-      // start a touch ahead of the picture so the sound is heard on time
-      anchor = { ctx: ctx.currentTime, film: video.currentTime + latency() * speed };
+      if (!ctx || !tracks.music.on || video.paused || ctx.state !== 'running') return;
       Object.values(tracks).forEach(startTrack);
       restarts++;
     };
-    const audioTime = () => (anchor ? anchor.film + (ctx.currentTime - anchor.ctx) * speed - latency() * speed : null);
-    const drift = () => { const a = audioTime(); return a === null ? 0 : a - video.currentTime; };
-
-    const load = async (t, url) => {
-      if (!url || !ctx) return;
-      const abs = new URL(url, location.href).href;
-      if (t.url !== abs) { t.url = abs; t.buffer = null; }
-      if (t.buffer || t.loading === abs || !armed) return;
-      t.loading = abs;
-      // keep the old track playing until the new one is decoded, then swap in place
-      try {
-        const data = await (await fetch(abs)).arrayBuffer();
-        const buf = await new Promise((ok, no) => ctx.decodeAudioData(data, ok, no));
-        if (t.url === abs) { t.buffer = buf; if (anchor) startTrack(t); else if (!video.paused) start(); }
-      } catch (e) {}
-      finally { if (t.loading === abs) t.loading = ''; }
+    const drift = () => {
+      const a = tracks.music.audio;
+      return !a || a.paused || a.readyState < 3 ? 0 : a.currentTime - latency() * speed - video.currentTime;
+    };
+    const load = (t, url) => {
+      if (!url) return;
+      t.url = new URL(url, location.href).href;
+      if (!armed || !t.audio || t.audio.src === t.url) return;
+      t.audio.src = t.url;
+      if (!video.paused && t.on) startTrack(t);
     };
 
     const fade = t => { if (t.gain) t.gain.gain.setTargetAtTime(t.on ? t.level : 0, ctx.currentTime, 0.02); };
@@ -85,19 +75,21 @@
       if (muteBtn) { muteBtn.setAttribute('aria-pressed', String(muted)); muteBtn.setAttribute('aria-label', muted ? 'Turn sound on' : 'Mute'); }
     };
 
-    let raf = 0, last = 0;
+    let raf = 0, lastTime = 0;
     const loop = () => {
+      if (!ctx || ctx.state !== 'running' || !tracks.music.on || video.paused) { raf = 0; return; }
       const now = video.currentTime;
-      if (now + 0.5 < last) start(); // the video looped
-      else if (anchor && Math.abs(drift()) > RESYNC) start();
-      else if (!anchor && ctx && ctx.state === 'running' && !video.paused) start();
-      last = now;
+      if (now + .5 < lastTime) start(); // restart even a track that ended just before the video loop
+      lastTime = now;
+      for (const t of Object.values(tracks)) {
+        if (t.audio && !t.audio.paused && !t.audio.seeking && t.audio.readyState >= 3) syncTrack(t);
+      }
       raf = video.paused ? 0 : requestAnimationFrame(loop);
     };
-    const kick = () => { if (!raf) raf = requestAnimationFrame(loop); };
+    const kick = () => { if (ctx?.state === 'running' && tracks.music.on && !video.paused && !raf) raf = requestAnimationFrame(loop); };
 
     const arm = () => { armed = true; Object.values(tracks).forEach(t => load(t, t.url)); };
-    video.addEventListener('playing', () => { arm(); start(); setState(); kick(); });
+    video.addEventListener('playing', () => { start(); setState(); kick(); });
     video.addEventListener('play', () => { setState(); kick(); });
     video.addEventListener('pause', () => { stop(); setState(); });
     video.addEventListener('waiting', stop);
@@ -106,26 +98,34 @@
 
     const play = () => video.play().catch(() => {});
     const unlock = () => {
-      if (!ctx) return;
-      const ready = () => { arm(); if (!video.paused) start(); };
+      if (!AC) return;
+      if (!ctx) {
+        ctx = new AC();
+        for (const t of Object.values(tracks)) {
+          t.gain = ctx.createGain(); t.gain.gain.value = t.on ? t.level : 0;
+          t.gain.connect(ctx.destination);
+          t.audio = new Audio(); t.audio.preload = 'none';
+          // Keep pitch following speed, as with the original buffer sources.
+          t.audio.preservesPitch = false;
+          t.source = ctx.createMediaElementSource(t.audio); t.source.connect(t.gain);
+          t.audio.addEventListener('loadedmetadata', () => { if (t.on && !video.paused) startTrack(t); });
+          t.audio.addEventListener('playing', () => syncTrack(t));
+        }
+        ctx.addEventListener('statechange', () => { setState(); kick(); });
+      }
+      // Start streaming in the gesture while the audio context resumes.
+      arm();
+      const ready = () => { if (!video.paused) start(); setState(); kick(); };
       if (ctx.state !== 'running') ctx.resume().then(ready).catch(() => {}); else ready();
     };
-    // The first tap or key press anywhere lets the music start; the sound button mutes and unmutes.
-    if (ctx) ctx.addEventListener('statechange', setState);
-    // Which event counts as a press differs by browser and by mouse or finger, so listen to them all until one works.
-    const WAKES = ['pointerdown', 'pointerup', 'touchend', 'click', 'keydown'];
-    const wake = (e) => {
-      if (ctx.state === 'running') return WAKES.forEach(t => removeEventListener(t, wake, true));
-      if (!root.contains(e.target)) unlock();
-    };
-    if (ctx) WAKES.forEach(t => addEventListener(t, wake, true));
     const sound = (e) => {
       if (e) e.stopPropagation();
-      const on = ctx && ctx.state !== 'running' ? true : !tracks.music.on;
+      const on = !ctx || ctx.state !== 'running' ? true : !tracks.music.on;
       Object.values(tracks).forEach(t => { t.on = on; });
-      unlock(); Object.values(tracks).forEach(fade);
+      if (on) unlock();
+      Object.values(tracks).forEach(fade);
       if (on && video.paused) play();
-      else if (on && !anchor) start();
+      else if (on) start();
       setState(); kick();
     };
     if (muteBtn) muteBtn.addEventListener('click', sound);
