@@ -54,3 +54,9 @@
 @media (pointer: coarse) {
   .film-sound { width: 44px; height: 44px; }
 }
+
+/* Reserve the selected film format before the player starts. */
+@media (max-width: 720px), (max-aspect-ratio: 4/5) {
+  .sn-film .film { max-width: 520px; margin: 0 auto; }
+  .film-frame { aspect-ratio: 4 / 5; }
+}

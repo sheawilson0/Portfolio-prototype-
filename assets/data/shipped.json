@@ -252,7 +252,7 @@
       "k": "work",
       "t": "A PowerPoint add-in",
       "l": "Puts the brand's assets inside PowerPoint. Pip, its helper, is my own sprite: twelve moods drawn frame by frame.",
-      "img": "/assets/media/shipped/pip.png",
+      "img": "/assets/media/shipped/pip.webp",
       "o": "sprite"
     }
   ]
