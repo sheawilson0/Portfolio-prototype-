@@ -99,36 +99,6 @@ Visual source: jumpstart-prototype.html at f67a1dc, rendered unchanged at 1440×
 Local review image: [open](../assets/media/shipped/drafts/private/older-reporting.webp)
 Approval: work-owned prototype. Generic title/project/copy, draft: true and wraps: true. Visual and variants stay in the excluded private folder.
 
-### 2026-04-08 · Cipher’s guidelines, on the site · maybe
-uni. The mark, type and colour, brought together in a downloadable guide.
-Evidence: portfolio 14544c2, 8 Apr: adds the guidelines download. The document is v1.0, May 2025; this entry dates its addition to the portfolio, not its creation. Separate process deliverable from the app case study.
-Visual source: portfolio, 14544c2:Cipher Brand Guidelines.pdf, page 16 (Primary Logo), rendered unchanged with pdftoppm at 1600×900.
-Local review image: [open](../assets/media/shipped/drafts/older-cipher-guidelines.webp)
-
-### 2026-04-06 · Amp, in a case study · strong
-uni. A music player concept with one control for volume, devices and shortcuts.
-Evidence: portfolio 803f08a, 4 Apr: case study; b4da1ef, 6 Apr: higher-resolution hero and feature imagery. No claim of a shipped music service.
-Visual source: portfolio b4da1ef:amp-screens.png, 1000×1000. Original mockup copied as supplied, with no changes to artwork.
-Local review image: [open](../assets/media/shipped/drafts/older-amp.webp)
-
-### 2026-04-04 · Brain Dump, explained · strong
-personal. Type or talk, then sort the mess into tasks, routines and ideas.
-Evidence: portfolio 2e2e37d, 4 Apr: adds Brain Dump case study. Original home capture recovered from 803f08a:braindump-home.png, 631×1306. Case study says Shea built the app for himself. The screenshot includes Shea's own first name and ordinary task examples; no inbox, client data or other people's names.
-Visual source: portfolio 803f08a:braindump-home.png, copied unchanged.
-Local review image: [open](../assets/media/shipped/drafts/older-braindump.webp)
-
-### 2026-04-04 · A closer look at Cipher · strong
-uni. A banking concept, from the green mark to the app and website.
-Evidence: portfolio 803f08a, 4 Apr: builds out the Cipher case study. A concept at Ulster, not a live bank. Dates the case study, not the original coursework.
-Visual source: portfolio 803f08a:cipher-bento.png, 1920×1080, copied unchanged. Original concept fixture portraits/names are part of the supplied design, not live banking data.
-Local review image: [open](../assets/media/shipped/drafts/older-cipher.webp)
-
-### 2026-04-04 · Tasks, made for a watch · strong
-uni. A case study for my wrist-sized to-do concept, with colour showing what comes first.
-Evidence: portfolio 803f08a, 4 Apr: adds Captr case study. Earlier 5 Mar homepage already shows Captr; April dates the fuller case study, not the original concept.
-Visual source: portfolio 803f08a:Captrhome.jpg, 1200×800, copied unchanged.
-Local review image: [open](../assets/media/shipped/drafts/older-captr.webp)
-
 ### 2026-10-31 · A phone browser with no bar · replacement visual
 personal. Existing public entry; title and copy unchanged.
 Before: pale static phone capture, 780×1688. After: 11.55-second muted looping recording of the running Browser lab V3, plus a crisp 390×844 tab-switcher poster. Shows the full page without an address bar, a recipe peek over the page, the tab switcher and Rooms settings. All pages are the prototype's fictional fixtures. Limited the recording session's tabs to shop, recipe, search and wiki pages; no inboxes, real people or private browsing. Used the prototype's own functions to open these existing states, with no artwork or UI changes.
