@@ -395,14 +395,15 @@
 /* The Herring Net in the About sentence: click it and it grows out of the line into a pop-up; any click or Esc
    sends it back to its spot. */
 (() => {
-  const btn = document.querySelector('.in-art-btn'), dlg = document.querySelector('.art-zoom');
-  if (!btn || !dlg) return;
-  const small = btn.querySelector('img'), big = dlg.querySelector('img');
+  const btns = document.querySelectorAll('.in-art-btn'), dlg = document.querySelector('.art-zoom');
+  if (!btns.length || !dlg) return;
+  const big = dlg.querySelector('img');
+  let small = btns[0].querySelector('img');
   // Warm the full painting as About approaches, so opening it doesn't wait on the network.
-  const artObserver = new IntersectionObserver(([entry]) => {
-    if (entry.isIntersecting) { big.loading = 'eager'; artObserver.disconnect(); }
+  const artObserver = new IntersectionObserver((entries) => {
+    if (entries.some((e) => e.isIntersecting)) { big.loading = 'eager'; artObserver.disconnect(); }
   }, { rootMargin: '600px' });
-  artObserver.observe(btn);
+  btns.forEach((btn) => artObserver.observe(btn));
   const still = matchMedia('(prefers-reduced-motion: reduce)');
   let busy = false;
   const fly = (back) => {
@@ -412,11 +413,12 @@
     const kf = [{ transform: from, borderRadius: '2px' }, { transform: 'none', borderRadius: '8px' }];
     return big.animate(back ? kf.reverse() : kf, { duration: still.matches ? 0 : 480, easing: 'cubic-bezier(.2, .9, .25, 1)', fill: 'both' });
   };
-  btn.addEventListener('click', () => {
+  btns.forEach((btn) => btn.addEventListener('click', () => {
+    small = btn.querySelector('img');
     dlg.showModal(); small.style.visibility = 'hidden';
     requestAnimationFrame(() => dlg.classList.add('is-open'));
     fly(false);
-  });
+  }));
   const close = async () => {
     if (busy) return; busy = true;
     dlg.classList.remove('is-open');
