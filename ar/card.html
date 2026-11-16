@@ -73,6 +73,9 @@
   #hud .nocard { position: absolute; left: 50%; bottom: calc(76px + var(--safe-b)); translate: -50% 10px; opacity: 0; pointer-events: none; white-space: nowrap;
     transition: opacity .5s var(--ease), translate .6s var(--ease); }
   body.is-scanning.has-waited #hud .nocard { opacity: 1; translate: -50% 0; pointer-events: auto; }
+  /* Phones with their own AR viewer get the desk first; everything else gets the on-screen version */
+  body:not(.can-place) .if-place, body.can-place .if-no-place { display: none; }
+  body.can-place #intro .actions { gap: 10px; }
 </style>
 </head>
 <body>
@@ -83,13 +86,17 @@
   <header class="nav"><div class="nav-inner"><a class="logo" href="../" aria-label="Shea Wilson, homepage">SW</a><nav class="links" aria-label="Main"><a href="./">3D</a><a href="../#contact">Contact</a></nav></div></header>
   <div class="mock" aria-hidden="true"><div class="mock-card"><img src="print/card-back.webp" alt=""></div></div>
   <h1>The card, <em>in 3D.</em></h1>
-  <p class="lede">Point your camera at the side with the four projects. They lift off the card, and you can tap one to open it.</p>
+  <p class="lede"><span class="if-place">No card? Put my work on your desk. Got one? Point your camera at the side with the four projects and they lift off it.</span><span class="if-no-place">Point your camera at the side with the four projects. They lift off the card, and you can tap one to open it.</span></p>
   <div class="actions">
+    <button class="btn is-primary if-place" id="desk" type="button">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" aria-hidden="true"><path d="M8 1.8 13.5 5v6L8 14.2 2.5 11V5z"/><path d="M2.5 5 8 8.2 13.5 5M8 8.2v6"/></svg>
+      Put it on your desk
+    </button>
     <button class="btn is-primary" id="go" type="button">
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" aria-hidden="true"><path d="M2 5.5a1.5 1.5 0 0 1 1.5-1.5h1.6l1.2-1.6h3.4L10.9 4h1.6A1.5 1.5 0 0 1 14 5.5v6A1.5 1.5 0 0 1 12.5 13h-9A1.5 1.5 0 0 1 2 11.5z"/><circle cx="8" cy="8.3" r="2.4"/></svg>
-      Start camera
+      <span class="if-no-place">Start camera</span><span class="if-place">Scan my card</span>
     </button>
-    <button class="btn is-quiet" id="nocard" type="button">No card? See it without one</button>
+    <button class="btn is-quiet if-no-place" id="nocard" type="button">No card? See it on screen</button>
     <a class="btn is-quiet" id="contact" href="assets/shea-wilson.vcf">Save my contact</a>
   </div>
   <p class="err" id="err">The camera didn’t start. If you opened this from another app, try it in Safari or Chrome. Or see it without the card.</p>
@@ -110,7 +117,7 @@
     </button>
     </span>
   </div>
-  <button class="pill glass nocard" id="nocard-live" type="button">No card? See it without one</button>
+  <button class="pill glass nocard" id="nocard-live" type="button"><span class="if-place">No card? Put it on your desk</span><span class="if-no-place">No card? See it on screen</span></button>
   <p class="hint pill glass" id="hint" role="status"><span class="ring" style="--size:12px"></span><span id="hint-text">Point at the side with the four projects</span></p>
 </div>
 

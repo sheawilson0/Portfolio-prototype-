@@ -7,6 +7,7 @@ import { buildHorizon } from './horizon.js';
 import { CARD, asset, environment, loadTexture, squircleShape, squirclePlane, buildShadow } from './kit.js';
 import { projectPanel } from './project-panel.js';
 import { sky, onSky } from './sky-bridge.js';
+import { canPlace, placeOnDesk } from './place.js';
 
 const q = new URLSearchParams(location.search);
 const $ = (id) => document.getElementById(id);
@@ -353,7 +354,7 @@ async function go() {
     intro.classList.add('is-gone');
     unzoom();
     // Nothing found after a while: offer the card-free version
-    setTimeout(() => { if (!horizon.started) body.classList.add('has-waited'); }, 8000);
+    setTimeout(() => { if (!horizon.started) body.classList.add('has-waited'); }, 3000);
   } catch (err) {
     console.warn(err);
     stopAR();
@@ -371,8 +372,22 @@ function noCard() {
   unzoom();
   startPreview();
 }
+// Phones with their own AR viewer put the model on a real surface instead. The viewer takes over the camera,
+// so the scan stops and you come back to the start, ready to scan a card if you have one.
+if (canPlace) { body.classList.add('can-place'); $('go').classList.remove('is-primary'); }
+function backToStart() {
+  stopAR();
+  mode = 'idle';
+  body.classList.remove('is-ar', 'is-live', 'is-scanning', 'has-waited');
+  anchor.visible = false;
+  intro.classList.remove('is-gone', 'is-starting', 'has-error');
+  $('go').disabled = false;
+}
+$('desk').addEventListener('click', placeOnDesk);
 $('nocard').addEventListener('click', noCard);
-$('nocard-live').addEventListener('click', noCard);
+$('nocard-live').addEventListener('click', () => {
+  if (canPlace) { backToStart(); placeOnDesk(); } else noCard();
+});
 $('close').addEventListener('click', () => { location.href = q.get('back') || '../'; });
 $('replay').addEventListener('click', () => {
   closeSheet();
