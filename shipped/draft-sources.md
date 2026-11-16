@@ -116,10 +116,10 @@ Worktree served on free port 6148. Review renders 31 cards including six labelle
 
 Three drafts, all draft: true. Newest entry before this run was 15 Nov (Two Shores); same-day work not already listed was included.
 
-### 2026-11-16 · This site, in 26 seconds · strong
-personal. A launch film recorded from the live site, with every cut on the beat.
-Evidence: ~/Developer/portfolio-launch-video (not a git repo): README and out/ renders dated 16 Nov 03:18. Made to post on X and LinkedIn; Shea hasn't reviewed it yet, so drop this if the film changes or doesn't go out.
-Visual source: ~/Developer/portfolio-launch-video/out/sheawilson-launch-16x9.mp4. Poster is its first frame; the clip is its first 8 seconds, scaled to 960×540, h264, yuv420p, no audio, faststart, 323716 bytes. Shows only the public site.
+### 2026-11-16 · This site, sunrise to night · strong
+personal. A short teaser. The sky runs from sunrise to night while the work skims past.
+Evidence: ~/Developer/portfolio-launch-video (not a git repo), round two "day" film, v4, rendered 16 Nov 12:12. Shea called it perfect and swapped it in for the first cut (the 26-second one), which he'd rejected.
+Visual source: ~/Developer/portfolio-launch-video/out/round2/sheawilson-day.mp4, all 18 seconds, scaled to 960×540 at 24 fps, two-pass h264 at 165 kbps, yuv420p, no audio, faststart, 380245 bytes. Poster is the film's own poster, out/round2/sheawilson-day-poster.png (2.4 s). Shows only the public site's cards.
 Local review image: [open](../assets/media/shipped/drafts/launch-film.webp)
 Local review film: [open](../assets/media/shipped/drafts/launch-film.mp4)
 
