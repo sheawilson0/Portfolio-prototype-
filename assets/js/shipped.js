@@ -24,7 +24,8 @@
     const made = window.SHIP_OBJECTS && (s.wraps ? window.SHIP_OBJECTS.wraps : window.SHIP_OBJECTS[s.obj]);
     if (made) return made(s);
     if (s.wraps) return `<span class="obj obj-tile is-wraps"><span class="obj-blur"></span>${LOCK}</span>`;
-    const img = s.img ? `<img src="${esc(s.img)}" alt="" loading="lazy" decoding="async" draggable="false">` : '';
+    const responsive = s.w && s.h ? ` width="${s.w}" height="${s.h}" srcset="${[480, 800, 1200].map(w => `${esc(s.img.replace('.webp', `-${w}w.webp`))} ${w}w`).join(', ')}" sizes="(max-width: 700px) 280px, 360px"` : '';
+    const img = s.video && !reduced ? `<video src="${esc(s.video)}" poster="${esc(s.img)}" width="${s.w}" height="${s.h}" muted loop playsinline preload="none" aria-hidden="true"></video>` : s.img ? `<img src="${esc(s.img)}" alt=""${responsive} loading="lazy" decoding="async" draggable="false">` : '';
     switch (s.img && s.o) {
       case 'icon': return `<span class="obj obj-icon">${img}</span>`;
       case 'cutout': return `<span class="obj obj-cutout">${img}</span>`;
@@ -148,7 +149,8 @@
   ['pointerdown', 'touchend', 'keydown'].forEach((t) => addEventListener(t, wakeAudio, { capture: true, passive: true }));
   document.addEventListener('visibilitychange', () => { if (!document.hidden && ctx) ctx.resume().catch(() => {}); });
 
-  fetch('/assets/data/shipped.json').then((r) => r.json()).then(({ ships }) => {
+  const initial = document.querySelector('#shipped-data');
+  (initial ? Promise.resolve(JSON.parse(initial.textContent)) : fetch('/assets/data/shipped.json').then(r => r.json())).then(({ ships }) => {
     ships = ships.filter((s) => !s.draft).sort((a, b) => b.d.localeCompare(a.d));
     if (!ships.length) return;
     home(ships);
@@ -278,12 +280,13 @@
       current = -1; opened = null; steer = null;
       track.classList.remove('has-open');
       const target = focusId && items.find((el) => el.id === focusId);
-      requestAnimationFrame(() => {
+      {
+        // Centre before the first paint, including cross-page snapshots.
         // Opens on the newest thing I can show, not a locked one.
         const newest = [...items].reverse().find((el) => !el.classList.contains('is-wraps'));
         if (target) { go(target, false); open(target); } else if (newest) go(newest, false); else track.scrollLeft = track.scrollWidth;
         onScroll();
-      });
+      }
     }
 
     // The focus line is the middle of the screen.
@@ -296,7 +299,14 @@
       steer = smooth && !reduced ? el : null;
       track.scrollTo({ left: mid(el) - track.clientWidth / 2, behavior: steer ? 'smooth' : 'auto' });
     };
-    const mood = (el) => el?.sprite?.set(el === opened ? 'open' : el.classList.contains('is-focus') ? 'near' : 'far');
+    const mood = (el) => {
+      if (!el) return;
+      const near = el === opened || el.classList.contains('is-focus');
+      el.sprite?.set(el === opened ? 'open' : near ? 'near' : 'far');
+      const video = el.querySelector('video');
+      if (video) { if (near && !document.hidden) video.play().catch(() => {}); else video.pause(); }
+    };
+    document.addEventListener('visibilitychange', () => items.forEach(mood));
     function open(el) {
       if (opened === el) return;
       const was = opened;
