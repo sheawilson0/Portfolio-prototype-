@@ -211,13 +211,13 @@
   const loaded = (img) => img.classList.add('is-loaded');
   document.addEventListener('load', (e) => { if (e.target.tagName === 'IMG') loaded(e.target); }, true);
   document.querySelectorAll('img').forEach((img) => { if (img.complete && img.naturalWidth) loaded(img); });
-  // Start the remaining card pictures after the DOM is ready, behind the first card.
+  // The intro waits for the first two cards; leave the rest to native lazy loading.
   document.addEventListener('DOMContentLoaded', () => {
     const work = document.querySelector('.work');
     if (!work || getComputedStyle(work).display === 'none') return;
-    // Only exclude CSS-hidden alternatives; offscreen cards still need their pictures.
-    const pictures = [...work.querySelectorAll('img[loading="lazy"]')].filter(i => getComputedStyle(i).display !== 'none');
-    pictures.forEach(i => { i.fetchPriority = 'low'; i.loading = 'eager'; });
+    work.querySelectorAll('.item:nth-child(-n+2) .media img[loading="lazy"]').forEach((img) => {
+      if (getComputedStyle(img).display !== 'none') img.loading = 'eager';
+    });
   });
 
   /* ── The next page, ready before the click ──
