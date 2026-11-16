@@ -212,17 +212,21 @@
   .is-street .obj-screen { width: 276px; height: 206px; }
 }
 
-/* One opacity crossfade, without the shared rise or additive blending flash. */
+/* One crossfade. Both pages wear the same fixed sky, so the two halves fade with the same timing and add up
+   (plus-lighter): the sky stays put and only the content changes. Normal blending let the plain colour behind
+   the page show through halfway, which read as the screen turning blue. */
 .shipped-hop::view-transition-old(root),
 .shipped-hop::view-transition-new(root) {
-  animation: shipped-fade-out .24s ease both;
-  mix-blend-mode: normal;
+  animation: shipped-fade-out .28s ease both;
+  mix-blend-mode: plus-lighter;
 }
 .shipped-hop::view-transition-new(root) { animation-name: shipped-fade-in; }
 @keyframes shipped-fade-out { to { opacity: 0; } }
 @keyframes shipped-fade-in { from { opacity: 0; } }
 .shipped-hop .reveal.in { transition: none; }
-.shipped-leaving body { opacity: 0; transition: opacity .18s ease; }
+/* Browsers without page transitions (Firefox, Zen): fade what's on the sky, never the sky itself (body::before
+   on the homepage, body's own background on Shipped), so the plain colour behind the page never shows. */
+.shipped-leaving body > * { opacity: 0 !important; transition: opacity .18s ease !important; }
 @media (prefers-reduced-motion: reduce) {
   .shipped-hop::view-transition-group(*),
   .shipped-hop::view-transition-old(*),
@@ -230,10 +234,10 @@
   .is-street .st-stand, .is-street .st-stand .obj { transition: none; }
 }
 
-.shipped-fallback.shipped-arrived body { animation: shipped-fade-in .2s ease both; }
-.shipped-fallback.shipped-leaving body { animation: none; }
+.shipped-fallback.shipped-arrived body > * { animation: shipped-fade-in .24s ease both; }
+.shipped-fallback.shipped-leaving body > * { animation: none; }
 /* home.css adds its own card and picture entrances after this stylesheet. */
 .shipped-hop .home .work .item.reveal,
 .shipped-hop .home .work .item.reveal .media { transition: none !important; }
 
-.shipped-fallback:not(.shipped-arrived) body { opacity: 0; }
+.shipped-fallback:not(.shipped-arrived) body > * { opacity: 0; }
