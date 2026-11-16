@@ -1,0 +1,89 @@
+# Shipped draft review
+
+Twelve additions; none are claimed as new public launches unless the source supports it. All have draft: true. Review at /shipped/?drafts on the local worktree server. The 29 existing records are unchanged; the street already hides 13 minor updates, so it shows 16 public cards or 28 with drafts.
+
+## Sources and picks
+
+### 2026-11-15 · Three ways through the same street · strong
+personal. A Belfast street, tried side-on, in isometric pixels and in 3D.
+Evidence: two-shores: 15 Nov commits building side-on, iso2d and iso3d prototypes, then a comparison page.
+Visual source: /Users/sheawilson/Developer/two-shores/proto/side/shots/desktop-court.png
+Local review image: [open](/Users/sheawilson/.t3/worktrees/portfolio/t3-9f12605b-54f8507fc7a70b13/assets/media/shipped/drafts/two-shores.webp)
+
+### 2026-11-10 · Meridian, in thirteen seconds · strong
+personal. A short film that moves from Home to the agents and Stash.
+Evidence: meridian-first-post: 29a6bc9, 10 Nov; rendered film is 13.7 seconds. Frame at 11.5s avoids all sample inbox content.
+Visual source: ~/Developer/meridian-first-post/renders/meridian-first-post.mp4, 11.5s
+Local review image: [open](/Users/sheawilson/.t3/worktrees/portfolio/t3-9f12605b-54f8507fc7a70b13/assets/media/shipped/drafts/meridian-film.webp)
+
+### 2026-11-09 · Two ways to make Cadence clearer · strong
+personal. A status line or a reading page. I compared both before the next design.
+Evidence: cadence: 9 Nov design v4 commit and design/v4/index.html. Separate process artefact from the v5 release already listed. Captured the Dictation state to avoid names in the invented meeting fixture.
+Visual source: ~/Developer/cadence/design/v4/ (Dictation)
+Local review image: [open](/Users/sheawilson/.t3/worktrees/portfolio/t3-9f12605b-54f8507fc7a70b13/assets/media/shipped/drafts/cadence-rounds.webp)
+
+### 2026-11-09 · A family of products · strong
+work. Six rounds of marks and colour, brought together for a first look.
+Evidence: Influential/insight-lab: 9 Nov, six logo/colour rounds and a first-look share page. Private preview, not a product launch.
+Visual source: ~/Developer/Influential/insight-lab/site/
+Local review image: [open](/Users/sheawilson/.t3/worktrees/portfolio/t3-9f12605b-54f8507fc7a70b13/assets/media/shipped/drafts/private/brand-rounds.webp)
+
+### 2026-11-03 · Finding the line · strong
+uni. Nine rounds behind Meridian’s mascot, with what I kept and dropped.
+Evidence: final-year: 029ae98 and 522568b, 3 Nov. Public write-up, distinct from the finished mascot already listed.
+Visual source: /Users/sheawilson/.t3/userdata/browser-artifacts/browser-screenshot-localhost-mwijw8am-6e6440dc.png
+Local review image: [open](/Users/sheawilson/.t3/worktrees/portfolio/t3-9f12605b-54f8507fc7a70b13/assets/media/shipped/drafts/finding-the-line.webp)
+
+### 2026-10-28 · An agent that feels painted · strong
+personal. Three looks for the same seven states: oil, manuscript and stained glass.
+Evidence: ornament-lab: 28 Oct prototype commit and README. Idle, fleet off: no sample task names shown.
+Visual source: ~/Developer/ornament-lab/?variant=A&state=idle&fleet=0
+Local review image: [open](/Users/sheawilson/.t3/worktrees/portfolio/t3-9f12605b-54f8507fc7a70b13/assets/media/shipped/drafts/ornament.webp)
+
+### 2026-10-15 · A design system in motion · strong
+work. From construction lines to finished screens, in a short film.
+Evidence: Influential/quitcoach-brand-film: 15 Oct commits and README. Local 92-second design-system film, not the launch film already on the Quit28 case study. Frame at 43s.
+Visual source: ~/Developer/Influential/quitcoach-brand-film/renders/brand-wide-silent.mp4, 43s
+Local review image: [open](/Users/sheawilson/.t3/worktrees/portfolio/t3-9f12605b-54f8507fc7a70b13/assets/media/shipped/drafts/private/design-film.webp)
+
+### 2026-10-13 · Find the shape before the word · strong
+personal. Three layouts for looking up interface terms, with examples you can try.
+Evidence: ui-lingo-prototype: a9d4a89, 13 Oct; README labels all three layouts as unselected prototypes.
+Visual source: /Users/sheawilson/Developer/ui-lingo-prototype/review/layout-B.png
+Local review image: [open](/Users/sheawilson/.t3/worktrees/portfolio/t3-9f12605b-54f8507fc7a70b13/assets/media/shipped/drafts/ui-words.webp)
+
+### 2026-09-28 · Smoking Snapshot, the film · strong
+work. The calculator became a 32-second film, cut to the beat.
+Evidence: snapshot-film README: made 28 Sep. Film already embedded on the portfolio snapshot.html page. Frame at 8s from the existing wide MP4; video reuses that same file.
+Visual source: assets/media/snapshot/film/snapshot-film-wide.mp4, 8s
+Local review image: [open](/Users/sheawilson/.t3/worktrees/portfolio/t3-9f12605b-54f8507fc7a70b13/assets/media/shipped/drafts/snapshot-film.webp)
+
+### 2026-09-10 · My projects as floating islands · maybe
+personal. A small world where a raised lantern means an agent needs me.
+Evidence: overworld: 10 Sep build and review commits; docs/review-2026-09-10/4-overview-night-pass2.png. Overview shows project status, no private session content.
+Visual source: /Users/sheawilson/Developer/overworld/docs/review-2026-09-10/4-overview-night-pass2.png
+Local review image: [open](/Users/sheawilson/.t3/worktrees/portfolio/t3-9f12605b-54f8507fc7a70b13/assets/media/shipped/drafts/overworld.webp)
+
+### 2026-09-08 · Put a price on the work · maybe
+personal. An offline tool for turning a design brief into a scope and a quote.
+Evidence: scope-note: 3b9bb45 and ed6247a, 8 Sep. Offline customer ZIP prepared; no evidence of sales. Example client only in existing review capture.
+Visual source: /Users/sheawilson/Developer/scope-note/outputs/review/client-document.png
+Local review image: [open](/Users/sheawilson/.t3/worktrees/portfolio/t3-9f12605b-54f8507fc7a70b13/assets/media/shipped/drafts/scope-note.webp)
+
+### 2026-08-27 · An awareness tool, explored · maybe
+work. Different ways to take someone from a first tap to a clear takeaway.
+Evidence: Influential/heart-health-live-performance: 27 Aug campaign variant/checkpoint commits. Original concept supplied by a colleague; this is Shea’s exploration/refinement, not a claim to the original. Kept generic and under wraps pending ownership/publicity review.
+Visual source: ~/Developer/Influential/heart-health-live-performance/copy-amends-campaign/ (analytics rejected)
+Local review image: [open](/Users/sheawilson/.t3/worktrees/portfolio/t3-9f12605b-54f8507fc7a70b13/assets/media/shipped/drafts/private/awareness.webp)
+
+## Work-owned visuals needing approval
+
+Smoking Snapshot film (already present on the portfolio, but approve this extra use); Quit28 design-system film; Insight Lab first-look brand board; Heart Health campaign exploration. The latter three use generic copy and wraps: true. Their image folder is excluded from Vercel deploys. They remain locked in review mode too; open the local image links above to inspect them.
+
+## Coverage
+
+Inspected the READMEs and recent git history across ~/Developer (including Influential, shared worktree histories deduplicated), ~/Meridian and this portfolio. Passed over repeated JumpStart checkouts, existing Device Shots/motion lab/voice/browser releases, maintenance-only updates, concepts made only as generated reference images, and assets showing personal data. Snapshot-film has no dated git commits here, so its date comes from its README.
+
+## Verification
+
+Worktree served on free port 6137. Headless Chromium checks cover public/review card counts, draft labels, phone width, search, query-preserving navigation, homepage count, embedded JSON equality and all 480/800/1200 WebP variants. Source captures were inspected for private content. No generated product images.

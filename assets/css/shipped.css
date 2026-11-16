@@ -241,3 +241,6 @@
 .shipped-hop .home .work .item.reveal .media { transition: none !important; }
 
 .shipped-fallback:not(.shipped-arrived) body > * { opacity: 0; }
+
+/* Review labels use the street’s quiet date lettering. */
+.st-draft { margin-left: 6px; padding: 2px 5px; border: 1px solid currentColor; border-radius: 4px; font-size: 10px; }
