@@ -322,8 +322,13 @@
         last = t; turn = (turn + 1) % 4; drawSun(); drawSky(t);
       };
       drawSun(); drawSky(0);
-      if (!reduced) raf = requestAnimationFrame(loop);
-      return () => { cancelAnimationFrame(raf); removeEventListener('keydown', onKey); removeEventListener('resize', sizeSky); };
+      const sync = () => {
+        cancelAnimationFrame(raf);
+        if (!reduced && !document.hidden) { last = 0; raf = requestAnimationFrame(loop); }
+      };
+      document.addEventListener('visibilitychange', sync);
+      sync();
+      return () => { document.removeEventListener('visibilitychange', sync); cancelAnimationFrame(raf); removeEventListener('keydown', onKey); removeEventListener('resize', sizeSky); };
     },
   };
 

@@ -234,7 +234,7 @@
     paintKey = key;
     const L = lookAt(n.min, n.ymd);
     const theme = m === 'sky' ? L.theme : m;
-    root.dataset.mode = m;
+    if (root.dataset.mode !== m) root.dataset.mode = m;
     if (m !== 'sky') {
       // A fixed theme is the site as it's drawn today.
       unset();
@@ -423,7 +423,8 @@
     if (wait > 0) { clearTimeout(favTimer); favTimer = setTimeout(favicon, wait); return; }
     favKey = key; favAt = performance.now();
     const c = document.createElement('canvas'); c.width = c.height = 64;
-    const g = c.getContext('2d');
+    // A tiny favicon needs no GPU readback in the middle of a theme change.
+    const g = c.getContext('2d', { willReadFrequently: true });
     const ring = fixed ? BRAND : L.p, disc = fixed ? (last.theme === 'dark' ? '#05070b' : '#ffffff') : L.bg;
     if (g.createConicGradient) {
       const cg = g.createConicGradient(-Math.PI / 2, 32, 32);
@@ -444,7 +445,13 @@
       favLink = document.createElement('link'); favLink.rel = 'icon'; favLink.type = 'image/png';
       document.head.append(favLink);
     }
-    favLink.href = c.toDataURL('image/png');
+    // Encoding is asynchronous, so changing theme never waits for the canvas.
+    c.toBlob((blob) => {
+      if (!blob || key !== favKey) return;
+      const previous = favLink.href;
+      favLink.href = URL.createObjectURL(blob);
+      if (previous.startsWith('blob:')) URL.revokeObjectURL(previous);
+    }, 'image/png');
   }
 
   /* ───────── The time bar ─────────
@@ -660,5 +667,5 @@
   setInterval(() => { if (!document.hidden && !frozen) paint(); }, 10000);
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && !frozen) paint(); });
   // Nothing to repaint in a hidden tab.
-  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') stopPlay(); });
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') { stopPlay(); endSweep(); } });
 })();

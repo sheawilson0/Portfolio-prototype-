@@ -162,11 +162,16 @@
 
 /* ───────── The scrubber ───────── */
 .st-ticks { display: flex; align-items: flex-end; gap: 5px; height: 38px; padding-top: 16px; cursor: ew-resize; touch-action: none; -webkit-user-select: none; user-select: none; }
-.st-tick { --base: 8px; position: relative; width: 2px; height: calc(var(--base) + var(--lift, 0) * 12px); border-radius: 1px;
-  background: color-mix(in srgb, var(--ink) calc(18% + var(--lift, 0) * 26%), transparent); transition: height .35s cubic-bezier(.3, 1.6, .5, 1), background-color .2s var(--ease); }
-.st-tick.is-month { --base: 13px; }
-.st-tick.is-on { background: var(--hi); }
-.st-tick span { position: absolute; bottom: 100%; left: 50%; translate: -50% -4px; font-size: 11px; font-weight: 500; font-style: normal; color: var(--st-date); white-space: nowrap; }
+.st-tick { --base: 8; position: relative; width: 2px; height: calc(var(--base) * 1px); }
+/* Keep the wave out of layout; the label follows the tip without being stretched. */
+.st-tick::before { content: ""; position: absolute; inset: 0; border-radius: 1px;
+  transform-origin: 50% 100%; transform: scaleY(calc(1 + var(--lift, 0) * 12 / var(--base)));
+  background: color-mix(in srgb, var(--ink) calc(18% + var(--lift, 0) * 26%), transparent);
+  transition: transform .35s cubic-bezier(.3, 1.6, .5, 1), background-color .2s var(--ease); }
+.st-tick.is-month { --base: 13; }
+.st-tick.is-on::before { background: var(--hi); }
+.st-tick span { position: absolute; bottom: 100%; left: 50%; translate: -50% -4px; font-size: 11px; font-weight: 500; font-style: normal; color: var(--st-date); white-space: nowrap;
+  transform: translateY(calc(var(--lift, 0) * -12px)); transition: transform .35s cubic-bezier(.3, 1.6, .5, 1); }
 
 @media (max-width: 700px) {
   .street { padding-top: 64px; }

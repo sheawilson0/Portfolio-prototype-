@@ -71,10 +71,21 @@
 
   // Hover, on the mosaic tiles, the cards and the case pages' Next tiles: --px and --py (-.5 to .5) follow the pointer, eased, and ease back to 0.
   if (reduced || !matchMedia('(hover: hover) and (pointer: fine)').matches) return;
-  const tiles = [...document.querySelectorAll('.tile, .item, .nx-tile')].map((el) => ({ el, x: 0, y: 0, tx: 0, ty: 0, light: null }));
-  let raf = 0;
-  const frame = () => {
+  const tiles = [...document.querySelectorAll('.tile, .item, .nx-tile')].map((el) => ({ el, x: 0, y: 0, tx: 0, ty: 0, light: null, pointer: null }));
+  let raf = 0, last = 0;
+  const frame = (now) => {
     raf = 0;
+    if (document.hidden) { last = 0; return; }
+    // Match the same easing on 60 Hz and ProMotion displays.
+    const blend = 1 - Math.pow(.92, Math.min(50, last ? now - last : 1000 / 60) / (1000 / 60));
+    last = now;
+    // All geometry reads precede the frame's writes, even with several active tiles.
+    tiles.forEach((t) => {
+      if (!t.pointer) return;
+      const r = t.el.getBoundingClientRect(), [x, y] = t.pointer;
+      t.tx = (x - r.left) / r.width - .5; t.ty = (y - r.top) / r.height - .5;
+      t.light = [x - r.left, y - r.top]; t.pointer = null;
+    });
     tiles.forEach((t) => {
       if (t.light) {
         t.el.style.setProperty('--rx', `${t.light[0].toFixed(0)}px`);
@@ -82,18 +93,18 @@
         t.light = null;
       }
       if (t.x === t.tx && t.y === t.ty) return;
-      t.x += (t.tx - t.x) * .08; t.y += (t.ty - t.y) * .08;
+      t.x += (t.tx - t.x) * blend; t.y += (t.ty - t.y) * blend;
       if (Math.abs(t.tx - t.x) + Math.abs(t.ty - t.y) < .001) { t.x = t.tx; t.y = t.ty; } else raf ||= requestAnimationFrame(frame);
       t.el.style.setProperty('--px', t.x.toFixed(4)); t.el.style.setProperty('--py', t.y.toFixed(4));
     });
+    if (!raf) last = 0;
   };
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) raf ||= requestAnimationFrame(frame); });
   tiles.forEach((t) => {
     t.el.addEventListener('pointermove', (e) => {
-      const r = t.el.getBoundingClientRect();
-      t.tx = (e.clientX - r.left) / r.width - .5; t.ty = (e.clientY - r.top) / r.height - .5;
-      t.light = [e.clientX - r.left, e.clientY - r.top];
+      t.pointer = [e.clientX, e.clientY];
       raf ||= requestAnimationFrame(frame);
     });
-    t.el.addEventListener('pointerleave', () => { t.tx = 0; t.ty = 0; raf ||= requestAnimationFrame(frame); });
+    t.el.addEventListener('pointerleave', () => { t.pointer = null; t.tx = 0; t.ty = 0; raf ||= requestAnimationFrame(frame); });
   });
 })();
