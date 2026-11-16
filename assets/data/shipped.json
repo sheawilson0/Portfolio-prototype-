@@ -7,7 +7,6 @@
       "k": "personal",
       "t": "Three ways through the same street",
       "l": "A Belfast street, tried side-on, in isometric pixels and in 3D.",
-      "draft": true,
       "img": "/assets/media/shipped/drafts/two-shores.webp",
       "o": "screen",
       "w": 1440,
@@ -36,11 +35,11 @@
       "k": "personal",
       "t": "Meridian, in thirteen seconds",
       "l": "A short film that moves from Home to the agents and Stash.",
-      "draft": true,
       "img": "/assets/media/shipped/drafts/meridian-film.webp",
       "o": "screen",
       "w": 1920,
-      "h": 1080
+      "h": 1080,
+      "video": "/assets/media/shipped/drafts/meridian-film.mp4"
     },
     {
       "d": "2026-11-09",
@@ -55,27 +54,10 @@
     },
     {
       "d": "2026-11-09",
-      "p": "Cadence",
-      "k": "personal",
-      "t": "Two ways to make Cadence clearer",
-      "l": "A status line or a reading page. I compared both before the next design.",
-      "draft": true,
-      "img": "/assets/media/shipped/drafts/cadence-rounds.webp",
-      "o": "screen",
-      "w": 1280,
-      "h": 800
-    },
-    {
-      "d": "2026-11-09",
       "p": "Client work",
       "k": "work",
       "t": "A family of products",
       "l": "Six rounds of marks and colour, brought together for a first look.",
-      "draft": true,
-      "img": "/assets/media/shipped/drafts/private/brand-rounds.webp",
-      "o": "screen",
-      "w": 1280,
-      "h": 800,
       "wraps": true
     },
     {
@@ -114,7 +96,6 @@
       "k": "uni",
       "t": "Finding the line",
       "l": "Nine rounds behind Meridian’s mascot, with what I kept and dropped.",
-      "draft": true,
       "img": "/assets/media/shipped/drafts/finding-the-line.webp",
       "o": "screen",
       "w": 1280,
@@ -155,7 +136,6 @@
       "k": "personal",
       "t": "An agent that feels painted",
       "l": "Three looks for the same seven states: oil, manuscript and stained glass.",
-      "draft": true,
       "img": "/assets/media/shipped/drafts/ornament.webp",
       "o": "screen",
       "w": 1280,
@@ -189,24 +169,7 @@
       "k": "work",
       "t": "A design system in motion",
       "l": "From construction lines to finished screens, in a short film.",
-      "draft": true,
-      "img": "/assets/media/shipped/drafts/private/design-film.webp",
-      "o": "screen",
-      "w": 1920,
-      "h": 1080,
       "wraps": true
-    },
-    {
-      "d": "2026-10-13",
-      "p": "UI Words",
-      "k": "personal",
-      "t": "Find the shape before the word",
-      "l": "Three layouts for looking up interface terms, with examples you can try.",
-      "draft": true,
-      "img": "/assets/media/shipped/drafts/ui-words.webp",
-      "o": "screen",
-      "w": 1280,
-      "h": 1100
     },
     {
       "d": "2026-10-12",
@@ -310,7 +273,6 @@
       "k": "work",
       "t": "Smoking Snapshot, the film",
       "l": "The calculator became a 32-second film, cut to the beat.",
-      "draft": true,
       "img": "/assets/media/shipped/drafts/snapshot-film.webp",
       "o": "screen",
       "w": 1600,
@@ -374,23 +336,10 @@
       "k": "personal",
       "t": "My projects as floating islands",
       "l": "A small world where a raised lantern means an agent needs me.",
-      "draft": true,
       "img": "/assets/media/shipped/drafts/overworld.webp",
       "o": "screen",
       "w": 1280,
       "h": 800
-    },
-    {
-      "d": "2026-09-08",
-      "p": "Scope Note",
-      "k": "personal",
-      "t": "Put a price on the work",
-      "l": "An offline tool for turning a design brief into a scope and a quote.",
-      "draft": true,
-      "img": "/assets/media/shipped/drafts/scope-note.webp",
-      "o": "screen",
-      "w": 1405,
-      "h": 768
     },
     {
       "d": "2026-09-05",
@@ -418,11 +367,6 @@
       "k": "work",
       "t": "An awareness tool, explored",
       "l": "Different ways to take someone from a first tap to a clear takeaway.",
-      "draft": true,
-      "img": "/assets/media/shipped/drafts/private/awareness.webp",
-      "o": "screen",
-      "w": 1280,
-      "h": 800,
       "wraps": true
     },
     {
