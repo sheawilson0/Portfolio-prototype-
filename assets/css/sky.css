@@ -96,7 +96,7 @@
 /* ───────── The sky button ─────────
    Top right of the nav; it opens the time card. The sun, or the moon after dark (sky.js turns one into the other). */
 .theme-toggle .tt { display: none; }
-.sbt-sky { width: 24px; height: 20px; overflow: visible; transition: scale .35s cubic-bezier(.3, 1.6, .5, 1); }
+.sbt-sky { width: 36px; height: 30px; /* the sun or moon 12px across (C, 18 Nov) */ overflow: visible; transition: scale .35s cubic-bezier(.3, 1.6, .5, 1); }
 .theme-toggle:hover .sbt-sky { scale: 1.1; }
 .theme-toggle:active .sbt-sky, .theme-toggle[aria-expanded="true"] .sbt-sky { scale: .92; }
 .sbt-sky .halo { filter: blur(2px); }
