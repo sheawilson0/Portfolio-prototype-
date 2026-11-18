@@ -145,7 +145,11 @@
   const smooth = (t) => t * t * (3 - 2 * t);
   const lum = (h) => hex(h).map((v) => { v /= 255; return v <= .04045 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4; }).reduce((a, v, i) => a + v * [.2126, .7152, .0722][i], 0);
 
-  let frozen = params.get('t'), frozenDate = params.get('d');
+  // A time picked on the time bar holds until Live is pressed, closed or not, and page to page for this visit.
+  const HOLD = 'sky-time';
+  const held = () => { try { const v = sessionStorage.getItem(HOLD); return /^\d{1,2}:\d{2}$/.test(v || '') ? v : null; } catch (e) { return null; } };
+  const hold = (v) => { try { if (v) sessionStorage.setItem(HOLD, v); else sessionStorage.removeItem(HOLD); } catch (e) {} };
+  let frozen = params.get('t') || (embed ? null : held()), frozenDate = params.get('d');
   root.dataset.top = 'sky'; // project pages open under the homepage's sky
   function now() {
     const w = wall(Date.now());
@@ -384,7 +388,7 @@
   }
   function endSweep() {
     if (!root.classList.contains('sky-sweep')) return;
-    cancelAnimationFrame(sweepRaf); frozen = null;
+    cancelAnimationFrame(sweepRaf); frozen = null; hold(null);
     root.classList.remove('sky-sweep');
     paint(true);
   }
@@ -415,7 +419,7 @@
   addEventListener('keydown', (e) => {
     if (e.metaKey || e.ctrlKey || e.altKey || e.target.closest('input, textarea, [contenteditable]')) return;
     if (e.key === 'd') setMode(root.dataset.theme === 'dark' ? 'light' : 'dark');
-    else if (e.key === 'D') setMode('sky');
+    else if (e.key === 'D') { frozen = null; hold(null); dial.live = true; setMode('sky'); }
   });
 
   /* ───────── Favicon ───────── */
@@ -444,7 +448,7 @@
      anywhere on the path, or tap the little Now dot to go back. The sun springs rather than jumps, the minutes
      roll, and every quarter hour the sun passes plays a music-box note that climbs as the sun rises.
      The path gives more room to sunrise and sunset, where the sky changes most, so they don't flash past.
-     Closing it goes back to now. */
+     A time you pick holds when the card closes, and Live lets go of it again. */
   const fmt = (m) => { const h = Math.floor(m / 60), mm = String(m % 60).padStart(2, '0'); return `${h % 12 || 12}:${mm}${h < 12 ? 'am' : 'pm'}`; };
   const calm = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
@@ -483,7 +487,7 @@
       const m = b.dataset.m;
       if (m === 'sky') { if (mode !== 'sky') setMode('sky', null, true); unlock(); goLive(); return; }
       setMode(m);
-      dial.live = true; frozen = null; frozenDate = null; dial.pos = dial.to = now().min; dial.vel = 0;
+      dial.live = true; frozen = null; frozenDate = null; hold(null); dial.pos = dial.to = now().min; dial.vel = 0;
       paint(true);
     });
     const local = (e) => { const r = svg.getBoundingClientRect(); return { x: clamp(e.clientX - r.left, 0, r.width), y: e.clientY - r.top }; };
@@ -558,7 +562,6 @@
     barOpen = false;
     root.classList.remove('sun-on');
     dial.drag = null; dial.hp = null;
-    if (frozen || frozenDate) goLive(); // the sky glides back to now as the card pours away
     genie(false);
     decorate();
   }
@@ -689,7 +692,7 @@
       if (last) daySound(height(dial.pos, last.n), Math.abs(dial.vel), crossed ? q : null);
     } else {
       dial.pos = dial.to; dial.vel = 0; dial.q = -1;
-      if (dial.live) { frozen = null; frozenDate = null; } else frozen = toHM(Math.round(dial.pos));
+      if (dial.live) { frozen = null; frozenDate = null; hold(null); } else { frozen = toHM(Math.round(dial.pos)); hold(frozen); }
       daySound(null);
     }
     paintNow(!moving);
@@ -828,7 +831,8 @@
   }
   function syncBar() {
     if (!bar || !last) return;
-    bar.querySelectorAll('[data-m]').forEach((b) => { const v = String(b.dataset.m === last.mode); if (b.getAttribute('aria-pressed') !== v) b.setAttribute('aria-pressed', v); });
+    // Live is only lit while the sky follows now; picking a time lets go of it.
+    bar.querySelectorAll('[data-m]').forEach((b) => { const v = String(b.dataset.m === last.mode && (b.dataset.m !== 'sky' || dial.live)); if (b.getAttribute('aria-pressed') !== v) b.setAttribute('aria-pressed', v); });
     bar.classList.toggle('is-live', dial.live && !frozen && last.mode === 'sky');
     bar.classList.toggle('is-fixed', last.mode !== 'sky');
     if (!dial.raf && dial.live && !frozen) dial.pos = dial.to = last.n.min;
