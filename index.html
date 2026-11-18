@@ -43,12 +43,7 @@
 <link rel="stylesheet" href="assets/css/tiles.css">
 <link rel="stylesheet" href="assets/css/home.css">
 </head>
-<body class="home" data-work="cards" data-copy="cap" data-q28="hand" data-brain="show" data-contact="quiet" data-ship="yellow" data-gap="roomy" data-phones="snap" data-skylook="street" data-arc="none" data-page="sky" data-fill="clear" data-edge="off" data-glow="off" data-shadow="off" data-hero="headline" data-air="airy" data-ring="sky" data-layout="peng" data-about="together" data-top="sky" data-text="now" data-caps="now" data-toggle="off">
-<script>
-  // Variants from the address, for review: ?hero=a&text=a&caps=b&toggle=on sets those data attributes on <body>.
-  // Only keys <body> already has, so a stray parameter can't switch anything else.
-  try { new URLSearchParams(location.search).forEach((v, k) => { if (k in document.body.dataset && /^[\w-]{1,24}$/.test(v)) document.body.dataset[k] = v; }); } catch (e) {}
-</script>
+<body class="home" data-work="cards" data-copy="cap" data-q28="hand" data-brain="show" data-contact="quiet" data-ship="yellow" data-gap="roomy" data-phones="snap" data-skylook="street" data-arc="none" data-page="sky" data-fill="clear" data-edge="off" data-glow="off" data-shadow="off" data-hero="headline" data-air="airy" data-ring="sky" data-layout="peng" data-about="together" data-top="sky">
 
 <header class="nav">
   <div class="nav-inner">
@@ -59,8 +54,7 @@
       <a href="#about">About</a>
       <a href="#contact">Contact</a>
       <button class="theme-toggle" type="button" aria-label="Switch to dark mode" aria-pressed="false">
-        <svg class="ti ti-moon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13.5 9.6A5.5 5.5 0 0 1 6.4 2.5a5.5 5.5 0 1 0 7.1 7.1z"/></svg>
-        <svg class="ti ti-sun" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" aria-hidden="true"><circle cx="8" cy="8" r="3"/><path d="M8 1.5v1.3M8 13.2v1.3M1.5 8h1.3M13.2 8h1.3M3.4 3.4l.9.9M11.7 11.7l.9.9M3.4 12.6l.9-.9M11.7 4.3l.9-.9"/></svg>
+        <span class="tt"><span class="tt-ring"></span><span class="tt-disc"><span class="tt-moon"></span></span></span>
       </button>
     </nav>
   </div>
@@ -73,31 +67,6 @@
   <div class="hero-copy">
     <h1>Always making <em>something.</em></h1>
     <p class="intro"><span class="intro-who">I’m Shea, a design engineer at Influential and a Digital Design student at Ulster University. </span>I designed and built Smoking Snapshot and Quit28 for an NHS campaign. <span class="last">Last shipped <a href="shipped/">this week</a>.</span></p>
-    <!-- Hero options for review: ?hero=a to ?hero=f. Hidden unless <body data-hero> picks one. -->
-    <div class="hero-v" data-v="a">
-      <h1>I design and build<br> <em>things people use.</em></h1>
-      <p class="intro">Smoking Snapshot and Quit28 for the NHS, used 1,000+ times.</p>
-    </div>
-    <div class="hero-v" data-v="b">
-      <h1>From Figma<br> <em>to the real thing.</em></h1>
-      <p class="intro">I design in Figma and Paper, then build it myself, so clients can click through something real while their feedback can still change it.</p>
-    </div>
-    <div class="hero-v" data-v="c">
-      <h1>Always making <em>something.</em></h1>
-      <p class="intro">I’m Shea, a design engineer at Influential. Smoking Snapshot, which I designed and built for an NHS campaign, has been used 1,000+ times.</p>
-    </div>
-    <div class="hero-v" data-v="d">
-      <h1><span data-ship-count>38</span> things shipped<br> <em>since August.</em></h1>
-      <p class="intro">From NHS campaign tools to a reporting product in pilot and apps I made for myself. I’m Shea, a design engineer at Influential.</p>
-    </div>
-    <div class="hero-v" data-v="e">
-      <h1>Shea Wilson,<br> <em>design engineer.</em></h1>
-      <p class="intro">At Influential I design and build products for clients, like Smoking Snapshot for the NHS and JumpStart, in pilot with the National Football Museum.</p>
-    </div>
-    <div class="hero-v" data-v="f">
-      <h1>Live for the NHS.<br> <em>In pilot with a museum.</em></h1>
-      <p class="intro">I’m Shea, a design engineer at Influential. Quit28 and Smoking Snapshot are live for an NHS campaign, and JumpStart is in pilot with the National Football Museum.</p>
-    </div>
   </div>
 </section>
 
@@ -239,7 +208,7 @@
           </div>
         </div>
       </a>
-      <a class="tile-cap item-cap" href="braindump.html" tabindex="-1"><b>Brain Dump</b><span>Sorts what you type or say</span><span class="cap-v">Personal tool, in daily use</span></a>
+      <a class="tile-cap item-cap" href="braindump.html" tabindex="-1"><b>Brain Dump</b><span>Sorts what you type or say</span></a>
     </article>
 
     <article class="item t-shipped reveal" style="--d:.2s">
@@ -267,7 +236,7 @@
         <div class="card-copy"><h2>Cipher</h2><p class="line">Brand guidelines, website and app for an AI-first bank.</p></div>
         <div class="media"><img decoding="async" data-depth="0.2" src="assets/media/home/cipher-laptop-1200w.webp" alt="Cipher website on a floating laptop: Built with AI, designed for you" width="1633" height="2000" loading="lazy" srcset="assets/media/home/cipher-laptop-480w.webp 480w, assets/media/home/cipher-laptop-800w.webp 800w, assets/media/home/cipher-laptop-1200w.webp 1200w" sizes="(max-width: 720px) 89.23vw, (max-width: 1512px) 26.79vw, 405px"></div>
       </a>
-      <a class="tile-cap item-cap" href="cipher.html" tabindex="-1"><b>Cipher</b><span>A concept AI-first bank</span><span class="cap-v">Concept · Brand, web and app</span></a>
+      <a class="tile-cap item-cap" href="cipher.html" tabindex="-1"><b>Cipher</b><span>A concept AI-first bank</span></a>
     </article>
 
     <article class="item t-small t-amp reveal" style="--tone:#ff6a2b; --a:#ff6a2b; --b:#c33f1f; --c:#ffb347; --d:.1s">
@@ -281,7 +250,7 @@
         <div class="card-copy"><h2>Amp</h2><p class="line">A music player built around smart playback and moving between devices.</p></div>
         <div class="media"><img decoding="async" data-depth="0.2" src="assets/media/amp/amp-floating-screens-1200w.webp" alt="Three Amp screens floating at an angle: the player, the library and the home screen" width="2000" height="2000" loading="lazy" srcset="assets/media/amp/amp-floating-screens-480w.webp 480w, assets/media/amp/amp-floating-screens-800w.webp 800w, assets/media/amp/amp-floating-screens-1200w.webp 1200w" sizes="(max-width: 720px) 89.23vw, (max-width: 1512px) 26.79vw, 405px"></div>
       </a>
-      <a class="tile-cap item-cap" href="amp.html" tabindex="-1"><b>Amp</b><span>A concept music player</span><span class="cap-v">Concept · Music player</span></a>
+      <a class="tile-cap item-cap" href="amp.html" tabindex="-1"><b>Amp</b><span>A concept music player</span></a>
     </article>
   </div>
   <p class="earlier reveal"><span>Earlier concepts</span><a href="cipher.html">Cipher</a><a href="amp.html">Amp</a></p>

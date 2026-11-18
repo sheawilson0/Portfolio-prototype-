@@ -307,13 +307,14 @@ body.home[data-hero="line"] .hero .intro .last { white-space: normal; color: var
 
 /* ───────── Room around the top (lab: Room around the top) ─────────
    The first card starts where the hero ends, less the 150px it tucks under. Work shows early: as it is. Work peeks at
-   the bottom: the words sit in the middle of the first screen and the top of the first card shows at its foot. */
+   the bottom: the words sit in the middle of the first screen and the top of the first card shows at its foot.
+   18 Nov: the words take about two thirds of the screen (was 82%, 76% on a phone), so more of the first cards shows. */
 body.home[data-air="airy"] .hero { display: flex; flex-direction: column; justify-content: center; padding-top: 72px; }
-body.home[data-air="airy"] .hero { min-height: calc(82svh + 150px); }
+body.home[data-air="airy"] .hero { min-height: calc(68svh + 150px); }
 body.home[data-air="airy"] .hero .stage { display: none; }
 
 @media (max-width: 700px) {
-  body.home[data-air="airy"] .hero { min-height: calc(76svh + 150px); }
+  body.home[data-air="airy"] .hero { min-height: calc(64svh + 150px); }
 }
 
 /* ───────── About: Index + contact (lab: About) ─────────
@@ -350,40 +351,3 @@ body[data-about="together"] .contact { display: none; }
 .js .home .work .item.reveal.in { translate: none; }
 .js .home .work .item.reveal > .card > .media { scale: 1.045; transition: scale 1.6s var(--ease) var(--d, 0s); }
 .js .home .work .item.reveal.in > .card > .media { scale: 1; }
-
-/* ───────── Options for review (?hero=, ?text=, ?caps=, ?toggle= in the address; see the script after <body>) ─────────
-   None of these is on by default. */
-
-/* Hero: six other tops, each its own line, line under it and height (--hero-h: how much of the first screen it
-   takes before the work tucks in under it). Roman then italic, Spectral 300, like the headline today. */
-.hero-v { display: none; }
-body.home:is([data-hero="a"], [data-hero="b"], [data-hero="c"], [data-hero="d"], [data-hero="e"], [data-hero="f"]) .hero-copy > :is(h1, .intro) { display: none; }
-body.home[data-hero="a"] .hero-v[data-v="a"], body.home[data-hero="b"] .hero-v[data-v="b"], body.home[data-hero="c"] .hero-v[data-v="c"],
-body.home[data-hero="d"] .hero-v[data-v="d"], body.home[data-hero="e"] .hero-v[data-v="e"], body.home[data-hero="f"] .hero-v[data-v="f"] { display: block; }
-body.home[data-hero="a"] { --hero-h: 62svh; }
-body.home[data-hero="b"] { --hero-h: 56svh; }
-body.home[data-hero="c"] { --hero-h: 66svh; }
-body.home[data-hero="d"] { --hero-h: 58svh; }
-body.home[data-hero="e"] { --hero-h: 48svh; }
-body.home[data-hero="f"] { --hero-h: 60svh; }
-body.home:is([data-hero="a"], [data-hero="b"], [data-hero="c"], [data-hero="d"], [data-hero="e"], [data-hero="f"]) .hero { min-height: calc(var(--hero-h) + 150px); padding-top: 88px; }
-
-/* Text: the body words (--ink-2) and the tile captions (--whisper) a little brighter after dark, same weight and the
-   same soft, see-through look. Today: 68% and 52%. A: 76% and 60%. B: a step further, 82% and 66%. */
-[data-theme="dark"] body.home[data-text="a"] { --ink-2: rgba(242, 240, 235, .76); --whisper: rgba(242, 240, 235, .6); }
-[data-theme="dark"] body.home[data-text="b"] { --ink-2: rgba(242, 240, 235, .82); --whisper: rgba(242, 240, 235, .66); }
-
-/* Tile captions: the name at full ink, DM Sans 400 (as today), and one plain outcome or an honest tag after it. */
-.cap-v { display: none; }
-body.home[data-caps="b"] .item-cap:has(.cap-v) > span:not(.cap-v) { display: none; }
-body.home[data-caps="b"] .item-cap .cap-v { display: inline; }
-
-/* Theme toggle: in the pill, right of Contact. A 32px button with a 16px moon (or sun after dark) in the links' grey. */
-body.home[data-toggle="on"] .links .theme-toggle { display: grid; width: 32px; height: 32px; margin-left: -8px; border-radius: 10px; color: var(--ink-2);
-  transition: background-color .2s var(--ease), color .2s var(--ease); }
-body.home[data-toggle="on"] .theme-toggle:hover { color: var(--ink); background: var(--pill-on, rgb(255 255 255 / .5)); }
-[data-theme="dark"] body.home[data-toggle="on"] .theme-toggle:hover { background: var(--pill-on, rgb(255 255 255 / .12)); }
-body.home[data-toggle="on"] .theme-toggle:focus-visible { outline: 2px solid var(--ink-2); outline-offset: 2px; }
-.theme-toggle .ti { grid-area: 1 / 1; width: 16px; height: 16px; }
-.theme-toggle .ti-sun, [data-theme="dark"] .theme-toggle .ti-moon { display: none; }
-[data-theme="dark"] .theme-toggle .ti-sun { display: block; }
