@@ -94,27 +94,24 @@
 @media (pointer: coarse) { .sb-modes button { height: 40px; } }
 
 /* ───────── The sky button ─────────
-   Top right of the nav; it opens the time card. Three looks, picked in the lab (data-button on <body>). */
-.theme-toggle .tt, .theme-toggle > :is(.sbt-tile, .sbt-time, .sbt-ic) { display: none; }
+   Top right of the nav; it opens the time card. The sky tile, or in the lab (data-button on <body>) the time. */
+.theme-toggle .tt, .theme-toggle > :is(.sbt-tile, .sbt-time) { display: none; }
 :is(body:not([data-button]), body[data-button="tile"]) .theme-toggle .sbt-tile,
-body[data-button="time"] .theme-toggle .sbt-time,
-body[data-button="icon"] .theme-toggle .sbt-ic-moon, [data-theme="dark"] body[data-button="icon"] .theme-toggle .sbt-ic-sun { display: block; }
-[data-theme="dark"] body[data-button="icon"] .theme-toggle .sbt-ic-moon { display: none; }
-/* A tile of the sky as it is now, like the favicon, with the sun crossing it by day. */
+body:is([data-button="time"], [data-button="timepill"]) .theme-toggle .sbt-time { display: block; }
+/* A tile of the sky as it is now, like the favicon. The sun arcs across it by day, the moon by night. */
 .sbt-tile { position: relative; width: 20px; height: 20px; border-radius: 6px; overflow: hidden;
   background: radial-gradient(70% 60% at 50% 108%, color-mix(in srgb, var(--sky-sunglow, #fff1e2) calc(var(--sky-ga, 0) * 100%), transparent), transparent),
     linear-gradient(var(--sky-top, #9ec0e9), var(--sky-mid, #cdd9e9) 58%, var(--sky-low, #f9ede2));
   box-shadow: inset 0 0 0 .5px rgb(255 255 255 / .6), 0 1px 3px rgb(10 20 40 / .2); transition: scale .35s cubic-bezier(.3, 1.6, .5, 1); }
 .sbt-tile i { position: absolute; border-radius: 50%; translate: -50% -50%; }
-.sbt-sun { left: var(--bt-x, 50%); top: var(--bt-y, 40%); width: 5px; height: 5px; background: #ffb347; box-shadow: 0 0 4px #ffa23a; opacity: var(--bt-sun, 1); }
-.sbt-moon { left: 68%; top: 32%; width: 4px; height: 4px; background: #eef1fb; box-shadow: 0 0 3px rgb(220 230 255 / .7); opacity: calc(1 - var(--bt-sun, 1)); }
+.sbt-sun { left: var(--bt-sx, 50%); top: var(--bt-sy, 40%); width: 5px; height: 5px; background: #ffb347; box-shadow: 0 0 4px #ffa23a; opacity: var(--bt-s, 0); }
+.sbt-moon { left: var(--bt-mx, 50%); top: var(--bt-my, 40%); width: 4px; height: 4px; background: #eef1fb; box-shadow: 0 0 3px rgb(220 230 255 / .7); opacity: var(--bt-m, 0); }
 .theme-toggle:hover .sbt-tile { scale: 1.1; }
 .theme-toggle:active .sbt-tile, .theme-toggle[aria-expanded="true"] .sbt-tile { scale: .92; }
-/* The time, in a soft pill, like Peng's. */
-body[data-button="time"] .theme-toggle { width: auto; height: 30px; padding: 0 11px; border-radius: 999px; color: var(--ink-2); background: color-mix(in srgb, var(--ink) 7%, transparent);
+/* The time, in the links' grey; or in a soft pill, like Peng's. */
+body:is([data-button="time"], [data-button="timepill"]) .theme-toggle { width: auto; height: 30px; padding: 0 4px; border-radius: 999px; color: var(--ink-2);
   transition: background-color .2s var(--ease), color .2s var(--ease); }
-body[data-button="time"] .theme-toggle:hover, body[data-button="time"] .theme-toggle[aria-expanded="true"] { color: var(--ink); background: color-mix(in srgb, var(--ink) 12%, transparent); }
-.sbt-time { font-size: 13.5px; font-variant-numeric: tabular-nums; font-feature-settings: "tnum"; white-space: nowrap; }
-/* A line moon by day and a sun after dark, in the links' grey. */
-.sbt-ic { width: 16px; height: 16px; color: var(--ink-2); transition: color .2s var(--ease); }
-.theme-toggle:hover .sbt-ic { color: var(--ink); }
+body:is([data-button="time"], [data-button="timepill"]) .theme-toggle:is(:hover, [aria-expanded="true"]) { color: var(--ink); }
+body[data-button="timepill"] .theme-toggle { padding: 0 11px; background: color-mix(in srgb, var(--ink) 7%, transparent); }
+body[data-button="timepill"] .theme-toggle:is(:hover, [aria-expanded="true"]) { background: color-mix(in srgb, var(--ink) 12%, transparent); }
+.sbt-time { font-size: 14px; font-variant-numeric: tabular-nums; font-feature-settings: "tnum"; white-space: nowrap; }
