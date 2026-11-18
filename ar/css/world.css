@@ -44,13 +44,16 @@ body.is-pointing { cursor: pointer; }
 
 .intro { left: 50%; top: 57%; width: min(88vw, 600px); translate: -50% 0; text-align: center; }
 .lede { font-size: clamp(16px, 1.3vw, 19px); line-height: 1.55; color: var(--ink-2); text-wrap: pretty; }
+/* "Last shipped", as on the homepage: its own line, the orange dot, the newest thing linked */
+.lede .last { display: block; color: var(--ink); }
+.lede .last a { text-decoration: underline; text-decoration-color: color-mix(in srgb, var(--ink) 25%, transparent); text-underline-offset: 3px; transition: text-decoration-color .2s var(--ease); }
+.lede .last a:hover { text-decoration-color: var(--ink); }
+.lede .last::before { content: ""; display: inline-block; width: 6px; height: 6px; margin: 0 7px 2px 1px; border-radius: 50%; background: #f26419; box-shadow: 0 0 0 3px color-mix(in srgb, #f26419 22%, transparent); }
 .hint { display: inline-flex; align-items: center; gap: 10px; margin-top: 20px; font-size: 14px; font-weight: 400; color: var(--ink-2); }
 
 .cap { left: var(--gutter); bottom: calc(108px + var(--safe-b)); width: min(420px, 36vw); }
 .cap.is-right { left: auto; right: var(--gutter); }
 .cap.is-beside, .cap.is-beside.is-right { right: auto; bottom: auto; width: min(380px, 30vw); }
-.cap::before { content: ""; position: absolute; z-index: -1; inset: -56px -80px -40px -80px; pointer-events: none;
-  background: radial-gradient(closest-side, color-mix(in srgb, var(--bg) 74%, transparent) 40%, color-mix(in srgb, var(--bg) 30%, transparent) 72%, transparent); }
 .cap-meta { display: flex; align-items: center; gap: 9px; }
 .cap-meta i { width: 7px; height: 7px; border-radius: 50%; flex: none; background: var(--tone); }
 .cap h2 { margin-top: 12px; font-family: var(--serif); font-weight: 300; font-size: clamp(36px, 3.4vw, 50px); line-height: 1.04; letter-spacing: -.022em; }
@@ -61,37 +64,27 @@ body.is-pointing { cursor: pointer; }
 .cap-actions .btn.is-primary:hover svg { transform: translateX(2px); }
 
 .talk { left: 50%; top: 46%; width: min(92vw, 760px); translate: -50% -50%; text-align: center; transform-origin: 50% 50%; }
-.talk h2 { font-family: var(--serif); font-weight: 300; font-size: clamp(60px, 9vw, 132px); line-height: .95; letter-spacing: -.03em; word-spacing: -.04em; }
+/* The homepage's About (home.css, data-about="together"): photo, headline, then Now, Studying, Built for me, Say hello */
+.talk-photo { display: block; width: 104px; height: 104px; margin: 0 auto 28px; border-radius: 50%; object-fit: cover; }
+.talk h2 { font-family: var(--serif); font-weight: 300; font-size: clamp(40px, 4.6vw, 60px); line-height: 1.02; letter-spacing: -.03em; word-spacing: -.04em; text-wrap: balance; }
 .talk h2 em { font-style: italic; letter-spacing: -.022em; }
-.talk .sub { margin-top: 18px; font-size: 18px; line-height: 1.5; color: var(--ink-2); }
-.cta { display: inline-flex; align-items: center; gap: 10px; margin-top: 34px; }
-.email { position: relative; display: inline-flex; align-items: center; gap: 12px; padding: 19px 30px 19px 26px; border-radius: 999px;
-  font-size: clamp(17px, 1.5vw, 21px); font-weight: 400; letter-spacing: -.01em; color: var(--bg); background: var(--ink);
-  box-shadow: 0 8px 22px rgba(10, 10, 10, .16); transition: box-shadow .6s var(--ease); }
-.email:hover { box-shadow: 0 16px 44px rgba(10, 10, 10, .26); }
-@property --sweep { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
-.email::before { content: ""; position: absolute; inset: -3px; border-radius: 999px; padding: 2px; opacity: 0; pointer-events: none;
-  background: linear-gradient(180deg, var(--sky-top, #9ec0e9), var(--sky-low, #f9ede2));
-  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; }
-.talk.is-live .email::before { animation: sweep 1.8s var(--ease-io) .3s both; }
-.talk.is-live .email:hover::before { animation: orbit 2.6s linear infinite; opacity: .95; }
-@keyframes sweep { 0% { opacity: 0; --sweep: 0deg; } 25% { opacity: 1; } 100% { opacity: 0; --sweep: 360deg; } }
-@keyframes orbit { to { --sweep: 360deg; } }
-[data-theme="dark"] .email { box-shadow: 0 10px 30px rgba(0, 0, 0, .55); }
-.email-icon { width: 18px; height: 18px; flex: none; }
-.copy { display: inline-flex; align-items: center; gap: 8px; height: 62px; padding: 0 22px 0 20px; border-radius: 999px; font-size: 14px; font-weight: 400; color: var(--ink-2);
-  background: var(--glass-strong); border: 1px solid var(--glass-line); transition: color .3s var(--ease), border-color .3s var(--ease); }
-.copy:hover, .copy.is-copied { color: var(--ink); }
-.copy svg { width: 16px; height: 16px; flex: none; }
-.linkedin { display: flex; width: max-content; align-items: center; gap: 9px; margin: 26px auto 0; font-size: 15px; font-weight: 400; color: var(--ink-2); transition: color .3s var(--ease); }
-.linkedin .mark { width: 16px; height: 16px; flex: none; background: currentColor; -webkit-mask-size: contain; mask-size: contain; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; -webkit-mask-position: center; mask-position: center; }
-.linkedin .arr { width: 11px; height: 11px; transition: transform .4s var(--ease); }
-.linkedin:hover { color: var(--ink); }
-.linkedin:hover .arr { transform: translate(2px, -2px); }
-.restart { display: flex; width: max-content; align-items: center; gap: 8px; margin: 14px auto 0; font-size: 14px; font-weight: 400; color: var(--whisper); transition: color .3s var(--ease); }
+.talk-index { display: grid; gap: 12px; width: fit-content; margin: 44px auto 0; font-size: clamp(16px, 1.3vw, 19px); text-align: left; }
+.talk-index div { display: grid; grid-template-columns: 8.5em minmax(0, 24em); gap: 22px; }
+.talk-index dt { color: var(--whisper); text-align: right; }
+.talk-index dd { margin: 0; color: var(--ink); text-wrap: balance; }
+.talk-index a { color: inherit; text-decoration: none; transition: opacity .2s var(--ease); }
+.talk-index a:hover { text-decoration: underline; text-decoration-color: color-mix(in srgb, var(--ink) 30%, transparent); text-underline-offset: 3px; }
+.talk .in-art { display: inline-block; height: 1.05em; width: auto; vertical-align: -.2em; margin: 0 .1em; border-radius: .12em; rotate: -3deg; box-shadow: 0 .1em .3em rgb(0 0 0 / .3); }
+.restart { display: flex; width: max-content; align-items: center; gap: 8px; margin: 40px auto 0; font-size: 14px; font-weight: 400; color: var(--whisper); transition: color .3s var(--ease); }
 .restart svg { width: 11px; height: 11px; transition: transform .4s var(--ease); }
 .restart:hover { color: var(--ink); }
 .restart:hover svg { transform: translateY(-2px); }
+@media (max-width: 720px) {
+  .talk-photo { width: 88px; height: 88px; margin-bottom: 22px; }
+  .talk-index { text-align: center; margin-top: 30px; gap: 14px; }
+  .talk-index div { grid-template-columns: 1fr; gap: 2px; }
+  .talk-index dt { text-align: center; }
+}
 
 /* ───────── Stops: back, one dash per stop, on ───────── */
 .walk { position: fixed; z-index: 12; left: 50%; bottom: calc(22px + var(--safe-b)); translate: -50% 0; display: flex; align-items: center; gap: 2px; padding: 3px; border-radius: 999px; }
@@ -157,11 +150,6 @@ body.is-pointing { cursor: pointer; }
   .cap-line { font-size: 15px; margin-top: 8px; }
   .cap-actions { margin-top: 16px; gap: 8px; }
   .cap-actions .btn { height: 44px; padding: 0 17px; font-size: 14px; }
-  .talk .sub { font-size: 16px; margin-top: 14px; padding: 0 12px; }
-  .cta { flex-direction: column; gap: 10px; margin-top: 26px; }
-  .email { padding: 17px 24px 17px 22px; }
-  .copy { height: 48px; }
-  .linkedin { margin-top: 20px; }
   .walk { bottom: calc(16px + var(--safe-b)); }
   .walk-btn { width: 38px; height: 38px; }
   .dashes button { width: 16px; }
@@ -181,7 +169,6 @@ body.is-pointing { cursor: pointer; }
   .intro { width: min(84vw, 720px); }
   .lede { font-size: 14px; line-height: 1.5; }
   .cap { bottom: calc(66px + var(--safe-b)); width: min(400px, 42vw); }
-  .cap::before { inset: -30px -50px -24px -50px; }
   .cap-meta { font-size: 12px; }
   .cap h2 { font-size: 28px; margin-top: 6px; }
   .cap-line { font-size: 14px; line-height: 1.45; margin-top: 6px; }
@@ -193,7 +180,6 @@ body.is-pointing { cursor: pointer; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .talk.is-live .email::before, .talk.is-live .email:hover::before { animation: none; opacity: 0; }
   .loader .ring { animation-duration: 4s; }
   ::view-transition-new(root) { animation: none; }
   .tip { transition: none; }

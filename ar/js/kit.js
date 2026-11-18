@@ -298,6 +298,41 @@ export async function butterflyTexture({ size = 512, live = true } = {}) {
   return { texture: tex, tick(dt) { since += dt; if (since > 1 / 15) { since = 0; draw(); } } };
 }
 
+// Quit28's "Ride out a craving" timer, live: the homepage tile's breathing circles drawn into a texture
+// (tiles.css .q28-float, from the app's craving-timer.module.css). 4 seconds in, 4 out; three minutes on the clock.
+let manrope = null;
+const loadManrope = () => manrope ||= new FontFace('Manrope', `url(${asset('assets/fonts/Manrope-800.woff2')})`, { weight: '800' })
+  .load().then((f) => { document.fonts.add(f); }).catch(() => {});
+export async function cravingTexture({ size = 512, still = false } = {}) {
+  await loadManrope();
+  const [c, g] = canvas(size, size);
+  const tex = toTexture(c, { srgb: false });
+  tex.premultiplyAlpha = true;
+  const k = size / 360, mid = size / 2, BLUE = '#00a7fa', RING = 131 * k;
+  let clock = 3, since = 1;
+  const draw = () => {
+    const breath = (1 - Math.cos((clock % 8) / 8 * Math.PI * 2)) / 2; // 0 at rest, 1 at the top of a breath
+    const s = .82 + .18 * breath, gone = Math.floor(clock) % 180, left = 180 - gone;
+    g.clearRect(0, 0, size, size);
+    g.beginPath(); g.arc(mid, mid, 128 * k * s, 0, Math.PI * 2); g.fillStyle = '#dbf3fe'; g.fill();
+    g.save(); g.shadowColor = 'rgba(0,167,250,.55)'; g.shadowBlur = 44 * k;
+    g.beginPath(); g.arc(mid, mid, 96 * k * s, 0, Math.PI * 2); g.fillStyle = BLUE; g.fill(); g.restore();
+    g.lineWidth = 3 * k; g.lineCap = 'round';
+    g.beginPath(); g.arc(mid, mid, RING, 0, Math.PI * 2); g.strokeStyle = 'rgba(0,167,250,.16)'; g.stroke();
+    g.beginPath(); g.arc(mid, mid, RING, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * (clock % 180) / 180); g.strokeStyle = BLUE; g.stroke();
+    g.textAlign = 'center'; g.fillStyle = '#0a0a0a';
+    g.font = `800 ${24 * k}px Manrope, sans-serif`;
+    if ('letterSpacing' in g) g.letterSpacing = `${-.035 * 24 * k}px`;
+    g.fillText(Math.floor(gone / 4) % 2 === 0 ? 'Breathe in' : 'Breathe out', mid, mid - 2 * k);
+    g.font = `800 ${15 * k}px Manrope, sans-serif`; g.fillStyle = 'rgba(10,10,10,.75)';
+    if ('letterSpacing' in g) g.letterSpacing = '0px';
+    g.fillText(`${Math.floor(left / 60)}:${String(left % 60).padStart(2, '0')}`, mid, mid + 20 * k);
+    tex.needsUpdate = true;
+  };
+  draw();
+  return { texture: tex, tick(dt) { if (still) return; clock += dt; since += dt; if (since > 1 / 30) { since = 0; draw(); } } };
+}
+
 // A pane of glass for a product: frosted, with a bright edge and the project's light behind it
 export function buildPane({ w, h, r = 3.2, depth = 1.2, tone = '#ffffff', map = null, opacity = .5, dark = false } = {}) {
   const group = new THREE.Group();

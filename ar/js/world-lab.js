@@ -84,9 +84,9 @@ export const LAB = {
   ending: {
     name: 'Ending', key: 'n', live: 'sky', done: true,
     options: [
-      ['face', 'On the disc', 'What’s live: “Let’s talk.” on the disc’s face.'],
-      ['sky', 'Above it', '“Let’s talk.” in the sky above a low eclipse.'],
-      ['overview', 'Overview', 'Looking back down the whole walk, “Let’s talk.” above.'],
+      ['face', 'On the disc', 'What’s live: the ending on the disc’s face.'],
+      ['sky', 'Above it', 'the ending in the sky above a low eclipse.'],
+      ['overview', 'Overview', 'Looking back down the whole walk, the ending above.'],
     ],
   },
   sound: {

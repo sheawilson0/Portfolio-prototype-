@@ -5,7 +5,7 @@
 // Every material is unlit and works in the site's own colour space: textures are sampled raw and colours are
 // mixed the way the browser mixes them, so a hex value here looks the same as it does in site.css.
 import * as THREE from '../vendor/three/three.module.js';
-import { PROJECTS, MORE, squircleSlab, squirclePlane, hexA, asset, pipTexture, butterflyTexture } from './kit.js';
+import { PROJECTS, MORE, squircleSlab, squirclePlane, hexA, asset, pipTexture, butterflyTexture, cravingTexture } from './kit.js';
 
 const D2R = Math.PI / 180;
 export const rgb = (hex) => {
@@ -72,7 +72,8 @@ export const CARDS = {
   tall: { tall: true },
   flat: { layer: (L, k) => ({ ...L, z: .01 + k * .006, rot: 0 }), shadow: { drop: () => .014, blur: 8, k: 1.25 } },
   deep: { layer: (L) => ({ ...L, z: L.z * 2.6 + .05 }), shadow: { blur: 26, k: .8 } },
-  open: { open: true },
+  // no glass: the pictures stand further apart in the air, each casting a soft shadow on what's behind it
+  open: { open: true, layer: (L) => ({ ...L, z: L.z * 3 }), shadow: { blur: 30, k: 1.7, drop: (L) => .03 + L.z * .08 } },
 };
 
 // Whether things may move on their own (off with reduced motion)
@@ -409,6 +410,8 @@ const COMPOSE = {
     blobs: [],
     layers: [
       { src: IMG('quit28-calendar'), w: 1.9, x: -.42, y: .22, rot: -3, z: .08, alpha: true },
+      // the craving timer, breathing, under the calendar and beside the phone (the homepage tile's three pieces)
+      { live: 'craving', w: 1, h: 1, x: -.38, y: -.86, z: .17, alpha: true },
       { src: IMG('quit28-iphone'), h: 2.04, x: .76, y: -.08, rot: 2, z: .24, alpha: true },
     ],
   },
@@ -767,7 +770,7 @@ export async function buildPane(place, dark, glassKey = 'smoked') {
     const startDark = dark && !!L.dark;
     let tex;
     if (L.live) {
-      const made = L.live === 'pip' ? await pipTexture() : await butterflyTexture();
+      const made = L.live === 'pip' ? await pipTexture() : L.live === 'craving' ? await cravingTexture({ still: !MOTION.on }) : await butterflyTexture();
       tex = made.texture;
       tex.colorSpace = THREE.NoColorSpace; tex.premultiplyAlpha = true; tex.needsUpdate = true;
       live.push(made);
@@ -792,9 +795,9 @@ export async function buildPane(place, dark, glassKey = 'smoked') {
     const sh = shadowCanvas(tex.image, { rounded: L.alpha ? 0 : L.r / Math.min(w, h), blur: shd.blur ?? (L.alpha ? 14 : 18) });
     const smat = tintMaterial(own(canvasTexture(sh.canvas)), .3);
     const smesh = new THREE.Mesh(new THREE.PlaneGeometry(w * sh.sx, h * sh.sy), smat);
-    smesh.visible = !design.open; // nothing to fall on
     const drop = shd.drop ? shd.drop(L) : .05 + L.z * .35;
-    smesh.position.set(L.x + L.z * .12, y - drop, face + .002);
+    // on glass it falls on the glass; with no glass it hangs just behind the picture, over whatever is behind that
+    smesh.position.set(L.x + L.z * .12, y - drop, design.open ? face + L.z - .03 : face + .002);
     smesh.rotation.z = mesh.rotation.z;
     smesh.renderOrder = 1;
     holder.add(smesh);

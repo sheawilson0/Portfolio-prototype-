@@ -63,20 +63,25 @@ const sky = buildSky();
 const eclipse = buildEclipse();
 const ground = buildGround(panes);
 ground.setPanes(panes);
-const headline = buildType([[['Always making', false]], [['something.', true]]], { height: 6.2 });
+// The homepage's headline: one line on a wide screen, two on an upright one
+const headlines = {
+  one: buildType([[['Always making ', false], ['something.', true]]], { height: 3.1 }),
+  two: buildType([[['Always making', false]], [['something.', true]]], { height: 6.2 }),
+};
+let headline = headlines.one;
 
 // Solid things that cover a lot of screen go last, so the depth test skips what's hidden
 const back = new THREE.Group(); back.renderOrder = 10000; back.add(sky.mesh);
 const floor = new THREE.Group(); floor.renderOrder = 9000; floor.add(ground.mesh);
-const head = new THREE.Group(); head.add(headline.mesh);
-headline.mesh.position.set(0, 21.5, -26);
+const head = new THREE.Group(); head.add(headlines.one.mesh, headlines.two.mesh);
+for (const k in headlines) headlines[k].mesh.position.set(0, 21.5, -26);
 scene.add(back, floor, eclipse.mesh, head, ...panes.map((p) => p.group));
 
 /* ───────── Stops, and the scroll track that drives them ───────── */
 const STOPS = [
   { id: 'start', name: 'Start' },
   ...panes.map((pane) => ({ id: pane.def.id, name: pane.def.name, pane })),
-  { id: 'talk', name: 'Let’s talk' },
+  { id: 'talk', name: 'Say hello' },
 ];
 const N = STOPS.length;
 const LAST = N - 1;
@@ -142,7 +147,10 @@ function buildPath() {
   const eye0 = new V3(0, 15, 30);
   const t0 = Math.tan(startFov * D2R / 2);
   const D = 56; // headline distance from the opening eye
-  const hw = lerp(.84, h < 520 ? .36 : .42, wide) * 2 * D * t0 * aspect;
+  headline = portrait ? headlines.two : headlines.one;
+  headlines.one.mesh.visible = !portrait; headlines.two.mesh.visible = portrait;
+  // as wide as the homepage's: about half a desktop screen on one line
+  const hw = (portrait ? .84 : lerp(.8, h < 520 ? .46 : .54, wide)) * 2 * D * t0 * aspect;
   const scale = hw / headline.width;
   const halfH = headline.height * scale / 2 / D / t0; // in NDC
   headline.mesh.scale.setScalar(scale);
@@ -762,6 +770,19 @@ function fillCaption(k) {
     (extra ? `<a class="btn" href="${extra.href}" target="_blank" rel="noopener">${extra.label}${ARROW_OUT}</a>` : '');
 }
 
+// "Last shipped …", the same line as the homepage's (assets/js/shipped.js): the newest thing, linked
+fetch(new URL('../../assets/data/shipped.json', import.meta.url)).then((r) => r.json()).then(({ ships }) => {
+  const latest = ships.filter((x) => !x.draft && !x.wraps).sort((x, y) => y.d.localeCompare(x.d))[0];
+  if (!latest) return;
+  const day = (d) => new Date(`${d}T12:00:00`), today = new Date(); today.setHours(12, 0, 0, 0);
+  const n = Math.round((today - day(latest.d)) / 864e5), x = day(latest.d);
+  const when = n <= 0 ? 'today' : n === 1 ? 'yesterday' : `on ${['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][x.getMonth()]} ${x.getDate()}`;
+  const link = document.createElement('a');
+  link.href = `../shipped/#${latest.d}-${latest.t.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}`;
+  link.textContent = latest.t;
+  $('#last').replaceChildren('Last shipped ', link, ` ${when}.`);
+}).catch(() => {});
+
 // On a computer the intro says the arrow keys work too
 if (fine) intro.querySelector('.hint').lastChild.textContent = 'Scroll, or use the arrow keys, to walk through';
 
@@ -902,15 +923,6 @@ addEventListener('keydown', (e) => {
   else if (e.key === 'End') { e.preventDefault(); go(LAST); }
 });
 
-// Copy the address, like the homepage
-const copyBtn = $('#copy');
-copyBtn.addEventListener('click', async () => {
-  const label = copyBtn.querySelector('.copy-label');
-  try { await navigator.clipboard.writeText(copyBtn.dataset.email); label.textContent = 'Copied'; copyBtn.classList.add('is-copied'); }
-  catch (e) { location.href = `mailto:${copyBtn.dataset.email}`; return; }
-  setTimeout(() => { label.textContent = 'Copy'; copyBtn.classList.remove('is-copied'); }, 1800);
-});
-
 /* ───────── Sound on and off ───────── */
 // The walk has sound unless someone switches it off here; that choice is kept in this browser
 const sndBtn = $('#snd');
@@ -940,7 +952,7 @@ function applyTheme(s = skyNow()) {
   sky.theme(theme);
   eclipse.theme(theme, dark);
   ground.theme(theme, dark);
-  headline.theme(theme);
+  for (const k in headlines) headlines[k].theme(theme);
   panes.forEach((p) => p.theme(theme, dark));
   if (ready) frame(performance.now(), true);
 }
