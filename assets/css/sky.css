@@ -56,52 +56,56 @@
 .theme-toggle:focus-visible .tt-hint { opacity: 1; translate: 0 0; }
 
 /* ───────── The time bar ─────────
-   One frosted tile with no stroke, the same glass as the nav and the Shipped street's buttons. */
-.sky-bar { position: fixed; z-index: 120; left: 50%; bottom: max(18px, env(safe-area-inset-bottom)); width: min(540px, calc(100vw - 24px)); translate: -50% 24px;
-  display: grid; gap: 8px; padding: 10px 10px 8px; border-radius: 30px; corner-shape: squircle; font: 400 14px/1 var(--sans); letter-spacing: -.005em; color: var(--ink);
-  background: rgb(243 247 252 / .55); box-shadow: 0 16px 50px rgb(20 40 80 / .16);
-  -webkit-backdrop-filter: blur(20px) saturate(1.8) brightness(1.1); backdrop-filter: blur(20px) saturate(1.8) brightness(1.1);
-  opacity: 0; visibility: hidden; transition: opacity .35s var(--ease), translate .55s var(--ease), visibility 0s .55s; }
-[data-theme="dark"] .sky-bar { background: rgb(34 54 100 / .5); }
-@supports not (corner-shape: squircle) { .sky-bar { border-radius: 24px; } }
-.sky-bar.is-open { opacity: 1; visibility: visible; translate: -50% 0; transition: opacity .35s var(--ease), translate .55s cubic-bezier(.2, .9, .25, 1); }
-.sky-bar button, .sb-board { flex: none; display: inline-grid; place-items: center; height: 34px; padding: 0 12px; border-radius: 999px; color: var(--ink-2); white-space: nowrap; transition: background-color .2s var(--ease), color .2s var(--ease), scale .2s var(--ease); }
-.sky-bar button:hover, .sb-board:hover { color: var(--ink); background: color-mix(in srgb, var(--ink) 6%, transparent); }
-.sky-bar button:active { scale: .96; }
-.sky-bar button[aria-pressed="true"] { color: var(--ink); background: color-mix(in srgb, var(--ink) 10%, transparent); }
-.sky-bar svg { width: 12px; height: 12px; }
-.sb-top { display: flex; align-items: center; gap: 4px; }
-.sky-bar .sb-play, .sky-bar .sb-close { width: 34px; padding: 0; }
-.sky-bar .sb-play { color: var(--bg); background: var(--ink); }
-.sky-bar .sb-play:hover { color: var(--bg); background: var(--ink); }
-.sb-read { flex: 1 1 auto; min-width: 0; display: flex; align-items: baseline; gap: 8px; padding-left: 8px; overflow: hidden; line-height: 1.5; color: var(--ink-2); white-space: nowrap; }
-/* Every digit is the same width and the clock's box never changes size, so nothing beside it moves. */
-.sb-clock { flex: none; width: 4.4em; font-size: 16px; font-weight: 500; color: var(--ink); font-variant-numeric: tabular-nums; font-feature-settings: "tnum"; }
-.sb-name { overflow: hidden; text-overflow: ellipsis; }
-.sb-name.is-new { animation: sb-name .45s var(--ease); }
-@keyframes sb-name { from { opacity: 0; translate: 0 3px; } }
-.sb-now[hidden] { display: none !important; }
-.sb-stages { display: flex; justify-content: space-between; gap: 2px; overflow-x: auto; scrollbar-width: none; font-size: 13px; }
-.sb-stages::-webkit-scrollbar { display: none; }
-.sky-bar .sb-stages button { height: 30px; padding: 0 9px; }
-/* The scrubber is the day drawn out: the sun's path over a horizon line, the sun (or the moon, under the line) on
-   it where the time is. The real slider lies over it, invisible, so it drags and works from the keyboard. */
-.sb-path { position: relative; height: 64px; margin: 0 10px; }
-.sb-path svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; fill: none; stroke-linecap: round; }
-.sb-curve { stroke: color-mix(in srgb, var(--ink) 34%, transparent); stroke-width: 1.5; stroke-dasharray: 1 5; vector-effect: non-scaling-stroke; }
-.sb-hz { stroke: color-mix(in srgb, var(--ink) 16%, transparent); stroke-width: 1; vector-effect: non-scaling-stroke; }
-.sb-orb { position: absolute; width: 18px; height: 18px; margin: -9px 0 0 -9px; border-radius: 50%; pointer-events: none;
-  background: #ffb347; box-shadow: 0 0 0 4px rgb(255 179 71 / .22), 0 0 18px rgb(255 160 60 / .7); transition: background-color .4s var(--ease), box-shadow .4s var(--ease), scale .2s var(--ease); }
-.sb-orb.is-moon { background: #eef1fb; box-shadow: 0 0 0 4px rgb(220 228 255 / .16), 0 0 14px rgb(200 214 255 / .5); }
-.sb-path:active .sb-orb { scale: 1.2; }
-.sky-bar input[type="range"] { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: grab; }
-.sky-bar input[type="range"]:active { cursor: grabbing; }
-.sb-path:has(input:focus-visible) { outline: 2px solid color-mix(in srgb, var(--ink) 40%, transparent); outline-offset: 2px; border-radius: 12px; }
-@media (max-width: 520px) { .sb-stages { justify-content: flex-start; } .sb-board { display: none; } }
-
-@media (pointer: coarse) {
-  .sky-bar { max-height: calc(100dvh - 24px); overflow-y: auto; }
-  .sky-bar button, .sky-bar .sb-stages button { min-height: 44px; }
-  .sky-bar .sb-play, .sky-bar .sb-close { width: 44px; }
-  .sb-stages { flex-wrap: wrap; }
-}
+   After Peng's: a small card of the sky's own glass that pours out of the full stop (sky.js does the genie).
+   Light, Dark and Live along the top, the sun's path underneath. */
+.sky-bar { position: absolute; z-index: 120; width: min(312px, calc(100vw - 24px)); border-radius: 22px; color: var(--ink);
+  font: 400 14px/1 var(--sans); letter-spacing: -.005em;
+  --sb-bg: color-mix(in srgb, color-mix(in oklab, var(--sky-mid, #cdd9e9) 45%, #fff) 64%, transparent);
+  background: var(--sb-bg); -webkit-backdrop-filter: blur(18px) saturate(1.7); backdrop-filter: blur(18px) saturate(1.7);
+  box-shadow: 0 14px 40px rgb(15 30 70 / .16), inset 0 0 0 .5px rgb(255 255 255 / .4); transition: box-shadow .3s var(--ease); }
+[data-theme="dark"] .sky-bar { --sb-bg: color-mix(in srgb, color-mix(in oklab, var(--sky-mid, #12264b) 86%, #fff) 62%, transparent);
+  box-shadow: 0 14px 40px rgb(0 0 0 / .32), inset 0 0 0 .5px rgb(255 255 255 / .1); }
+.sky-bar:not(.is-open) { display: none; }
+.sky-bar.is-docked { position: fixed; left: 50%; bottom: max(18px, env(safe-area-inset-bottom)); translate: -50% 0; }
+/* While it pours: no card of its own, just the warped glass and slices. */
+.sky-bar.is-genie { background: none; box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; transition: none; }
+.sky-bar.is-genie > .sb-in { visibility: hidden; }
+.sb-genie { position: absolute; inset: 0; pointer-events: none; }
+.sb-glass { position: absolute; background: var(--sb-bg); -webkit-backdrop-filter: blur(18px) saturate(1.7); backdrop-filter: blur(18px) saturate(1.7); }
+.sb-slice { position: absolute; left: 0; top: 0; width: 100%; transform-origin: 0 0; }
+.sb-slice * { transition: none !important; animation: none !important; }
+.sb-in { padding: 10px 14px 8px; }
+.sb-modes { display: flex; justify-content: space-between; align-items: center; font-size: 13.5px; }
+.sb-modes button, .sb-board { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 4px; color: var(--ink-2); transition: color .2s var(--ease), scale .2s var(--ease); }
+.sb-modes button:hover, .sb-board:hover, .sb-modes button[aria-pressed="true"] { color: var(--ink); }
+.sb-modes button:active { scale: .95; }
+.sb-board { font-size: 12px; }
+.sb-live { width: 6px; height: 6px; border-radius: 50%; background: #ff9a1f; }
+.sky-bar.is-live .sb-live { animation: sb-live 2.4s ease-in-out infinite; }
+@keyframes sb-live { 50% { box-shadow: 0 0 0 4px rgb(255 154 31 / .2); } }
+/* The dial: the sun's path over a dashed horizon, the sun on it, the time riding above. */
+.sb-dial { position: relative; height: 84px; margin: 4px 0 0; outline: none; touch-action: none; -webkit-user-select: none; user-select: none; }
+.sb-dial:focus-visible { outline: 2px solid color-mix(in srgb, var(--ink) 35%, transparent); outline-offset: 2px; border-radius: 10px; }
+.sb-dial svg { display: block; width: 100%; height: 100%; overflow: visible; cursor: pointer; transition: opacity .3s var(--ease); }
+.sb-dial.is-grab svg { cursor: grab; }
+.sb-dial.is-dragging svg { cursor: grabbing; }
+.sb-curve, .sb-lit { fill: none; stroke-width: 2; }
+.sb-curve { stroke: color-mix(in srgb, var(--ink) 60%, transparent); }
+.sb-lit { stroke: var(--ink); stroke-width: 2.2; opacity: 0; transition: opacity .25s var(--ease); }
+.sb-dial.is-near .sb-lit { opacity: 1; }
+.sb-hz { fill: none; stroke: color-mix(in srgb, var(--ink) 32%, transparent); stroke-width: 1.2; stroke-dasharray: 3 4; }
+.sb-sun, .sb-nowdot { transform-box: fill-box; transform-origin: center; transition: scale .35s cubic-bezier(.3, 1.7, .5, 1), opacity .2s var(--ease); }
+.sb-sun { fill: #ff9a1f; filter: drop-shadow(0 0 5px rgb(255 150 40 / .6)); }
+.sb-dial.is-grab .sb-sun { scale: 1.25; }
+.sb-nowdot { fill: var(--ink); }
+.sb-dial.on-now .sb-nowdot { scale: 1.6; }
+.sb-time, .sb-nowtag { position: absolute; left: 0; top: 0; white-space: nowrap; pointer-events: none; }
+.sb-time { display: flex; font-size: 13px; font-weight: 500; font-variant-numeric: tabular-nums; font-feature-settings: "tnum"; transition: opacity .3s var(--ease); }
+.sb-time > span { display: inline-grid; }
+.sb-time i { grid-area: 1 / 1; font-style: normal; }
+.sb-nowtag { font-size: 12px; color: var(--ink-2); transform: translateX(-50%); opacity: 0; transition: opacity .2s var(--ease); }
+.sb-dial.on-now .sb-nowtag { opacity: 1; }
+/* In Light or Dark the day is resting: touch it to follow the sky again. */
+.sky-bar.is-fixed .sb-dial svg, .sky-bar.is-fixed .sb-time { opacity: .45; }
+.sb-tap { position: absolute; width: 1px; height: 1px; overflow: hidden; opacity: 0; pointer-events: none; }
+@media (pointer: coarse) { .sb-modes button { height: 40px; } }

@@ -226,8 +226,8 @@
      from Sky it goes to the opposite of what's showing, then the other fixed theme, then back to Sky. */
   let mode = 'sky';
   try { const m = localStorage.getItem('sky-mode'); if (m === 'light' || m === 'dark') mode = m; } catch (e) {}
-  let barOpen = false; // the time bar always shows the sky
-  const effective = () => (barOpen ? 'sky' : mode);
+  let barOpen = false;
+  const effective = () => mode;
 
   /* ───────── Painting ───────── */
   const VARS = ['--p1', '--p2', '--p3', '--p4', '--p5', '--p6', '--pale-a', '--pale-b', '--bg', '--sky-glow', '--wash', '--wash-a', '--sun-c', '--sun-a', '--sun-x', '--sun-y', '--moon-x'];
@@ -314,8 +314,8 @@
         const dot = document.createElement('span');
         dot.className = 'sky-dot'; dot.textContent = '.'; dot.tabIndex = 0;
         dot.setAttribute('role', 'button'); dot.setAttribute('aria-label', 'Play with the time of day');
-        dot.addEventListener('click', () => openBar());
-        dot.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openBar(); } });
+        dot.addEventListener('click', () => toggleBar());
+        dot.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleBar(); } });
         em.append(dot);
       }
     }
@@ -412,14 +412,14 @@
     paint(true); refreshHint();
   }
 
-  function setMode(next, e) {
+  function setMode(next, e, quiet) {
     endSweep();
     const before = last?.theme;
     mode = next;
     try { next === 'sky' ? localStorage.removeItem('sky-mode') : localStorage.setItem('sky-mode', next); } catch (err) {}
     switchSound(next);
     const apply = () => { paint(true); refreshHint(); };
-    if (next === 'sky' && !matchMedia('(prefers-reduced-motion: reduce)').matches) { sweep(); return; }
+    if (next === 'sky' && !quiet && !matchMedia('(prefers-reduced-motion: reduce)').matches) { sweep(); return; }
     const after = next === 'sky' ? lookAt(last.n.min, last.n.ymd).theme : next;
     const toggle = document.querySelector('.theme-toggle');
     if (e && toggle) {
@@ -461,35 +461,107 @@
   }
 
   /* ───────── The time bar ─────────
-     For visitors: opened from the full stop or the footer. One frosted tile, like the Shipped street's buttons:
-     the time and what the sky is called, the moments of the day to step through, and the day itself to drag or
-     play. It opens on now and holds still. Closing it goes back to now. */
+     After Peng's (pengzhe.ng). A small glass card that pours out of the full stop like a genie and back into it,
+     with Light, Dark and Live along the top and the day drawn underneath as the sun's path. Drag the sun, tap
+     anywhere on the path, or tap the little Now dot to go back. The sun springs rather than jumps, the minutes
+     roll, and the day makes a sound as it moves: air at night, a glide through twilight, a soft chord at noon.
+     The path gives more room to sunrise and sunset, where the sky changes most, so they don't flash past.
+     Closing it goes back to now. */
   const fmt = (m) => { const h = Math.floor(m / 60), mm = String(m % 60).padStart(2, '0'); return `${h % 12 || 12}:${mm}${h < 12 ? 'am' : 'pm'}`; };
-  // The moments, from that day's sunrise R, sunset S and twilight T (the street sky's own anchors).
-  const STAGES = [['Dawn', (R, S, T) => R - .1 * T], ['Sunrise', (R, S, T) => R + .7 * T], ['Morning', (R, S, T) => R + 2.4 * T], ['Day', (R, S) => (R + S) / 2],
-    ['Golden hour', (R, S, T) => S - 1.6 * T], ['Sunset', (R, S, T) => S + .1 * T], ['Dusk', (R, S, T) => S + 1.1 * T], ['Night', (R, S, T) => S + 2.4 * T + 40]];
-  const stageMin = (i, n) => wrap(Math.round(STAGES[i][1](n.rise, n.set, n.tw)));
-  let bar = null, playing = 0, gliding = 0;
+  const calm = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const band = (a, b, v) => smooth(clamp((v - a) / (b - a), 0, 1));
+  const snap = (m) => clamp(Math.round(m / 15) * 15, 0, 1439);
+  const DH = 84, HZ = 54, UP = 30; // the dial's height, where the horizon sits, how far above it noon reaches
+  let bar = null, inner = null, dialEl = null, svg = null, timeEl = null;
+  // pos is where the sun is drawn (minutes, fractional), to is where it's heading; live means heading for now.
+  const dial = { pos: 0, vel: 0, to: 0, live: true, drag: null, hp: null, raf: 0, t: 0, q: -1, key: '', xs: [], ys: [], lens: [] };
+
+  // The sun's height through the day: 1 at noon, 0 on the horizon, -1 at midnight.
+  function height(m, n) {
+    const noon = (n.rise + n.set) / 2, half = Math.cos(Math.PI * (n.set - n.rise) / 1440), c = Math.cos(2 * Math.PI * (m - noon) / 1440);
+    return c >= half ? (c - half) / (1 - half) : -(half - c) / (1 + half);
+  }
   function buildBar() {
     bar = document.createElement('div');
     bar.className = 'sky-bar';
     bar.setAttribute('role', 'dialog');
     bar.setAttribute('aria-label', 'Time of day');
-    bar.innerHTML = `
-      <div class="sb-top">
-        <button type="button" class="sb-play" aria-label="Play the day"></button>
-        <span class="sb-read"><b class="sb-clock"></b><span class="sb-name"></span></span>
-        ${liveHost && !params.has('lab') ? '' : '<a class="sb-board" href="sky/">Compare times</a>'}
-        <button type="button" class="sb-now">Now</button>
-        <button type="button" class="sb-close" aria-label="Close and go back to now"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 3l6 6M9 3l-6 6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
+    bar.innerHTML = `<div class="sb-in">
+      <div class="sb-modes">
+        <button type="button" data-m="light">Light</button><button type="button" data-m="dark">Dark</button>
+        <button type="button" data-m="sky">Live<i class="sb-live" aria-hidden="true"></i></button>
+        ${liveHost && !params.has('lab') ? '' : '<a class="sb-board" href="sky/">Board</a>'}
       </div>
-      <div class="sb-path"><svg viewBox="0 0 520 64" preserveAspectRatio="none" aria-hidden="true"><path class="sb-curve"/><path class="sb-hz" d="M0 40H520"/></svg><i class="sb-orb"></i><input type="range" min="0" max="1439" step="1" aria-label="Time of day"></div>
-      <div class="sb-stages">${STAGES.map(([t], i) => `<button type="button" data-s="${i}">${t}</button>`).join('')}</div>`;
+      <div class="sb-dial" role="slider" tabindex="0" aria-label="Time of day" aria-valuemin="0" aria-valuemax="1439">
+        <svg aria-hidden="true"><path class="sb-hz"/><path class="sb-curve"/><path class="sb-lit"/><circle class="sb-nowdot" r="2.5"/><circle class="sb-sun" r="6"/></svg>
+        <span class="sb-time" aria-hidden="true"><span></span><span></span><span></span><span></span></span>
+        <span class="sb-nowtag" aria-hidden="true">Now</span>
+      </div></div>`;
     document.body.append(bar);
-    bar.addEventListener('click', onBar);
-    const range = bar.querySelector('input');
-    range.addEventListener('input', () => { stopPlay(); frozen = toHM(+range.value); paint(); });
-    stopPlay();
+    inner = bar.firstElementChild; dialEl = bar.querySelector('.sb-dial'); svg = dialEl.firstElementChild; timeEl = bar.querySelector('.sb-time');
+    bar.addEventListener('click', (e) => {
+      const b = e.target.closest('[data-m]');
+      if (!b) return;
+      const m = b.dataset.m;
+      if (m === 'sky') { if (mode !== 'sky') setMode('sky', null, true); unlock(); goLive(); return; }
+      setMode(m);
+      dial.live = true; frozen = null; frozenDate = null; dial.pos = dial.to = now().min; dial.vel = 0;
+      paint(true);
+    });
+    const local = (e) => { const r = svg.getBoundingClientRect(); return { x: clamp(e.clientX - r.left, 0, r.width), y: e.clientY - r.top }; };
+    const near = (p, m, r) => { const a = at(m); return Math.hypot(p.x - a.x, p.y - a.y) <= r; };
+    const grabR = () => (matchMedia('(pointer: coarse)').matches ? 28 : 18);
+    svg.addEventListener('pointerdown', (e) => {
+      if (e.button) return;
+      unlock();
+      const p = local(e), m = toMin(p.x);
+      dial.hp = p;
+      if (showNow() && near(p, nowMin(), 12) && !near(p, dial.pos, grabR())) { goLive(); return; }
+      toSky();
+      dial.live = false;
+      const grab = near(p, dial.pos, grabR());
+      dial.drag = { off: grab ? dial.pos - m : 0 };
+      svg.setPointerCapture(e.pointerId);
+      dial.to = grab ? dial.pos : snap(m);
+      dialEl.classList.add('is-dragging');
+      run();
+    });
+    svg.addEventListener('pointermove', (e) => {
+      dial.hp = local(e);
+      if (dial.drag) { dial.to = clamp(toMin(dial.hp.x) + dial.drag.off, 0, 1439); run(); } else renderDial();
+    });
+    const up = () => {
+      if (!dial.drag) return;
+      dial.drag = null; dial.to = snap(dial.to);
+      dialEl.classList.remove('is-dragging');
+      run();
+    };
+    svg.addEventListener('pointerup', up);
+    svg.addEventListener('pointercancel', up);
+    svg.addEventListener('pointerleave', () => { if (!dial.drag) { dial.hp = null; renderDial(); } });
+    dialEl.addEventListener('keydown', (e) => {
+      const step = { ArrowRight: 15, ArrowUp: 15, ArrowLeft: -15, ArrowDown: -15, PageUp: 60, PageDown: -60 }[e.key];
+      const to = e.key === 'Home' ? 0 : e.key === 'End' ? 1439 : step != null ? clamp(snap(dial.to) + step, 0, 1439) : null;
+      if (to == null) return;
+      e.preventDefault(); unlock(); toSky();
+      dial.live = false; dial.to = to; run();
+    });
+  }
+  // The full stop is where the card comes from. Pages without one get it at the bottom of the screen.
+  function place() {
+    const dot = document.querySelector('.sky-dot'), W = bar.offsetWidth;
+    if (dot && dot.getClientRects().length) {
+      const r = dot.getBoundingClientRect();
+      bar.classList.remove('is-docked');
+      bar.style.left = `${clamp((r.left + r.right) / 2 - W / 2, 12, innerWidth - W - 12) + scrollX}px`;
+      bar.style.top = `${r.bottom + scrollY + 10}px`;
+    } else { bar.classList.add('is-docked'); bar.style.left = bar.style.top = ''; }
+  }
+  function source() {
+    const dot = !bar.classList.contains('is-docked') && document.querySelector('.sky-dot');
+    if (dot) return dot.getBoundingClientRect();
+    return { left: innerWidth / 2 - 30, right: innerWidth / 2 + 30, width: 60, top: innerHeight + 20, bottom: innerHeight + 20 };
   }
   function openBar() {
     if (!bar) buildBar();
@@ -497,79 +569,306 @@
     barOpen = true;
     root.classList.add('sun-on');
     bar.classList.add('is-open');
-    paint(true);
+    place();
+    if (!dial.raf) { dial.live = !frozen; dial.pos = dial.to = now().min; dial.vel = 0; }
+    dial.key = '';
+    paint(true); paintNow(true);
+    genie(true);
   }
   function closeBar() {
-    if (!bar) return;
-    stopPlay(); barOpen = false; frozen = null; frozenDate = null;
+    if (!bar || !barOpen) return;
+    barOpen = false;
     root.classList.remove('sun-on');
-    bar.classList.remove('is-open');
+    dial.drag = null; dial.hp = null;
+    if (frozen || frozenDate) goLive(); // the sky glides back to now as the card pours away
+    genie(false);
+  }
+  const toggleBar = () => (barOpen ? closeBar() : openBar());
+  addEventListener('keydown', (e) => { if (e.key === 'Escape' && barOpen) closeBar(); });
+  document.addEventListener('pointerdown', (e) => { if (barOpen && !bar.contains(e.target) && !e.target.closest?.('.sky-dot')) closeBar(); }, true);
+  addEventListener('resize', () => { if (barOpen) { place(); dial.key = ''; renderDial(); } });
+
+  /* ── The path ── */
+  // Each 5-minute step gets room for how much the sky changes in it, smoothed, on top of an even share.
+  function shape(n, W) {
+    const key = `${n.ymd}|${W}|${n.rise}|${n.set}`;
+    if (dial.key === key) return;
+    dial.key = key;
+    const sky = (m) => { const k = street(wrap(m), n.ymd, 'sky'); return [k.top, k.mid, k.low].flatMap(hex); };
+    const raw = [];
+    let prev = sky(0);
+    for (let i = 1; i <= 288; i++) { const c = sky(i * 5); raw.push(Math.hypot(...c.map((v, j) => v - prev[j]))); prev = c; }
+    const mean = raw.reduce((a, v) => a + v, 0) / 288;
+    const wts = raw.map((_, i) => {
+      let s = 0, w = 0;
+      for (let j = -10; j <= 10; j++) { const v = raw[i + j]; if (v == null) continue; const g = Math.exp(-j * j / 32); s += v * g; w += g; }
+      return s / w + 2.5 * mean;
+    });
+    const total = wts.reduce((a, v) => a + v, 0);
+    dial.xs = [0]; wts.forEach((v, i) => dial.xs.push(dial.xs[i] + v / total * W));
+    // Above the horizon the true shape; below it the same slope, eased so the night never dips too deep.
+    const noon = (n.rise + n.set) / 2, half = Math.cos(Math.PI * (n.set - n.rise) / 1440);
+    dial.ys = dial.xs.map((_, i) => { const d = (Math.cos(2 * Math.PI * (i * 5 - noon) / 1440) - half) / (1 - half); return HZ - UP * (d < 0 ? d / (1 - d) : d); });
+    dial.lens = [0];
+    for (let i = 1; i <= 288; i++) dial.lens.push(dial.lens[i - 1] + Math.hypot(dial.xs[i] - dial.xs[i - 1], dial.ys[i] - dial.ys[i - 1]));
+    svg.setAttribute('viewBox', `0 0 ${W} ${DH}`);
+    const d = 'M' + dial.xs.map((x, i) => `${x.toFixed(1)} ${dial.ys[i].toFixed(1)}`).join('L');
+    bar.querySelector('.sb-curve').setAttribute('d', d);
+    bar.querySelector('.sb-lit').setAttribute('d', d);
+    bar.querySelector('.sb-hz').setAttribute('d', `M0 ${HZ}H${W}`);
+  }
+  function at(m) {
+    const i = clamp(m / 5, 0, 288), j = Math.min(287, Math.floor(i)), f = i - j, L = (a) => a[j] + (a[j + 1] - a[j]) * f;
+    return { x: L(dial.xs), y: L(dial.ys), l: L(dial.lens) };
+  }
+  function toMin(x) {
+    const xs = dial.xs;
+    let j = 0;
+    while (j < 287 && xs[j + 1] < x) j++;
+    return clamp((j + (x - xs[j]) / ((xs[j + 1] - xs[j]) || 1)) * 5, 0, 1439);
+  }
+  const nowMin = () => wall(Date.now()).min;
+  const showNow = () => !(dial.live && Math.abs(dial.pos - nowMin()) < 8);
+  // Stroke only the given stretches of the path (a dash pattern that starts with an empty dash).
+  const minus = (from, gaps) => gaps.reduce((out, [a, b]) => out.flatMap(([s, e]) => (b <= s || a >= e ? [[s, e]] : [[s, Math.min(e, a)], [Math.max(s, b), e]].filter(([x, y]) => y > x))), [from]);
+  const dashes = (show, T) => { const out = [0]; let p = 0; show.forEach(([s, e]) => { s = clamp(s, p, T); e = clamp(e, s, T); out.push((s - p).toFixed(1), (e - s).toFixed(1)); p = e; }); out.push(T + 50); return out.join(' '); };
+
+  function renderDial() {
+    if (!bar || !last || !bar.classList.contains('is-open')) return;
+    const W = svg.clientWidth;
+    if (!W) return;
+    const n = last.n;
+    shape(n, W);
+    const T = dial.lens[288], P = at(dial.pos), nm = nowMin(), Q = at(nm), hp = dial.hp;
+    const sunEl = svg.querySelector('.sb-sun'), nowEl = svg.querySelector('.sb-nowdot'), tag = bar.querySelector('.sb-nowtag');
+    sunEl.setAttribute('cx', P.x.toFixed(2)); sunEl.setAttribute('cy', P.y.toFixed(2));
+    const seeNow = showNow();
+    nowEl.setAttribute('cx', Q.x.toFixed(2)); nowEl.setAttribute('cy', Q.y.toFixed(2));
+    nowEl.style.opacity = seeNow ? '' : '0';
+    // The path breaks around the sun and the Now dot, like Peng's.
+    const gaps = [[P.l - 10, P.l + 10]];
+    if (seeNow) gaps.push([Q.l - 5.5, Q.l + 5.5]);
+    gaps.sort((a, b) => a[0] - b[0]);
+    bar.querySelector('.sb-curve').setAttribute('stroke-dasharray', dashes(minus([0, T], gaps), T));
+    const coarse = matchMedia('(pointer: coarse)').matches;
+    const onSun = !!hp && Math.hypot(hp.x - P.x, hp.y - P.y) <= (coarse ? 28 : 18);
+    const onNow = !!hp && seeNow && !onSun && Math.hypot(hp.x - Q.x, hp.y - Q.y) <= 12;
+    dialEl.classList.toggle('is-grab', onSun || !!dial.drag);
+    dialEl.classList.toggle('on-now', onNow);
+    // Under the pointer, the path darkens a little, so you can see where a tap will land.
+    dialEl.classList.toggle('is-near', !!hp && !onNow);
+    if (hp) { const l = at(toMin(hp.x)).l; bar.querySelector('.sb-lit').setAttribute('stroke-dasharray', dashes(minus([l - 22, l + 22], gaps), T)); }
+    tag.style.translate = `${Q.x.toFixed(1)}px ${(Q.y - 24).toFixed(1)}px`;
+    // The time rides above the sun, kept inside the card.
+    const shown = dial.live && !dial.raf ? n.min : dial.drag ? snap(dial.pos) : Math.round(clamp(dial.pos, 0, 1439));
+    setTime(shown);
+    const tw = timeEl.offsetWidth;
+    timeEl.style.translate = `${clamp(P.x - tw / 2, -6, W - tw + 6).toFixed(1)}px ${(P.y - 28).toFixed(1)}px`;
+    if (dialEl.getAttribute('aria-valuenow') !== String(shown)) { dialEl.setAttribute('aria-valuenow', shown); dialEl.setAttribute('aria-valuetext', fmt(shown)); }
+  }
+  // Each part of the time rolls on its own, up when the day goes forward, faster when changes come quickly.
+  function setTime(m) {
+    const parts = /^(\d+:)(\d)(\d)(\D+)$/.exec(fmt(m)).slice(1);
+    const prevM = timeEl._m ?? m, t = performance.now(), dur = clamp(t - (timeEl._t || 0), 140, 420);
+    if (prevM === m && timeEl.children[0].dataset.v) return;
+    timeEl._m = m; timeEl._t = t;
+    const dir = Math.sign(m - prevM);
+    parts.forEach((txt, i) => roll(timeEl.children[i], txt, dir, dur));
+  }
+  function roll(el, txt, dir, dur) {
+    if (el.dataset.v === txt) return;
+    const was = el.dataset.v;
+    el.dataset.v = txt;
+    if (!dir || was == null || calm()) { el.innerHTML = ''; const i = document.createElement('i'); i.textContent = txt; el.append(i); return; }
+    [...el.children].slice(0, -1).forEach((x) => x.remove());
+    const out = el.lastElementChild, inn = document.createElement('i');
+    inn.textContent = txt; el.append(inn);
+    const y = dir * .6, o = { duration: dur, easing: 'cubic-bezier(.2, .7, .2, 1)' }, blur = `blur(${dur < 200 ? 2 : 1.2}px)`;
+    out?.animate([{ transform: 'none', filter: 'blur(0)', opacity: 1 }, { transform: `translateY(${-y}em)`, filter: blur, opacity: 0 }], { ...o, fill: 'forwards' }).finished.then(() => out.remove(), () => {});
+    inn.animate([{ transform: `translateY(${y}em)`, filter: blur, opacity: 0 }, { transform: 'none', filter: 'blur(0)', opacity: 1 }], o);
+  }
+
+  /* ── The sun's movement ── */
+  // A spring: stiff and without overshoot while you drag, softer with a little settle when it glides somewhere.
+  function run() { if (!dial.raf) { dial.t = performance.now(); dial.raf = requestAnimationFrame(step); } }
+  function step(t) {
+    dial.raf = 0;
+    const dt = Math.min(1 / 30, (t - dial.t) / 1000); dial.t = t;
+    if (dial.live) dial.to = nowMin();
+    if (calm()) { dial.pos = dial.to; dial.vel = 0; }
+    const K = dial.drag ? 900 : 190, C = dial.drag ? 60 : 22;
+    dial.vel += (K * (dial.to - dial.pos) - C * dial.vel) * dt;
+    dial.pos += dial.vel * dt;
+    if (dial.pos < 0 || dial.pos > 1439) { dial.pos = clamp(dial.pos, 0, 1439); dial.vel = 0; }
+    const moving = !!dial.drag || Math.abs(dial.to - dial.pos) > .05 || Math.abs(dial.vel) > .5;
+    if (moving) {
+      frozen = toHM(Math.round(dial.pos));
+      const q = Math.floor(dial.pos / 15);
+      if (q !== dial.q && dial.q >= 0) tap();
+      dial.q = q;
+      if (last) daySound(height(dial.pos, last.n), Math.abs(dial.vel));
+    } else {
+      dial.pos = dial.to; dial.vel = 0; dial.q = -1;
+      if (dial.live) { frozen = null; frozenDate = null; } else frozen = toHM(Math.round(dial.pos));
+      daySound(null);
+    }
+    paintNow(!moving);
+    renderDial();
+    if (moving) dial.raf = requestAnimationFrame(step);
+  }
+  function goLive() { dial.live = true; dial.drag = null; run(); }
+  // Touching the day means following the sky again, whatever Light or Dark was showing.
+  function toSky() {
+    if (mode === 'sky') return;
+    mode = 'sky';
+    try { localStorage.removeItem('sky-mode'); } catch (e) {}
     paint(true);
   }
-  const PLAY = '<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 1.8v8.4L10 6z" fill="currentColor"/></svg>';
-  const PAUSE = '<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 2h2v8H3zM7 2h2v8H7z" fill="currentColor"/></svg>';
-  const stopPlay = () => { cancelAnimationFrame(playing); cancelAnimationFrame(gliding); playing = gliding = 0; const b = bar?.querySelector('.sb-play'); if (b) { b.innerHTML = PLAY; b.setAttribute('aria-label', 'Play the day'); } };
-  function play() {
-    if (playing) { stopPlay(); return; }
-    stopPlay();
-    let m = frozen ? hm(frozen) : now().min, prev = performance.now();
-    const b = bar.querySelector('.sb-play'); b.innerHTML = PAUSE; b.setAttribute('aria-label', 'Pause');
-    const tick = (t) => {
-      // Quick through the day and the night, slow through sunrise and sunset, where the sky is worth watching.
-      const n = now(), near = Math.min(Math.abs(m - n.rise), Math.abs(m - n.set)) < 2.6 * n.tw;
-      m = wrap(m + (t - prev) / 1000 * (near ? 9 : 110)); prev = t;
-      frozen = toHM(Math.floor(m));
-      paint();
-      playing = requestAnimationFrame(tick);
-    };
-    playing = requestAnimationFrame(tick);
+
+  /* ── The sound ──
+     One voice that follows the sun's height: wind when it's well below the horizon, a pure glide either side
+     of it, a warm chord that gently beats at noon. It's only as loud as the sun is fast. After Peng's "Blend". */
+  let voice = null, noiseBuf = null;
+  function unlock() {
+    try {
+      actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+      if (actx.state === 'suspended') actx.resume();
+    } catch (e) {}
   }
-  // Stepping to a moment: the day runs there the short way round, in under a second.
-  function glide(to) {
-    stopPlay();
-    const from = frozen ? hm(frozen) : now().min, gap = ((to - from + 2160) % 1440) - 720, t0 = performance.now();
-    if (matchMedia('(prefers-reduced-motion: reduce)').matches) { frozen = toHM(to); paint(); return; }
-    const tick = (t) => {
-      const k = Math.min(1, (t - t0) / 900);
-      frozen = toHM(wrap(Math.round(from + gap * smooth(k))));
-      paint();
-      gliding = k < 1 ? requestAnimationFrame(tick) : 0;
-    };
-    gliding = requestAnimationFrame(tick);
+  function daySound(h, speed) {
+    if (h == null) { if (voice) { voice.rest(); voice = null; } return; }
+    if (!actx || actx.state !== 'running') return;
+    if (!voice) { if (speed < 2) return; voice = dayVoice(); }
+    voice.move(h, speed);
   }
-  function onBar(e) {
-    const b = e.target.closest('button');
-    if (!b) return;
-    if (b.classList.contains('sb-play')) return play();
-    if (b.classList.contains('sb-close')) return closeBar();
-    if (b.dataset.s) return glide(stageMin(+b.dataset.s, now()));
-    if (b.classList.contains('sb-now')) { stopPlay(); frozen = null; frozenDate = null; }
-    paint(true);
+  function dayVoice() {
+    const a = actx, nodes = [], out = a.createGain();
+    out.gain.value = 0; out.connect(a.destination);
+    const lane = (level) => { const g = a.createGain(), trim = a.createGain(); g.gain.value = 0; trim.gain.value = level; g.connect(trim).connect(out); return g; };
+    const osc = (type, to, gain, detune = 0) => { const o = a.createOscillator(), g = a.createGain(); o.type = type; o.detune.value = detune; g.gain.value = gain; o.connect(g).connect(to); o.start(); nodes.push(o); return o; };
+    const filter = (type, f, to, q = 1) => { const b = a.createBiquadFilter(); b.type = type; b.frequency.value = f; b.Q.value = q; b.connect(to); return b; };
+    // Twilight: a pure tone with a little octave over it.
+    const glide = lane(.5), gf = filter('lowpass', 1500, glide), g1 = osc('sine', gf, .5), g2 = osc('triangle', gf, .06);
+    // Noon: a major chord, every note doubled a few cents apart so it beats, its filter opening toward noon.
+    const chord = lane(.55), cf = filter('lowpass', 800, chord, .7);
+    const notes = [1, 1.25, 1.5, 2].flatMap((r, i) => [-4, 4].map((c) => [r, osc(i % 2 ? 'triangle' : 'sine', cf, i === 3 ? .14 : .2, c)]));
+    // Night: air, a slow-moving band of noise.
+    const wind = lane(.5), lp = filter('lowpass', 1800, wind), bp = filter('bandpass', 700, lp, .5);
+    if (!noiseBuf) { noiseBuf = a.createBuffer(1, a.sampleRate * 2, a.sampleRate); const d = noiseBuf.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1; }
+    const src = a.createBufferSource(); src.buffer = noiseBuf; src.loop = true; src.connect(bp); src.start(a.currentTime, Math.random() * 1.5); nodes.push(src);
+    osc('sine', bp.frequency, 260).frequency.value = .13;
+    return {
+      move(h, speed) {
+        const t = a.currentTime, day = band(.45, 1, h), night = band(.45, 1, -h);
+        glide.gain.setTargetAtTime(Math.sqrt(Math.max(0, 1 - day - night)), t, .12);
+        chord.gain.setTargetAtTime(Math.sqrt(day), t, .12);
+        wind.gain.setTargetAtTime(Math.sqrt(night), t, .12);
+        const f = 262 * 2 ** (h * .6), r = 196 * 2 ** (h * .25);
+        g1.frequency.setTargetAtTime(f, t, .05); g2.frequency.setTargetAtTime(2 * f, t, .05);
+        notes.forEach(([k, o]) => o.frequency.setTargetAtTime(r * k, t, .08));
+        cf.frequency.setTargetAtTime(520 + 2600 * Math.max(0, h) ** 2, t, .25);
+        out.gain.setTargetAtTime(.16 * Math.min(1, speed / 150) ** .6, t, .06);
+      },
+      rest() { const t = a.currentTime; out.gain.setTargetAtTime(0, t, .09); nodes.forEach((o) => o.stop(t + .8)); },
+    };
+  }
+  // A tick in the hand at every quarter hour on phones: a vibration on Android, the switch trick on iPhone.
+  let tapEl = null;
+  function tap() {
+    if (!bar || !matchMedia('(pointer: coarse)').matches) return;
+    if (navigator.vibrate) { navigator.vibrate(4); return; }
+    if (!tapEl) { tapEl = document.createElement('label'); tapEl.className = 'sb-tap'; tapEl.setAttribute('aria-hidden', 'true'); tapEl.innerHTML = '<input type="checkbox" switch tabindex="-1">'; bar.append(tapEl); }
+    tapEl.click();
+  }
+
+  /* ── The genie ──
+     While the card moves, its glass is one layer cut to the funnel's outline, and its contents are 6px slices,
+     each warped onto its own strip of the funnel. Rows near the full stop narrow first, then everything pours in.
+     The same shape as Peng's genie: bend over the first half, pour over the last three quarters. */
+  let gen = null;
+  function genie(open) {
+    const c0 = gen ? gen.c : open ? 1 : 0;
+    if (gen) { cancelAnimationFrame(gen.raf); gen.layer.remove(); }
+    if (calm()) { gen = null; bar.classList.remove('is-genie'); if (!open) bar.classList.remove('is-open'); return; }
+    bar.classList.add('is-genie');
+    const W = bar.offsetWidth, H = bar.offsetHeight, r = bar.getBoundingClientRect(), s = source();
+    const cx = (s.left + s.right) / 2 - r.left, neck = Math.max(14, s.width) / 2;
+    const G = { W, H, sl: cx - neck, sr: cx + neck, sy: (s.top + s.bottom) / 2 - r.top, R: parseFloat(getComputedStyle(bar).borderTopLeftRadius) || 22 };
+    const layer = document.createElement('div'), glass = document.createElement('div');
+    layer.className = 'sb-genie'; layer.inert = true; layer.setAttribute('aria-hidden', 'true');
+    glass.className = 'sb-glass';
+    G.gx = Math.min(0, G.sl); G.gy = Math.min(0, G.sy);
+    Object.assign(glass.style, { left: `${G.gx}px`, top: `${G.gy}px`, width: `${Math.max(W, G.sr) - G.gx}px`, height: `${Math.max(H, G.sy) - G.gy}px` });
+    layer.append(glass);
+    const ys = [];
+    for (let y = 0; y < H; y += 6) ys.push(y);
+    ys.push(H);
+    const slices = ys.slice(0, -1).map((y0, i) => {
+      const sl = inner.cloneNode(true);
+      sl.classList.add('sb-slice');
+      sl.style.clipPath = `inset(${Math.max(0, y0 - .5)}px 0 ${Math.max(0, H - ys[i + 1] - .5)}px 0)`;
+      layer.append(sl);
+      return sl;
+    });
+    bar.append(layer);
+    gen = { c: c0, layer, raf: 0, t: performance.now() };
+    const dur = open ? 450 : 400;
+    const tick = (t) => {
+      gen.c = clamp(gen.c + (open ? -1 : 1) * (t - gen.t) / dur, 0, 1); gen.t = t;
+      drawGenie(G, ys, slices, glass, gen.c);
+      if (gen.c === (open ? 0 : 1)) {
+        layer.remove(); gen = null;
+        bar.classList.remove('is-genie');
+        if (!open) bar.classList.remove('is-open');
+        return;
+      }
+      gen.raf = requestAnimationFrame(tick);
+    };
+    drawGenie(G, ys, slices, glass, c0);
+    gen.raf = requestAnimationFrame(tick);
+  }
+  function drawGenie(G, ys, slices, glass, c) {
+    const bend = smooth(clamp(c / .5, 0, 1)), pour = clamp((c - .25) / .75, 0, 1) ** 2;
+    const below = G.sy >= G.H / 2, span = below ? G.sy : G.H - G.sy;
+    const row = (y) => {
+      const s = Math.min((below ? y : G.H - y) + pour * span, span), k = bend * smooth(clamp(s / span, 0, 1));
+      return { Y: below ? s : G.H - s, l: k * G.sl, r: G.W + k * (G.sr - G.W) };
+    };
+    const rows = ys.map(row);
+    slices.forEach((sl, i) => {
+      const m = quad(G.W, ys[i], ys[i + 1], rows[i], rows[i + 1]);
+      sl.style.visibility = m ? '' : 'hidden';
+      if (m) sl.style.transform = `matrix3d(${m.join(',')})`;
+    });
+    // The outline, every 2px, with the card's round corners carried along the warp.
+    const L = [], Rt = [];
+    for (let y = 0; y <= G.H; y += 2) {
+      const w = row(y), e = Math.min(y, G.H - y), inset = e < G.R ? G.R - Math.sqrt(G.R * G.R - (G.R - e) ** 2) : 0, k = (w.r - w.l) / G.W;
+      L.push(`${(w.l + inset * k - G.gx).toFixed(1)}px ${(w.Y - G.gy).toFixed(1)}px`);
+      Rt.push(`${(w.r - inset * k - G.gx).toFixed(1)}px ${(w.Y - G.gy).toFixed(1)}px`);
+    }
+    glass.style.clipPath = `polygon(${L.concat(Rt.reverse()).join(',')})`;
+  }
+  // The perspective transform that lays the strip [0,W]×[y0,y1] onto the four-cornered shape between two rows.
+  function quad(W, y0, y1, a, b) {
+    const hb = y1 - y0;
+    if (!(b.Y - a.Y > .001)) return null;
+    const [x0, Y0, x1, Y1, x2, Y2, x3, Y3] = [a.l, a.Y, a.r, a.Y, b.r, b.Y, b.l, b.Y];
+    const dx1 = x1 - x2, dx2 = x3 - x2, dx3 = x0 - x1 + x2 - x3, dy1 = Y1 - Y2, dy2 = Y3 - Y2, dy3 = Y0 - Y1 + Y2 - Y3;
+    const den = dx1 * dy2 - dx2 * dy1;
+    const g = (dx3 * dy2 - dx2 * dy3) / den, h = (dx1 * dy3 - dx3 * dy1) / den;
+    const A = x1 - x0 + g * x1, B = x3 - x0 + h * x3, D = Y1 - Y0 + g * Y1, E = Y3 - Y0 + h * Y3;
+    const m = [A / W, D / W, 0, g / W, B / hb, E / hb, 0, h / hb, 0, 0, 1, 0, x0 - B * y0 / hb, Y0 - E * y0 / hb, 0, 1 - h * y0 / hb];
+    return m.every(Number.isFinite) ? m.map((v) => +v.toFixed(6)) : null;
   }
   function syncBar() {
     if (!bar || !last) return;
-    bar.querySelector('.sb-now').hidden = !frozen && !frozenDate;
-    const { n, L } = last, range = bar.querySelector('input');
-    if (document.activeElement !== range || playing || gliding) range.value = n.min;
-    // The sun's path for that day: over the horizon line between sunrise and sunset, under it at night.
-    const noon = (n.rise + n.set) / 2, half = Math.cos(Math.PI * (n.set - n.rise) / 1440);
-    const alt = (m) => (Math.cos(2 * Math.PI * (m - noon) / 1440) - half) / (1 - half); // 1 at noon, 0 on the horizon
-    const yAt = (m) => 40 - Math.max(-.62, alt(m)) * 30;
-    const key = `${n.rise}|${n.set}`;
-    if (bar.dataset.path !== key) { bar.dataset.path = key; bar.querySelector('.sb-curve').setAttribute('d', Array.from({ length: 73 }, (_, i) => `${i ? 'L' : 'M'}${(i * 520 / 72).toFixed(1)} ${yAt(i * 20).toFixed(1)}`).join('')); }
-    const orb = bar.querySelector('.sb-orb');
-    orb.style.left = `${n.min / 14.4}%`; orb.style.top = `${yAt(n.min) / .64}%`;
-    orb.classList.toggle('is-moon', alt(n.min) < -.08);
-    // The moment we're in: the last one the clock has passed.
-    let on = STAGES.length - 1;
-    STAGES.forEach((_, i) => { if (stageMin(i, n) <= n.min) on = i; });
-    if (n.min < stageMin(0, n)) on = STAGES.length - 1;
-    bar.querySelectorAll('[data-s]').forEach((b, i) => { const v = String(i === on); if (b.getAttribute('aria-pressed') !== v) b.setAttribute('aria-pressed', v); });
-    bar.querySelector('.sb-clock').textContent = fmt(n.min);
-    const name = bar.querySelector('.sb-name'), label = STAGES[on][0];
-    if (name.textContent !== label) { name.textContent = label; name.classList.remove('is-new'); void name.offsetWidth; name.classList.add('is-new'); }
+    bar.querySelectorAll('[data-m]').forEach((b) => { const v = String(b.dataset.m === last.mode); if (b.getAttribute('aria-pressed') !== v) b.setAttribute('aria-pressed', v); });
+    bar.classList.toggle('is-live', dial.live && !frozen && last.mode === 'sky');
+    bar.classList.toggle('is-fixed', last.mode !== 'sky');
+    if (!dial.raf && dial.live && !frozen) dial.pos = dial.to = last.n.min;
+    renderDial();
   }
-  addEventListener('keydown', (e) => { if (e.key === 'Escape' && barOpen) closeBar(); });
 
   /* ───────── For the board at /sky/ ───────── */
   window.__sky = {
@@ -674,5 +973,5 @@
   setInterval(() => { if (!document.hidden && !frozen) paint(); }, 10000);
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && !frozen) paint(); });
   // Nothing to repaint in a hidden tab.
-  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') { stopPlay(); endSweep(); } });
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') { endSweep(); daySound(null); } });
 })();
