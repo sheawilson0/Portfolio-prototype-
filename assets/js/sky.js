@@ -285,9 +285,11 @@
       set('--moon-x', `${(-115 * (1 - dark)).toFixed(1)}%`);
     }
     if (theme === 'dark') { if (root.dataset.theme !== 'dark') root.dataset.theme = 'dark'; } else delete root.dataset.theme;
-    const meta = document.querySelector('meta[name="theme-color"]'), metaC = m === 'sky' ? L.bg : theme === 'dark' ? '#05070b' : '#ffffff';
+    // Pages that open under the sky give the browser bar the sky's top colour, not the old plain white or black.
+    const st = root.dataset.top === 'sky' ? street(n.min, n.ymd, m) : null;
+    if (st) { set('--sky-top', st.top); set('--sky-mid', st.mid); }
+    const meta = document.querySelector('meta[name="theme-color"]'), metaC = st ? st.top : m === 'sky' ? L.bg : theme === 'dark' ? '#05070b' : '#ffffff';
     if (meta && meta.content !== metaC && !DAYLIGHT) meta.setAttribute('content', metaC); // a daylight page paints its own
-    if (root.dataset.top === 'sky') { const st = street(n.min, n.ymd, m); set('--sky-top', st.top); set('--sky-mid', st.mid); }
     flush();
     last = { n, L, theme, mode: m };
     favicon();

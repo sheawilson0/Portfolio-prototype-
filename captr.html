@@ -24,7 +24,6 @@
   document.documentElement.classList.add('js');
   // Came from another page on the site (not a reload or a first visit): html.hop skips the long entrances.
   try { const n = performance.getEntriesByType('navigation')[0]; if (n && n.type !== 'reload' && document.referrer.startsWith(location.origin + '/')) document.documentElement.classList.add('hop'); } catch (e) {}
-  try { if (localStorage.getItem('theme') === 'dark') document.documentElement.dataset.theme = 'dark'; } catch (e) {}
 </script>
 <script src="assets/js/sky.js"></script>
 <link rel="stylesheet" href="/assets/fonts/portfolio.css">

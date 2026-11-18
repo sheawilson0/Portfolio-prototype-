@@ -24,7 +24,6 @@
   document.documentElement.classList.add('js');
   // Came from another page on the site (not a reload or a first visit): html.hop skips the long entrances.
   try { const n = performance.getEntriesByType('navigation')[0]; if (n && n.type !== 'reload' && document.referrer.startsWith(location.origin + '/')) document.documentElement.classList.add('hop'); } catch (e) {}
-  try { if (localStorage.getItem('theme') === 'dark') document.documentElement.dataset.theme = 'dark'; } catch (e) {}
 </script>
 <link rel="preload" as="image" href="assets/media/amp/amp-floating-screens.webp" imagesrcset="assets/media/amp/amp-floating-screens-480w.webp 480w, assets/media/amp/amp-floating-screens-800w.webp 800w, assets/media/amp/amp-floating-screens-1200w.webp 1200w, assets/media/amp/amp-floating-screens-1600w.webp 1600w, assets/media/amp/amp-floating-screens.webp 2000w" imagesizes="(max-width: 720px) 125.13vw, (max-width: 1512px) 100.0vw, 1600px" fetchpriority="high">
 <script src="assets/js/sky.js"></script>

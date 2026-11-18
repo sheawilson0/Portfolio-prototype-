@@ -24,7 +24,6 @@
   document.documentElement.classList.add('js');
   // Came from another page on the site (not a reload or a first visit): html.hop skips the long entrances.
   try { const n = performance.getEntriesByType('navigation')[0]; if (n && n.type !== 'reload' && document.referrer.startsWith(location.origin + '/')) document.documentElement.classList.add('hop'); } catch (e) {}
-  try { if (localStorage.getItem('theme') === 'dark') document.documentElement.dataset.theme = 'dark'; } catch (e) {}
   // The intro (intro.js): on a first visit or a reload, never coming back from another page, with reduced motion or a link to a section.
   try {
     if (!document.documentElement.classList.contains('hop') && !location.hash && !matchMedia('(prefers-reduced-motion: reduce)').matches) {

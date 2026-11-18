@@ -18,7 +18,7 @@
     const dark = root.dataset.theme === 'dark';
     toggle.setAttribute('aria-pressed', String(dark));
     toggle.setAttribute('aria-label', dark ? 'Switch to light mode' : 'Switch to dark mode');
-    metaTheme.setAttribute('content', dark ? '#05070b' : '#ffffff');
+    if (!window.__skyToggle) metaTheme.setAttribute('content', dark ? '#05070b' : '#ffffff'); // with the sky on, sky.js colours the browser bar
   };
   syncToggle();
   toggle.addEventListener('click', (e) => {
