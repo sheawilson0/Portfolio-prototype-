@@ -148,7 +148,7 @@
         <header class="sk-head">
           <span class="sk-photo"><img src="${PHOTO}" srcset="/links/shea-160.webp 160w, /links/shea-320.webp 320w, /links/shea-480.webp 480w" sizes="120px" alt="Shea Wilson" width="240" height="240"></span>
           <h1 data-egg>Shea Wilson</h1>
-          <p class="sk-role">Design engineer. Always making <em>something.</em></p>
+          <p class="sk-role">Product designer. Always making <em>something.</em></p>
         </header>
         <main class="sk">
           <ul class="sk-icons">${socials.map((l, i) => `<li style="--i:${i}"><a class="sk-icon pane" ${linkAttrs(l)} aria-label="${esc(l.label)}, ${esc(l.sub)}" title="${esc(l.label)}">${icon(l.icon)}</a></li>`).join('')}</ul>
@@ -222,7 +222,7 @@
       <main class="ar">
         <canvas class="ar-sun" width="48" height="48" aria-hidden="true"></canvas>
         <h1 class="ar-title">Shea<br>Wilson</h1>
-        <p class="ar-class">Class: design engineer</p>
+        <p class="ar-class">Class: product designer</p>
         <p class="ar-quest">Quest: always making something</p>
         <p class="ar-select">Select a link</p>
         <ul class="ar-menu">
