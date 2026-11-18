@@ -309,9 +309,10 @@
     if (toggle) {
       if (!toggle.querySelector('.sbt-sky')) toggle.innerHTML = `<svg class="sbt-sky" viewBox="0 0 24 20" aria-hidden="true"><defs><mask id="sbt-bite"><rect width="24" height="20" fill="#fff"/><circle class="bite" cy="8.4" r="3.8" fill="#000"/></mask></defs>
         <circle class="halo" cx="12" cy="10" r="6.5"/><circle class="body" cx="12" cy="10" r="4" mask="url(#sbt-bite)"/></svg>`;
-      if (last && toggle.dataset.at !== `${last.n.min}|${last.n.ymd}`) {
-        const n = last.n, h = height(n.min, n);
-        toggle.dataset.at = `${n.min}|${n.ymd}`;
+      if (last && toggle.dataset.at !== `${last.n.min}|${last.n.ymd}|${last.mode}`) {
+        // Light shows the noon sun and Dark the moon; Live follows the time.
+        const n = last.n, h = last.mode === 'light' ? 1 : last.mode === 'dark' ? -1 : height(n.min, n);
+        toggle.dataset.at = `${n.min}|${n.ymd}|${last.mode}`;
         const dark = smooth(clamp((.12 - h) / .3, 0, 1)), sunC = mix('#ff8a3d', '#ffd36b', clamp(h, 0, 1));
         const put = (sel, at) => { const el = toggle.querySelector(sel); Object.entries(at).forEach(([k, v]) => el.setAttribute(k, typeof v === 'number' ? v.toFixed(2) : v)); };
         put('.body', { fill: mix(sunC, '#eef1fb', dark) });
