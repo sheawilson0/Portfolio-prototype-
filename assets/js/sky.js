@@ -1,6 +1,6 @@
 /* The sky for sheawilson.uk. The page follows the sun where the visitor is: white while it's up, the eclipse
    after dark, and a slow fade through dusk and dawn rather than a switch. A sun travels along the horizon
-   during the day, the ring leans cooler in winter and warmer in summer, and the favicon matches the page.
+   during the day, the ring leans cooler in winter and warmer in summer, and the favicon's sky matches the page.
    The toggle clicks through Sky, Light and Dark. The sun only comes out with the time bar (tap the full stop).
 
    Runs in <head>, before first paint, so there's no flash of the wrong theme. Its styles are assets/css/sky.css.
@@ -442,46 +442,20 @@
 
   /* ───────── Favicon ───────── */
   // The eclipse, drawn in the page's colours: a white disc by day, dark after sunset, ring in the sky's colours.
-  let favKey = '', favAt = 0, favTimer = 0, favLink = null, favReady = false;
+  // The favicon is the S on the sky: the day sky by day, the night sky once the page goes dark.
+  let favKey = '', favLink = null, favReady = false;
   idle(() => { favReady = true; favicon(); });
   function favicon() {
     if (!favReady || !last) return;
-    const L = last.L, fixed = last.mode !== 'sky';
-    const key = fixed ? `fixed-${last.theme}` : `${L.bg}${L.p.join('')}`;
+    const key = last.theme === 'dark' ? 'night' : 'day';
     if (key === favKey) return;
-    const wait = 400 - (performance.now() - favAt);
-    if (wait > 0) { clearTimeout(favTimer); favTimer = setTimeout(favicon, wait); return; }
-    favKey = key; favAt = performance.now();
-    const c = document.createElement('canvas'); c.width = c.height = 64;
-    // A tiny favicon needs no GPU readback in the middle of a theme change.
-    const g = c.getContext('2d', { willReadFrequently: true });
-    const ring = fixed ? BRAND : L.p, disc = fixed ? (last.theme === 'dark' ? '#05070b' : '#ffffff') : L.bg;
-    if (g.createConicGradient) {
-      const cg = g.createConicGradient(-Math.PI / 2, 32, 32);
-      [...ring, ring[0]].forEach((col, i) => cg.addColorStop(i / 6, col));
-      g.fillStyle = cg;
-    } else g.fillStyle = ring[0];
-    g.beginPath(); g.arc(32, 32, 31, 0, Math.PI * 2); g.fill();
-    // Soften the outside of the ring, like the corona on the page.
-    g.globalCompositeOperation = 'destination-in';
-    const soft = g.createRadialGradient(32, 32, 18, 32, 32, 32);
-    soft.addColorStop(0, '#000'); soft.addColorStop(.55, '#000'); soft.addColorStop(1, 'rgba(0,0,0,0)');
-    g.fillStyle = soft; g.fillRect(0, 0, 64, 64);
-    g.globalCompositeOperation = 'source-over';
-    g.fillStyle = disc; g.beginPath(); g.arc(32, 32, 17, 0, Math.PI * 2); g.fill();
-    if (lum(disc) > .5) { g.strokeStyle = 'rgba(10,10,10,.12)'; g.lineWidth = 1; g.stroke(); }
+    favKey = key;
     if (!favLink) {
       document.querySelectorAll('link[rel~="icon"]').forEach((l) => l.remove());
-      favLink = document.createElement('link'); favLink.rel = 'icon'; favLink.type = 'image/png';
+      favLink = document.createElement('link'); favLink.rel = 'icon'; favLink.type = 'image/svg+xml';
       document.head.append(favLink);
     }
-    // Encoding is asynchronous, so changing theme never waits for the canvas.
-    c.toBlob((blob) => {
-      if (!blob || key !== favKey) return;
-      const previous = favLink.href;
-      favLink.href = URL.createObjectURL(blob);
-      if (previous.startsWith('blob:')) URL.revokeObjectURL(previous);
-    }, 'image/png');
+    favLink.href = `/assets/icons/favicon-${key}.svg`;
   }
 
   /* ───────── The time bar ─────────
