@@ -281,7 +281,7 @@
     if (theme === 'dark') { if (root.dataset.theme !== 'dark') root.dataset.theme = 'dark'; } else delete root.dataset.theme;
     // Pages that open under the sky give the browser bar the sky's top colour, not the old plain white or black.
     const st = root.dataset.top === 'sky' ? street(n.min, n.ymd, m) : null;
-    if (st) { set('--sky-top', st.top); set('--sky-mid', st.mid); }
+    if (st) { set('--sky-top', st.top); set('--sky-mid', st.mid); set('--sky-low', st.low); set('--sky-sunglow', st.glow); set('--sky-ga', st.ga.toFixed(2)); }
     const meta = document.querySelector('meta[name="theme-color"]'), metaC = st ? st.top : m === 'sky' ? L.bg : theme === 'dark' ? '#05070b' : '#ffffff';
     if (meta && meta.content !== metaC && !DAYLIGHT) meta.setAttribute('content', metaC); // a daylight page paints its own
     flush();
@@ -302,9 +302,20 @@
       const wash = document.createElement('div'); wash.className = 'sky-wash'; wash.setAttribute('aria-hidden', 'true');
       hero.prepend(wash);
     }
-    // The nav's sky button opens the time card.
+    // The nav's sky button opens the time card. Three looks, picked in the lab (data-button on <body>): a tile of
+    // the sky as it is now with the sun crossing it (like the favicon), the time itself, or a sun and moon icon.
     const toggle = document.querySelector('.theme-toggle');
     if (toggle) {
+      if (!toggle.querySelector('.sbt-tile')) toggle.innerHTML = `<span class="sbt-tile" aria-hidden="true"><i class="sbt-sun"></i><i class="sbt-moon"></i></span><span class="sbt-time" aria-hidden="true"></span>`
+        + '<svg class="sbt-ic sbt-ic-moon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13.5 9.6A5.5 5.5 0 0 1 6.4 2.5a5.5 5.5 0 1 0 7.1 7.1z"/></svg>'
+        + '<svg class="sbt-ic sbt-ic-sun" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" aria-hidden="true"><circle cx="8" cy="8" r="3"/><path d="M8 1.5v1.3M8 13.2v1.3M1.5 8h1.3M13.2 8h1.3M3.4 3.4l.9.9M11.7 11.7l.9.9M3.4 12.6l.9-.9M11.7 4.3l.9-.9"/></svg>';
+      if (last) {
+        const n = last.n, h = height(n.min, n), time = toggle.querySelector('.sbt-time'), t = fmt(n.min);
+        if (time.textContent !== t) time.textContent = t;
+        toggle.style.setProperty('--bt-x', `${(14 + 72 * n.min / 1440).toFixed(1)}%`);
+        toggle.style.setProperty('--bt-y', `${(80 - 52 * Math.max(0, h)).toFixed(1)}%`);
+        toggle.style.setProperty('--bt-sun', clamp((h + .08) / .12, 0, 1).toFixed(2));
+      }
       const open = String(barOpen);
       if (toggle.getAttribute('aria-label') !== 'Time of day') { toggle.setAttribute('aria-label', 'Time of day'); toggle.setAttribute('aria-haspopup', 'dialog'); toggle.removeAttribute('aria-pressed'); }
       if (toggle.getAttribute('aria-expanded') !== open) toggle.setAttribute('aria-expanded', open);
@@ -454,7 +465,6 @@
       <div class="sb-modes">
         <button type="button" data-m="light">Light</button><button type="button" data-m="dark">Dark</button>
         <button type="button" data-m="sky">Live<i class="sb-live" aria-hidden="true"></i></button>
-        ${liveHost && !params.has('lab') ? '' : '<a class="sb-board" href="sky/">Board</a>'}
       </div>
       <div class="sb-dial" role="slider" tabindex="0" aria-label="Time of day" aria-valuemin="0" aria-valuemax="1439">
         <svg aria-hidden="true"><path class="sb-hz"/><path class="sb-curve"/><path class="sb-lit"/><circle class="sb-nowdot" r="2.5"/><circle class="sb-sun" r="6"/></svg>
@@ -669,9 +679,10 @@
     if (moving) {
       frozen = toHM(Math.round(dial.pos));
       const q = Math.floor(dial.pos / 15);
-      if (q !== dial.q && dial.q >= 0) tap();
+      const crossed = q !== dial.q && dial.q >= 0;
+      if (crossed) tap();
       dial.q = q;
-      if (last) daySound(height(dial.pos, last.n), Math.abs(dial.vel));
+      if (last) daySound(height(dial.pos, last.n), Math.abs(dial.vel), crossed ? q : null);
     } else {
       dial.pos = dial.to; dial.vel = 0; dial.q = -1;
       if (dial.live) { frozen = null; frozenDate = null; } else frozen = toHM(Math.round(dial.pos));
@@ -691,52 +702,126 @@
   }
 
   /* ── The sound ──
-     One voice that follows the sun's height: wind when it's well below the horizon, a pure glide either side
-     of it, a warm chord that gently beats at noon. It's only as loud as the sun is fast. After Peng's "Blend". */
-  let voice = null, noiseBuf = null;
+     One voice per gesture, all following the sun's height. Four to choose from in the lab (data-sound on <body>):
+     Blend (after Peng's: air at night, a glide at twilight, a beating chord at noon, as loud as the sun is fast),
+     Music box (a note every quarter hour, climbing a pentatonic scale as the sun rises, a fifth on the hour),
+     Ratchet (a small mechanical click every quarter hour, a deeper one on the hour, brighter by day),
+     Air (a breath of noise whose pitch rises and falls with the sun, with a faint whistle in it). */
+  let voice = null, voiceKind = '', noiseBuf = null;
   function unlock() {
     try {
       actx = actx || new (window.AudioContext || window.webkitAudioContext)();
       if (actx.state === 'suspended') actx.resume();
     } catch (e) {}
   }
-  function daySound(h, speed) {
+  const noise = (a) => {
+    if (!noiseBuf || noiseBuf.sampleRate !== a.sampleRate) { noiseBuf = a.createBuffer(1, a.sampleRate * 2, a.sampleRate); const d = noiseBuf.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1; }
+    return noiseBuf;
+  };
+  function daySound(h, speed, q) {
     if (h == null) { if (voice) { voice.rest(); voice = null; } return; }
     if (!actx || actx.state !== 'running') return;
-    if (!voice) { if (speed < 2) return; voice = dayVoice(); }
+    const kind = VOICES[document.body?.dataset.sound] ? document.body.dataset.sound : 'blend';
+    if (voice && voiceKind !== kind) { voice.rest(); voice = null; }
+    if (!voice) { if (speed < 2 && q == null) return; voice = VOICES[kind](actx, actx.destination); voiceKind = kind; }
     voice.move(h, speed);
+    if (q != null) voice.quarter(q, h);
   }
-  function dayVoice() {
-    const a = actx, nodes = [], out = a.createGain();
-    out.gain.value = 0; out.connect(a.destination);
-    const lane = (level) => { const g = a.createGain(), trim = a.createGain(); g.gain.value = 0; trim.gain.value = level; g.connect(trim).connect(out); return g; };
-    const osc = (type, to, gain, detune = 0) => { const o = a.createOscillator(), g = a.createGain(); o.type = type; o.detune.value = detune; g.gain.value = gain; o.connect(g).connect(to); o.start(); nodes.push(o); return o; };
-    const filter = (type, f, to, q = 1) => { const b = a.createBiquadFilter(); b.type = type; b.frequency.value = f; b.Q.value = q; b.connect(to); return b; };
-    // Twilight: a pure tone with a little octave over it.
-    const glide = lane(.5), gf = filter('lowpass', 1500, glide), g1 = osc('sine', gf, .5), g2 = osc('triangle', gf, .06);
-    // Noon: a major chord, every note doubled a few cents apart so it beats, its filter opening toward noon.
-    const chord = lane(.55), cf = filter('lowpass', 800, chord, .7);
-    const notes = [1, 1.25, 1.5, 2].flatMap((r, i) => [-4, 4].map((c) => [r, osc(i % 2 ? 'triangle' : 'sine', cf, i === 3 ? .14 : .2, c)]));
-    // Night: air, a slow-moving band of noise.
-    const wind = lane(.5), lp = filter('lowpass', 1800, wind), bp = filter('bandpass', 700, lp, .5);
-    if (!noiseBuf) { noiseBuf = a.createBuffer(1, a.sampleRate * 2, a.sampleRate); const d = noiseBuf.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1; }
-    const src = a.createBufferSource(); src.buffer = noiseBuf; src.loop = true; src.connect(bp); src.start(a.currentTime, Math.random() * 1.5); nodes.push(src);
-    osc('sine', bp.frequency, 260).frequency.value = .13;
-    return {
-      move(h, speed) {
-        const t = a.currentTime, day = band(.45, 1, h), night = band(.45, 1, -h);
-        glide.gain.setTargetAtTime(Math.sqrt(Math.max(0, 1 - day - night)), t, .12);
-        chord.gain.setTargetAtTime(Math.sqrt(day), t, .12);
-        wind.gain.setTargetAtTime(Math.sqrt(night), t, .12);
-        const f = 262 * 2 ** (h * .6), r = 196 * 2 ** (h * .25);
-        g1.frequency.setTargetAtTime(f, t, .05); g2.frequency.setTargetAtTime(2 * f, t, .05);
-        notes.forEach(([k, o]) => o.frequency.setTargetAtTime(r * k, t, .08));
-        cf.frequency.setTargetAtTime(520 + 2600 * Math.max(0, h) ** 2, t, .25);
-        out.gain.setTargetAtTime(.16 * Math.min(1, speed / 150) ** .6, t, .06);
-      },
-      rest() { const t = a.currentTime; out.gain.setTargetAtTime(0, t, .09); nodes.forEach((o) => o.stop(t + .8)); },
-    };
-  }
+  // Small pieces the voices share.
+  const kit = (a) => ({
+    osc(type, to, gain, detune = 0) { const o = a.createOscillator(), g = a.createGain(); o.type = type; o.detune.value = detune; g.gain.value = gain; o.connect(g).connect(to); o.start(); return o; },
+    filter(type, f, to, q = 1) { const b = a.createBiquadFilter(); b.type = type; b.frequency.value = f; b.Q.value = q; b.connect(to); return b; },
+    air(to) { const n = a.createBufferSource(); n.buffer = noise(a); n.loop = true; n.connect(to); n.start(a.currentTime, Math.random() * 1.5); return n; },
+    // A struck note that rings away: a short attack and a long exponential fall.
+    strike(f, t, gain, len, to, type = 'sine') { const o = a.createOscillator(), g = a.createGain(); o.type = type; o.frequency.value = f; g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(gain, t + .003); g.gain.exponentialRampToValueAtTime(.0001, t + len); o.connect(g).connect(to); o.start(t); o.stop(t + len + .05); },
+  });
+  // Every so often is enough: a fast drag crosses dozens of quarter hours a second.
+  const every = (a, gap) => { let at = -1; return () => { if (a.currentTime - at < gap) return false; at = a.currentTime; return true; }; };
+  const speedGain = (speed) => Math.min(1, speed / 150) ** .6;
+  const VOICES = {
+    blend(a, dest) {
+      const k = kit(a), nodes = [], out = a.createGain();
+      out.gain.value = 0; out.connect(dest);
+      const lane = (level) => { const g = a.createGain(), trim = a.createGain(); g.gain.value = 0; trim.gain.value = level; g.connect(trim).connect(out); return g; };
+      // Twilight: a pure tone with a little octave over it.
+      const glide = lane(.5), gf = k.filter('lowpass', 1500, glide), g1 = k.osc('sine', gf, .5), g2 = k.osc('triangle', gf, .06);
+      // Noon: a major chord, every note doubled a few cents apart so it beats, its filter opening toward noon.
+      const chord = lane(.55), cf = k.filter('lowpass', 800, chord, .7);
+      const notes = [1, 1.25, 1.5, 2].flatMap((r, i) => [-4, 4].map((c) => [r, k.osc(i % 2 ? 'triangle' : 'sine', cf, i === 3 ? .14 : .2, c)]));
+      // Night: air, a slow-moving band of noise.
+      const wind = lane(.5), bp = k.filter('bandpass', 700, k.filter('lowpass', 1800, wind), .5), lfo = k.osc('sine', bp.frequency, 260);
+      lfo.frequency.value = .13;
+      nodes.push(g1, g2, lfo, k.air(bp), ...notes.map((n) => n[1]));
+      return {
+        move(h, speed) {
+          const t = a.currentTime, day = band(.45, 1, h), night = band(.45, 1, -h);
+          glide.gain.setTargetAtTime(Math.sqrt(Math.max(0, 1 - day - night)), t, .12);
+          chord.gain.setTargetAtTime(Math.sqrt(day), t, .12);
+          wind.gain.setTargetAtTime(Math.sqrt(night), t, .12);
+          const f = 262 * 2 ** (h * .6), r = 196 * 2 ** (h * .25);
+          g1.frequency.setTargetAtTime(f, t, .05); g2.frequency.setTargetAtTime(2 * f, t, .05);
+          notes.forEach(([n, o]) => o.frequency.setTargetAtTime(r * n, t, .08));
+          cf.frequency.setTargetAtTime(520 + 2600 * Math.max(0, h) ** 2, t, .25);
+          out.gain.setTargetAtTime(.16 * speedGain(speed), t, .06);
+        },
+        quarter() {},
+        rest() { const t = a.currentTime; out.gain.setTargetAtTime(0, t, .09); nodes.forEach((o) => o.stop(t + .8)); },
+      };
+    },
+    musicbox(a, dest) {
+      const k = kit(a), out = a.createGain(), ok = every(a, .05);
+      out.gain.value = .45; out.connect(dest);
+      const SCALE = [0, 2, 4, 7, 9, 12, 14, 16, 19, 21, 24];
+      // A tine: the note, a soft octave, and a bright overtone that dies first.
+      const pluck = (f, t, g, len) => { k.strike(f, t, g, len, out); k.strike(f * 2, t, g * .25, len * .6, out); k.strike(f * 5.4, t, g * .05, len * .25, out); };
+      return {
+        move() {},
+        quarter(q, h) {
+          if (!ok()) return;
+          const t = a.currentTime + .005, f = 294 * 2 ** (SCALE[Math.round(clamp((h + 1) / 2, 0, 1) * (SCALE.length - 1))] / 12), hour = q % 4 === 0;
+          pluck(f, t, hour ? .1 : .065, hour ? 1.3 : .75);
+          if (hour) pluck(f * 1.5, t + .045, .04, 1);
+        },
+        rest() {},
+      };
+    },
+    ratchet(a, dest) {
+      const out = a.createGain(), ok = every(a, .028);
+      out.gain.value = .6; out.connect(dest);
+      return {
+        move() {},
+        quarter(q, h) {
+          if (!ok()) return;
+          const t = a.currentTime + .005, hour = q % 4 === 0;
+          // The click: a few milliseconds of noise through a narrow band, higher by day.
+          const n = a.createBufferSource(), bp = a.createBiquadFilter(), g = a.createGain();
+          n.buffer = noise(a); bp.type = 'bandpass'; bp.frequency.value = (hour ? 2100 : 3300) * 2 ** (h * .35); bp.Q.value = 2.5;
+          g.gain.setValueAtTime(hour ? .55 : .35, t); g.gain.exponentialRampToValueAtTime(.0001, t + (hour ? .035 : .018));
+          n.connect(bp).connect(g).connect(out); n.start(t, Math.random()); n.stop(t + .05);
+          // The body: a tiny knock under it, deeper on the hour.
+          const o = a.createOscillator(), og = a.createGain();
+          o.frequency.setValueAtTime(hour ? 170 : 240, t); o.frequency.exponentialRampToValueAtTime(70, t + .03);
+          og.gain.setValueAtTime(hour ? .2 : .09, t); og.gain.exponentialRampToValueAtTime(.0001, t + .04);
+          o.connect(og).connect(out); o.start(t); o.stop(t + .06);
+        },
+        rest() {},
+      };
+    },
+    air(a, dest) {
+      const k = kit(a), out = a.createGain();
+      out.gain.value = 0; out.connect(dest);
+      const bp = k.filter('bandpass', 800, k.filter('lowpass', 5000, out), 1.4), src = k.air(bp), whistle = k.osc('sine', out, .035);
+      return {
+        move(h, speed) {
+          const t = a.currentTime, f = 420 * 2 ** ((h + 1) * 1.3);
+          bp.frequency.setTargetAtTime(f, t, .08); whistle.frequency.setTargetAtTime(f, t, .08);
+          out.gain.setTargetAtTime(.17 * speedGain(speed), t, .06);
+        },
+        quarter() {},
+        rest() { const t = a.currentTime; out.gain.setTargetAtTime(0, t, .09); src.stop(t + .8); whistle.stop(t + .8); },
+      };
+    },
+  };
   // A tick in the hand at every quarter hour on phones: a vibration on Android, the switch trick on iPhone.
   let tapEl = null;
   function tap() {
@@ -842,6 +927,7 @@
     at: (min, d) => lookAt(wrap(Math.round(min)), d || wall(Date.now()).ymd),
     street: () => last && street(last.n.min, last.n.ymd, last.mode),
     barOpen: () => barOpen,
+    voice: (kind, a) => VOICES[kind](a, a.destination), // for checking the sounds offline
   };
   function report() {
     if (!embed || parent === window || !last) return;

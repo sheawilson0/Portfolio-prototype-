@@ -60,10 +60,9 @@
 .sb-slice * { transition: none !important; animation: none !important; }
 .sb-in { padding: 10px 14px 8px; }
 .sb-modes { display: flex; justify-content: space-between; align-items: center; font-size: 13.5px; }
-.sb-modes button, .sb-board { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 4px; color: var(--ink-2); transition: color .2s var(--ease), scale .2s var(--ease); }
-.sb-modes button:hover, .sb-board:hover, .sb-modes button[aria-pressed="true"] { color: var(--ink); }
+.sb-modes button { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 4px; color: var(--ink-2); transition: color .2s var(--ease), scale .2s var(--ease); }
+.sb-modes button:hover, .sb-modes button[aria-pressed="true"] { color: var(--ink); }
 .sb-modes button:active { scale: .95; }
-.sb-board { font-size: 12px; }
 .sb-live { width: 6px; height: 6px; border-radius: 50%; background: #ff9a1f; }
 .sky-bar.is-live .sb-live { animation: sb-live 2.4s ease-in-out infinite; }
 @keyframes sb-live { 50% { box-shadow: 0 0 0 4px rgb(255 154 31 / .2); } }
@@ -93,3 +92,29 @@
 .sky-bar.is-fixed .sb-dial svg, .sky-bar.is-fixed .sb-time { opacity: .45; }
 .sb-tap { position: absolute; width: 1px; height: 1px; overflow: hidden; opacity: 0; pointer-events: none; }
 @media (pointer: coarse) { .sb-modes button { height: 40px; } }
+
+/* ───────── The sky button ─────────
+   Top right of the nav; it opens the time card. Three looks, picked in the lab (data-button on <body>). */
+.theme-toggle .tt, .theme-toggle > :is(.sbt-tile, .sbt-time, .sbt-ic) { display: none; }
+:is(body:not([data-button]), body[data-button="tile"]) .theme-toggle .sbt-tile,
+body[data-button="time"] .theme-toggle .sbt-time,
+body[data-button="icon"] .theme-toggle .sbt-ic-moon, [data-theme="dark"] body[data-button="icon"] .theme-toggle .sbt-ic-sun { display: block; }
+[data-theme="dark"] body[data-button="icon"] .theme-toggle .sbt-ic-moon { display: none; }
+/* A tile of the sky as it is now, like the favicon, with the sun crossing it by day. */
+.sbt-tile { position: relative; width: 20px; height: 20px; border-radius: 6px; overflow: hidden;
+  background: radial-gradient(70% 60% at 50% 108%, color-mix(in srgb, var(--sky-sunglow, #fff1e2) calc(var(--sky-ga, 0) * 100%), transparent), transparent),
+    linear-gradient(var(--sky-top, #9ec0e9), var(--sky-mid, #cdd9e9) 58%, var(--sky-low, #f9ede2));
+  box-shadow: inset 0 0 0 .5px rgb(255 255 255 / .6), 0 1px 3px rgb(10 20 40 / .2); transition: scale .35s cubic-bezier(.3, 1.6, .5, 1); }
+.sbt-tile i { position: absolute; border-radius: 50%; translate: -50% -50%; }
+.sbt-sun { left: var(--bt-x, 50%); top: var(--bt-y, 40%); width: 5px; height: 5px; background: #ffb347; box-shadow: 0 0 4px #ffa23a; opacity: var(--bt-sun, 1); }
+.sbt-moon { left: 68%; top: 32%; width: 4px; height: 4px; background: #eef1fb; box-shadow: 0 0 3px rgb(220 230 255 / .7); opacity: calc(1 - var(--bt-sun, 1)); }
+.theme-toggle:hover .sbt-tile { scale: 1.1; }
+.theme-toggle:active .sbt-tile, .theme-toggle[aria-expanded="true"] .sbt-tile { scale: .92; }
+/* The time, in a soft pill, like Peng's. */
+body[data-button="time"] .theme-toggle { width: auto; height: 30px; padding: 0 11px; border-radius: 999px; color: var(--ink-2); background: color-mix(in srgb, var(--ink) 7%, transparent);
+  transition: background-color .2s var(--ease), color .2s var(--ease); }
+body[data-button="time"] .theme-toggle:hover, body[data-button="time"] .theme-toggle[aria-expanded="true"] { color: var(--ink); background: color-mix(in srgb, var(--ink) 12%, transparent); }
+.sbt-time { font-size: 13.5px; font-variant-numeric: tabular-nums; font-feature-settings: "tnum"; white-space: nowrap; }
+/* A line moon by day and a sun after dark, in the links' grey. */
+.sbt-ic { width: 16px; height: 16px; color: var(--ink-2); transition: color .2s var(--ease); }
+.theme-toggle:hover .sbt-ic { color: var(--ink); }
