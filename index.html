@@ -43,18 +43,24 @@
 <link rel="stylesheet" href="assets/css/tiles.css">
 <link rel="stylesheet" href="assets/css/home.css">
 </head>
-<body class="home" data-work="cards" data-copy="cap" data-q28="hand" data-brain="show" data-contact="quiet" data-ship="yellow" data-gap="roomy" data-phones="snap" data-skylook="street" data-arc="none" data-page="sky" data-fill="clear" data-edge="off" data-glow="off" data-shadow="off" data-hero="headline" data-air="airy" data-ring="sky" data-layout="peng" data-about="together" data-top="sky">
+<body class="home" data-work="cards" data-copy="cap" data-q28="hand" data-brain="show" data-contact="quiet" data-ship="yellow" data-gap="roomy" data-phones="snap" data-skylook="street" data-arc="none" data-page="sky" data-fill="clear" data-edge="off" data-glow="off" data-shadow="off" data-hero="headline" data-air="airy" data-ring="sky" data-layout="peng" data-about="together" data-top="sky" data-text="now" data-caps="now" data-toggle="off">
+<script>
+  // Variants from the address, for review: ?hero=a&text=a&caps=b&toggle=on sets those data attributes on <body>.
+  // Only keys <body> already has, so a stray parameter can't switch anything else.
+  try { new URLSearchParams(location.search).forEach((v, k) => { if (k in document.body.dataset && /^[\w-]{1,24}$/.test(v)) document.body.dataset[k] = v; }); } catch (e) {}
+</script>
 
 <header class="nav">
   <div class="nav-inner">
     <span class="nav-pill" aria-hidden="true"></span>
-    <a class="logo" href="#top" aria-label="Shea Wilson, back to top">S<span class="fold"><span>hea&nbsp;</span></span>W<span class="fold"><span>ilson</span></span></a>
+    <a class="logo" href="#top" aria-label="Shea Wilson, back to top"><span class="logo-full">Shea Wilson</span><span class="logo-short" aria-hidden="true">SW</span></a>
     <nav class="links" aria-label="Main">
       <a href="#work">Work</a>
       <a href="#about">About</a>
       <a href="#contact">Contact</a>
       <button class="theme-toggle" type="button" aria-label="Switch to dark mode" aria-pressed="false">
-        <span class="tt"><span class="tt-ring"></span><span class="tt-disc"><span class="tt-moon"></span></span></span>
+        <svg class="ti ti-moon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13.5 9.6A5.5 5.5 0 0 1 6.4 2.5a5.5 5.5 0 1 0 7.1 7.1z"/></svg>
+        <svg class="ti ti-sun" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" aria-hidden="true"><circle cx="8" cy="8" r="3"/><path d="M8 1.5v1.3M8 13.2v1.3M1.5 8h1.3M13.2 8h1.3M3.4 3.4l.9.9M11.7 11.7l.9.9M3.4 12.6l.9-.9M11.7 4.3l.9-.9"/></svg>
       </button>
     </nav>
   </div>
@@ -67,6 +73,31 @@
   <div class="hero-copy">
     <h1>Always making <em>something.</em></h1>
     <p class="intro"><span class="intro-who">I’m Shea, a design engineer at Influential and a Digital Design student at Ulster University. </span>I designed and built Smoking Snapshot and Quit28 for an NHS campaign. <span class="last">Last shipped <a href="shipped/">this week</a>.</span></p>
+    <!-- Hero options for review: ?hero=a to ?hero=f. Hidden unless <body data-hero> picks one. -->
+    <div class="hero-v" data-v="a">
+      <h1>I design and build<br> <em>things people use.</em></h1>
+      <p class="intro">Smoking Snapshot and Quit28 for the NHS, used 1,000+ times.</p>
+    </div>
+    <div class="hero-v" data-v="b">
+      <h1>From Figma<br> <em>to the real thing.</em></h1>
+      <p class="intro">I design in Figma and Paper, then build it myself, so clients can click through something real while their feedback can still change it.</p>
+    </div>
+    <div class="hero-v" data-v="c">
+      <h1>Always making <em>something.</em></h1>
+      <p class="intro">I’m Shea, a design engineer at Influential. Smoking Snapshot, which I designed and built for an NHS campaign, has been used 1,000+ times.</p>
+    </div>
+    <div class="hero-v" data-v="d">
+      <h1><span data-ship-count>38</span> things shipped<br> <em>since August.</em></h1>
+      <p class="intro">From NHS campaign tools to a reporting product in pilot and apps I made for myself. I’m Shea, a design engineer at Influential.</p>
+    </div>
+    <div class="hero-v" data-v="e">
+      <h1>Shea Wilson,<br> <em>design engineer.</em></h1>
+      <p class="intro">At Influential I design and build products for clients, like Smoking Snapshot for the NHS and JumpStart, in pilot with the National Football Museum.</p>
+    </div>
+    <div class="hero-v" data-v="f">
+      <h1>Live for the NHS.<br> <em>In pilot with a museum.</em></h1>
+      <p class="intro">I’m Shea, a design engineer at Influential. Quit28 and Smoking Snapshot are live for an NHS campaign, and JumpStart is in pilot with the National Football Museum.</p>
+    </div>
   </div>
 </section>
 
@@ -98,7 +129,7 @@
   </a>
   <a class="tile m-ship" href="shipped/">
     <span class="tile-art"><span class="ship-hero" aria-hidden="true"><span class="ship-fly" data-fly></span><span class="obj-sprite ship-pip" style="--sheet:url('/assets/media/shipped/pip.webp')"></span></span></span>
-    <span class="tile-cap"><b>Shipped</b><span><span data-ship-count>29</span> things since August</span></span>
+    <span class="tile-cap"><b>Shipped</b><span><span data-ship-count>38</span> things since August</span></span>
   </a>
 </section>
 
@@ -208,7 +239,7 @@
           </div>
         </div>
       </a>
-      <a class="tile-cap item-cap" href="braindump.html" tabindex="-1"><b>Brain Dump</b><span>Sorts what you type or say</span></a>
+      <a class="tile-cap item-cap" href="braindump.html" tabindex="-1"><b>Brain Dump</b><span>Sorts what you type or say</span><span class="cap-v">Personal tool, in daily use</span></a>
     </article>
 
     <article class="item t-shipped reveal" style="--d:.2s">
@@ -217,12 +248,12 @@
         <span class="blob" style="width:44%; left:6%; top:58%; rotate:20deg; --ar:1.8"></span>
         <span class="blob" style="width:40%; left:56%; top:52%; rotate:-24deg; --ar:1.3"></span>
       </div>
-      <a class="card" href="shipped/">
+      <a class="card" href="shipped/" aria-label="Shipped: everything I’ve made since August">
         <div class="card-top"><span class="label">Everything I’ve made</span><span class="label live">Updated weekly</span></div>
-        <div class="card-copy"><h2>Shipped</h2><p class="line"><span data-ship-count>29</span> things since August, from client launches to tools I made for myself.</p></div>
+        <div class="card-copy"><h2>Shipped</h2><p class="line"><span data-ship-count>38</span> things since August, from client launches to tools I made for myself.</p></div>
         <div class="media"><span class="ship-hero" aria-hidden="true"><span class="ship-fly" data-fly></span><span class="obj-sprite ship-pip" style="--sheet:url('/assets/media/shipped/pip.webp')"></span></span></div>
       </a>
-      <a class="tile-cap item-cap" href="shipped/" tabindex="-1"><b>Shipped</b><span><span data-ship-count>29</span> things since August</span></a>
+      <a class="tile-cap item-cap" href="shipped/" tabindex="-1"><b>Shipped</b><span><span data-ship-count>38</span> things since August</span></a>
     </article>
 
     <article class="item t-small t-cipher reveal" style="--tone:#0ec980; --a:#0ec980; --b:#1ab796; --c:#7cf0c0">
@@ -234,9 +265,9 @@
       <a class="card" href="cipher.html">
         <div class="card-top"><span class="label">Brand, web and app</span><span class="label">Concept</span></div>
         <div class="card-copy"><h2>Cipher</h2><p class="line">Brand guidelines, website and app for an AI-first bank.</p></div>
-        <div class="media"><img decoding="async" data-depth="0.2" src="assets/media/home/cipher-laptop.webp" alt="Cipher website on a floating laptop: Built with AI, designed for you" width="1633" height="2000" loading="lazy" srcset="assets/media/home/cipher-laptop-480w.webp 480w, assets/media/home/cipher-laptop-800w.webp 800w, assets/media/home/cipher-laptop-1200w.webp 1200w, assets/media/home/cipher-laptop.webp 1633w" sizes="(max-width: 720px) 89.23vw, (max-width: 1512px) 26.79vw, 405px"></div>
+        <div class="media"><img decoding="async" data-depth="0.2" src="assets/media/home/cipher-laptop-1200w.webp" alt="Cipher website on a floating laptop: Built with AI, designed for you" width="1633" height="2000" loading="lazy" srcset="assets/media/home/cipher-laptop-480w.webp 480w, assets/media/home/cipher-laptop-800w.webp 800w, assets/media/home/cipher-laptop-1200w.webp 1200w" sizes="(max-width: 720px) 89.23vw, (max-width: 1512px) 26.79vw, 405px"></div>
       </a>
-      <a class="tile-cap item-cap" href="cipher.html" tabindex="-1"><b>Cipher</b><span>A concept AI-first bank</span></a>
+      <a class="tile-cap item-cap" href="cipher.html" tabindex="-1"><b>Cipher</b><span>A concept AI-first bank</span><span class="cap-v">Concept · Brand, web and app</span></a>
     </article>
 
     <article class="item t-small t-amp reveal" style="--tone:#ff6a2b; --a:#ff6a2b; --b:#c33f1f; --c:#ffb347; --d:.1s">
@@ -248,9 +279,9 @@
       <a class="card" href="amp.html">
         <div class="card-top"><span class="label">Mobile app</span><span class="label">Concept</span></div>
         <div class="card-copy"><h2>Amp</h2><p class="line">A music player built around smart playback and moving between devices.</p></div>
-        <div class="media"><img decoding="async" data-depth="0.2" src="assets/media/amp/amp-floating-screens.webp" alt="Three Amp screens floating at an angle: the player, the library and the home screen" width="2000" height="2000" loading="lazy" srcset="assets/media/amp/amp-floating-screens-480w.webp 480w, assets/media/amp/amp-floating-screens-800w.webp 800w, assets/media/amp/amp-floating-screens-1200w.webp 1200w, assets/media/amp/amp-floating-screens.webp 2000w" sizes="(max-width: 720px) 89.23vw, (max-width: 1512px) 26.79vw, 405px"></div>
+        <div class="media"><img decoding="async" data-depth="0.2" src="assets/media/amp/amp-floating-screens-1200w.webp" alt="Three Amp screens floating at an angle: the player, the library and the home screen" width="2000" height="2000" loading="lazy" srcset="assets/media/amp/amp-floating-screens-480w.webp 480w, assets/media/amp/amp-floating-screens-800w.webp 800w, assets/media/amp/amp-floating-screens-1200w.webp 1200w" sizes="(max-width: 720px) 89.23vw, (max-width: 1512px) 26.79vw, 405px"></div>
       </a>
-      <a class="tile-cap item-cap" href="amp.html" tabindex="-1"><b>Amp</b><span>A concept music player</span></a>
+      <a class="tile-cap item-cap" href="amp.html" tabindex="-1"><b>Amp</b><span>A concept music player</span><span class="cap-v">Concept · Music player</span></a>
     </article>
   </div>
   <p class="earlier reveal"><span>Earlier concepts</span><a href="cipher.html">Cipher</a><a href="amp.html">Amp</a></p>
@@ -266,46 +297,20 @@
       <li><span class="org-mark is-ulster" role="img" aria-label="Ulster University"></span><span>Studying Digital Design</span></li>
     </ul>
   </div>
-  <div class="about-body reveal" style="--d:.08s">
-    <p>I start in Figma and Paper, then build with Claude Code and Codex, so clients can click through something real while their feedback can still change it.</p>
-    <p>At Influential I design and build products for clients and internal tools for the team, like a PowerPoint add-in that puts the brand’s assets inside PowerPoint. Launch isn’t the end of it. When I suspected people were dropping out of Smoking Snapshot before the last questions, I added save points earlier so their answers still counted.</p>
-    <p>I build things for myself too. I built Brain Dump because I kept losing track of things across too many apps. I’ve also made my own dictation app, and a wallpaper that swaps in a different museum painting every morning. Winslow Homer’s <em>The Herring Net</em> is the one I keep coming back to.</p>
-  </div>
-  <div class="about-short reveal" style="--d:.08s">
-    <p>I design in Figma and Paper, then build with Claude Code and Codex, so clients can click through something real while their feedback can still change it.</p>
-    <p>I build things for myself too: Brain Dump, my own dictation app, and a wallpaper that swaps in a different museum painting every morning. Winslow Homer’s <em>The Herring Net</em> is the one I keep coming back to.</p>
-  </div>
   <dl class="about-index reveal" style="--d:.08s">
     <div><dt>Now</dt><dd>Design engineer at Influential</dd></div>
     <div><dt>Studying</dt><dd>Digital Design at Ulster University</dd></div>
     <div><dt>Built for me</dt><dd>A dashboard for my day, my own dictation app, and a wallpaper with a new museum painting <button type="button" class="in-art-btn" aria-label="Look closer at The Herring Net, the one I keep coming back to"><img class="in-art" src="assets/media/home/herring-net-160w.webp" alt="" width="1600" height="981" loading="lazy" decoding="async"></button> every morning</dd></div>
-    <div class="about-say"><dt>Say hello</dt><dd><a href="mailto:design@sheawilson.uk">design@sheawilson.uk</a> · <a href="https://www.linkedin.com/in/sheawilson0/" target="_blank" rel="noopener">LinkedIn</a> · <a href="https://x.com/sheawilson0" target="_blank" rel="noopener">X</a></dd></div>
+    <div class="about-say" id="contact"><dt>Say hello</dt><dd><a href="mailto:design@sheawilson.uk">design@sheawilson.uk</a> · <a href="https://www.linkedin.com/in/sheawilson0/" target="_blank" rel="noopener">LinkedIn</a> · <a href="https://x.com/sheawilson0" target="_blank" rel="noopener">X</a></dd></div>
   </dl>
-  <div class="about-mine reveal" style="--d:.08s">
-    <p class="label">Built for me</p>
-    <ul>
-      <li><b>A dashboard for my day</b><span>Meetings, drafts, notes and to-dos in one place. It’s called Meridian.</span></li>
-      <li><b>My own dictation app</b><span>I talk, it types, and it writes up my meetings.</span></li>
-      <li><b>A wallpaper</b><span>A different museum painting every morning. Winslow Homer’s <em>The Herring Net</em> is the one I keep coming back to.</span><img src="assets/media/home/herring-net-160w.webp" alt="" width="1600" height="981" loading="lazy" decoding="async"></li>
-    </ul>
-  </div>
-  <figure class="about-off reveal" style="--d:.08s">
-    <div class="about-off-photo">A photo of you doing it</div>
-    <figcaption><span class="is-gap">Outside work I [the thing you do]. [One line on why you love it.]</span></figcaption>
-  </figure>
-  <figure class="about-art reveal" style="--d:.08s">
-    <img src="assets/media/home/herring-net.webp" alt="The Herring Net by Winslow Homer: two fishermen in a small boat hauling a net of herring over the side" width="1600" height="981" loading="lazy" decoding="async">
-    <figcaption class="tile-cap"><b>The Herring Net, Winslow Homer</b><span>My wallpaper is a different museum painting every morning. This is the one I keep coming back to.</span></figcaption>
-  </figure>
-  <p class="about-line reveal">I’m Shea <img class="in-photo" src="/links/shea-480.webp" alt="" width="480" height="480" loading="lazy" decoding="async" srcset="/links/shea-160.webp 160w, /links/shea-320.webp 320w, /links/shea-480.webp 480w" sizes="40px">, a design engineer at <a class="org-link" href="https://www.thisisinfluential.com/" target="_blank" rel="noopener"><span class="org-mark is-influential" role="img" aria-label="Influential"></span></a> and a Digital Design student at <a class="org-link" href="https://www.ulster.ac.uk/" target="_blank" rel="noopener"><span class="org-mark is-ulster" role="img" aria-label="Ulster University"></span></a>. I build the tools <em>I wish I had,</em> like a wallpaper that swaps in a different museum painting every morning. <button type="button" class="in-art-btn" aria-label="Look closer at The Herring Net"><img class="in-art" src="assets/media/home/herring-net-160w.webp" alt="" width="1600" height="981" loading="lazy" decoding="async"></button> Winslow Homer’s <em>The Herring Net</em> is the one I keep coming back to.</p>
 </section>
 
 <dialog class="art-zoom" aria-label="The Herring Net by Winslow Homer">
-  <img src="assets/media/home/herring-net.webp" alt="The Herring Net by Winslow Homer: two fishermen in a small boat hauling a net of herring over the side" width="1600" height="981" loading="lazy" decoding="async">
+  <img src="assets/media/home/herring-net.webp" alt="The Herring Net by Winslow Homer: two fishermen in a small boat hauling a net of herring over the side" width="1600" height="981" loading="lazy" decoding="async" srcset="assets/media/home/herring-net-800w.webp 800w, assets/media/home/herring-net-1200w.webp 1200w, assets/media/home/herring-net.webp 1600w" sizes="min(1200px, calc(100vw - 48px))">
   <p><b>The Herring Net</b> Winslow Homer, 1885</p>
 </dialog>
 
-<section class="contact" id="contact">
+<section class="contact" id="say-hello">
   <h2 class="reveal">Say <em>hello.</em></h2>
   <p class="sub reveal" style="--d:.05s">Got a project or an idea? Email me, or find me on LinkedIn or X.</p>
   <div class="cta reveal" style="--d:.1s">
@@ -321,9 +326,6 @@
   </p>
 </section>
 
-<footer>
-  <nav aria-label="Footer"><a href="ar/">See my work in 3D</a></nav>
-</footer>
 
 
 

@@ -101,30 +101,42 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .tip svg { width: 12px; height: 12px; flex: none; }
 
 /* ───────── Nav ─────────
-   Scrolled, a pill forms behind the name and links; they glide into it with transforms, so nothing in the bar
-   reflows. */
-.nav { position: fixed; inset: 0 0 auto; z-index: 50; padding: 18px var(--gutter); pointer-events: none; }
-.nav-inner { position: relative; pointer-events: auto; margin: 0 auto; max-width: 1380px; height: 52px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
-/* The pill is always its small size and only fades: it used to fade in at full width and shrink, which read as a bar
-   flashing across the top. It arrives a beat after the name and links start gliding in, and leaves before they go.
-   A gentle saturate, so a blue sky doesn't turn it cyan. */
-.nav-pill { position: absolute; left: 50%; top: 0; bottom: 0; width: var(--pill-w, 460px); translate: -50% 0; scale: .97; border-radius: 19px; corner-shape: squircle; pointer-events: none; opacity: 0; visibility: hidden;
+   Scrolled, the bar becomes a pill as one piece: the pill gathers in round the name and links as they glide into it,
+   the bar tightens (padding and type size), and "Shea Wilson" crossfades into "SW". Everything shares one duration
+   and curve (--nav-t, --nav-ease) and one trigger (.is-scrolled), at every width. Reduced motion: it just switches. */
+.nav { --nav-t: .28s; --nav-ease: cubic-bezier(.2, 0, 0, 1); position: fixed; inset: 0 0 auto; z-index: 50; padding: 18px var(--gutter); pointer-events: none;
+  transition: padding var(--nav-t) var(--nav-ease); }
+.nav.is-scrolled { padding-top: 12px; padding-bottom: 12px; }
+.nav-inner { position: relative; pointer-events: auto; margin: 0 auto; max-width: 1380px; height: 52px; display: flex; align-items: center; justify-content: space-between; gap: 24px;
+  transition: height var(--nav-t) var(--nav-ease); }
+.nav.is-scrolled .nav-inner { height: 46px; }
+/* The pill starts the full width of the bar and gathers in to hug what's in it (--pill-w, measured by site.js), on the
+   same curve as the name and links gliding in, so its edges stay with them the whole way. A gentle saturate, so a blue
+   sky doesn't turn it cyan. */
+.nav-pill { position: absolute; left: 50%; top: 0; bottom: 0; width: 100%; translate: -50% 0; border-radius: 19px; corner-shape: squircle; pointer-events: none; opacity: 0; visibility: hidden;
   background: var(--nav-glass); box-shadow: 0 12px 40px rgb(20 40 80 / .1);
   -webkit-backdrop-filter: blur(16px) saturate(1.2); backdrop-filter: blur(16px) saturate(1.2);
-  transition: opacity .3s var(--ease), scale .5s var(--ease), visibility 0s .3s; }
-.nav.is-scrolled .nav-pill { opacity: 1; scale: 1; visibility: visible; transition: opacity .5s var(--ease) .18s, scale .7s var(--ease) .18s, visibility 0s; }
+  transition: opacity var(--nav-t) var(--nav-ease), width var(--nav-t) var(--nav-ease), visibility 0s var(--nav-t); }
+.nav.is-scrolled .nav-pill { width: var(--pill-w, 460px); opacity: 1; visibility: visible; transition: opacity var(--nav-t) var(--nav-ease), width var(--nav-t) var(--nav-ease), visibility 0s; }
 @supports not (corner-shape: squircle) { .nav-pill { border-radius: 16px; } }
-.logo, .links { position: relative; z-index: 1; transition: transform .8s var(--ease); }
+.logo, .links { position: relative; z-index: 1; transition: transform var(--nav-t) var(--nav-ease), font-size var(--nav-t) var(--nav-ease); }
 .nav.is-scrolled .logo { transform: translate3d(var(--logo-shift, 0px), 0, 0); }
 .nav.is-scrolled .links { transform: translate3d(calc(-1 * var(--links-shift, 0px)), 0, 0); }
 .logo { display: inline-flex; align-items: baseline; font-family: var(--serif); font-size: 22px; font-style: italic; font-weight: 400; letter-spacing: -.01em; white-space: nowrap; }
-.fold { display: inline-grid; grid-template-columns: 1fr; transition: grid-template-columns .7s var(--ease); }
-.fold > span { min-width: 0; overflow: hidden; padding-right: .08em; margin-right: -.08em; transition: opacity .45s var(--ease); }
-.nav.is-scrolled .fold { grid-template-columns: 0fr; }
-.nav.is-scrolled .fold > span { opacity: 0; }
+.nav.is-scrolled .logo { font-size: 20px; }
+/* As "Shea Wilson" fades it also narrows to the width of "SW", so it never runs into the links on the way in. */
+.logo-full, .logo-short { transition: opacity var(--nav-t) var(--nav-ease), clip-path var(--nav-t) var(--nav-ease); }
+.logo-full { clip-path: inset(-.3em -.2em); }
+.logo-short { position: absolute; left: 0; opacity: 0; }
+.nav.is-scrolled .logo-full { opacity: 0; clip-path: inset(-.3em calc(100% - 1.4em) -.3em -.2em); }
+.nav.is-scrolled .logo-short { opacity: 1; }
+/* site.js measures the scrolled sizes with this on, so nothing animates while it does. */
+.nav.is-measuring, .nav.is-measuring * { transition: none !important; }
+@media (prefers-reduced-motion: reduce) { .nav, .nav * { transition: none !important; } }
 /* Just my name, Work and Contact. The theme button is hidden: press D for light or dark, Shift+D to follow the sky. */
 .links a[href$="#about"], .links .theme-toggle { display: none; }
 .links { display: flex; align-items: center; gap: 26px; font-size: 14px; font-weight: 400; }
+.nav.is-scrolled .links { font-size: 13px; }
 .links a { color: var(--ink-2); transition: color .3s var(--ease); }
 .links a:hover { color: var(--ink); }
 
@@ -409,7 +421,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   mix-blend-mode: var(--bleed-blend); }
 
 /* The bottom of every page, after Peng's: one quiet, centred row of links. No copyright line, no rule above it.
-   The homepage only links to the 3D version here, since Say hello sits just above. */
+   The homepage has none: Say hello sits at the end of About. */
 footer { max-width: 1380px; margin: 0 auto; padding: 48px var(--gutter) 28px; display: flex; justify-content: center; font-size: 14px; font-weight: 400; color: var(--whisper); }
 footer nav { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 10px; }
 footer nav a + a::before { content: "·"; display: inline-block; margin-right: 10px; color: var(--whisper); }

@@ -63,10 +63,13 @@
   const nav = document.querySelector('.nav');
   const navInner = nav.querySelector('.nav-inner');
   const measure = () => {
-    // The pill hugs what's in it: "SW" (my name without its folds), a gap, the links, and the same room each side.
-    const logo = nav.querySelector('.logo'), links = nav.querySelector('.links');
-    const sw = logo.offsetWidth - [...logo.querySelectorAll('.fold')].reduce((t, f) => t + f.offsetWidth, 0);
-    const w = navInner.clientWidth, pad = 24, pillW = Math.min(w, pad + sw + 30 + links.offsetWidth + pad);
+    // The pill hugs what's in it, at its scrolled sizes: "SW", a gap, the links, and the same room each side.
+    // Measured with the bar briefly scrolled and every transition off (.is-measuring), then put back as it was.
+    const logo = nav.querySelector('.logo'), links = nav.querySelector('.links'), was = nav.classList.contains('is-scrolled');
+    nav.classList.add('is-measuring', 'is-scrolled');
+    const sw = logo.querySelector('.logo-short').offsetWidth, lw = links.offsetWidth;
+    nav.classList.toggle('is-scrolled', was); void nav.offsetWidth; nav.classList.remove('is-measuring');
+    const w = navInner.clientWidth, pad = 24, pillW = Math.min(w, pad + sw + 30 + lw + pad);
     nav.style.setProperty('--pill-w', `${pillW}px`);
     nav.style.setProperty('--logo-shift', `${(w - pillW) / 2 + pad}px`);
     nav.style.setProperty('--links-shift', `${(w - pillW) / 2 + pad}px`);
@@ -429,11 +432,6 @@
   dlg.addEventListener('cancel', (e) => { e.preventDefault(); close(); });
 })();
 
-/* When About carries the contact details (lab: About, Index + contact), Contact in the nav goes there. */
-document.querySelectorAll('a[href="#contact"]').forEach((a) => a.addEventListener('click', (e) => {
-  if (document.body.dataset.about !== 'together') return;
-  e.preventDefault(); document.getElementById('about').scrollIntoView({ behavior: 'smooth' });
-}));
 
 /* A film in a card (video[data-autoplay], muted) plays only while it's on screen, and loads nothing until then. */
 (() => {

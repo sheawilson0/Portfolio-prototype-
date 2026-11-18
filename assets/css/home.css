@@ -171,35 +171,12 @@ body:is([data-copy="cap"], [data-copy="lean"]) .work :is(.t-amp, .t-cipher) .med
 .work :is(.t-amp, .t-cipher) .media img, .item.is-hot:is(.t-amp, .t-cipher) .media img { object-fit: contain; transform: scale(1.08); }
 .work .t-cipher .media img, .item.is-hot.t-cipher .media img { transform: scale(.9); } /* a tall laptop: smaller, so it floats clear of the edge */
 
-/* ───────── About (lab: About) ─────────
-   Long: as it was. Short: the same, two paragraphs. Painting: the words on the right give way to The Herring Net,
-   hung like a card with a caption. Sentence: one big sentence with my photo, the two logos and the painting in it. */
-.about-short, .about-art, .about-line { display: none; }
-body:is([data-about="short"], [data-about="art"], [data-about="off"]) .about-body { display: none; }
-/* Photo and a line: a photo of something I do outside work, and one line about it.
-   Anything in .is-gap is a placeholder for Shea's own words. */
-.about-off { display: none; }
-body[data-about="off"] .about-off { display: block; align-self: end; }
-.about-off-photo { display: grid; place-items: center; aspect-ratio: 4 / 3; border-radius: 6px; border: 1px dashed var(--whisper); color: var(--whisper); font-size: 14px; rotate: -1.2deg; }
-.about-off figcaption { margin-top: 20px; font-size: 20px; line-height: 1.5; color: var(--ink-2); max-width: 40ch; }
-.is-gap { color: var(--whisper); font-style: italic; }
-body[data-about="short"] .about-short { display: block; align-self: end; }
-.about-short p { font-size: 20px; line-height: 1.55; color: var(--ink-2); max-width: 40ch; }
-.about-short p + p { margin-top: 18px; }
-body[data-about="art"] .about { align-items: end; }
-body[data-about="art"] .about-art { display: grid; gap: 16px; rotate: 1.2deg; }
-.about-art img { display: block; width: 100%; height: auto; border-radius: 6px; box-shadow: 0 1px 2px rgb(0 0 0 / .2), 0 30px 60px -20px rgb(0 0 0 / .45); }
-.about-art .tile-cap { rotate: -1.2deg; }
-body[data-about="line"] .about { display: block; padding-top: 120px; text-align: center; }
-body[data-about="line"] .about > :not(.about-line) { display: none; }
-body[data-about="line"] .about-line { display: block; max-width: 23em; margin: 0 auto; font-family: var(--serif); font-weight: 300; font-size: clamp(28px, 3.4vw, 50px); line-height: 1.26; letter-spacing: var(--track-heading); text-wrap: balance; }
-.about-line .in-photo, .in-art { display: inline-block; height: 1.05em; width: auto; vertical-align: -.2em; }
-.about-line .in-photo { aspect-ratio: 1; border-radius: 50%; object-fit: cover; }
+/* ───────── About: the painting in the index ─────────
+   The small painting in "Built for me" opens bigger: it flies out of the line into a pop-up (site.js) and back on any
+   click or Esc. It's a small thing in a line of text, so it takes clicks from a little way around it. */
+.in-art { display: inline-block; height: 1.05em; width: auto; vertical-align: -.2em; }
 .in-art { border-radius: .12em; rotate: -3deg; margin: 0 .1em; box-shadow: 0 .1em .3em rgb(0 0 0 / .3); transition: rotate .3s var(--ease), scale .3s var(--ease); }
-/* The painting in the sentence opens bigger: it flies out of the line into a pop-up (site.js) and back on any click or Esc. */
-/* The logos and the painting are small things in a line of text, so each takes clicks from a little way around it. */
-.about-line .org-link, .in-art-btn { position: relative; z-index: 1; padding: .3em .22em; margin: -.3em -.22em; }
-.in-art-btn { display: inline; cursor: zoom-in; }
+.in-art-btn { position: relative; z-index: 1; padding: .3em .22em; margin: -.3em -.22em; }
 .in-art-btn:is(:hover, :focus-visible) .in-art { rotate: 0deg; scale: 1.12; }
 .in-art-btn:focus-visible { outline: none; }
 .in-art-btn:focus-visible .in-art { outline: 2px solid var(--ink); outline-offset: 3px; }
@@ -211,14 +188,7 @@ body[data-about="line"] .about-line { display: block; max-width: 23em; margin: 0
 .art-zoom p { font-size: 15px; color: rgb(255 255 255 / .7); opacity: 0; transition: opacity .3s var(--ease); }
 .art-zoom p b { font-weight: 400; font-style: italic; color: #fff; margin-right: 6px; }
 .art-zoom.is-open p { opacity: 1; transition-delay: .2s; }
-.about-line .org-mark { display: inline-block; height: .8em; vertical-align: -.08em; }
-.about-line .org-mark.is-influential { width: 1.98em; vertical-align: .04em; }
-.about-line .org-mark.is-ulster { width: 1.45em; }
-.about-line .org-mark::before { opacity: .9; }
-/* The logos in the sentence link to Influential and Ulster; on hover the grey mark gives way to the colour one. */
-.org-link:is(:hover, :focus-visible) .org-mark::before { opacity: 0; }
-.org-link:is(:hover, :focus-visible) .org-mark::after { opacity: 1; }
-/* Sentence, big pictures: the photo and the painting grow into the line. */
+.in-art-btn { display: inline; cursor: zoom-in; }
 
 /* ───────── Horizon (lab) ─────────
    Arc, none, or Sun and moon: a whole small circle above the headline. By day a pale sun with a clean edge and a
@@ -318,32 +288,19 @@ body.home[data-shadow="off"] .work .card { box-shadow: none; }
 body.home[data-hero="line"] .hero .stage, body.home[data-hero="line"] .hero h1 { display: none; }
 body.home[data-hero="line"] .hero { padding-top: clamp(120px, 21vh, 210px); padding-bottom: 250px; }
 body.home[data-hero="line"] .intro-who { display: inline; }
-body.home[data-hero="line"] .hero .intro, body[data-about="para"] .about-short { font-size: clamp(19px, 1.75vw, 25px); line-height: 1.45; font-weight: 400; letter-spacing: -.012em; color: var(--ink); }
+body.home[data-hero="line"] .hero .intro { font-size: clamp(19px, 1.75vw, 25px); line-height: 1.45; font-weight: 400; letter-spacing: -.012em; color: var(--ink); }
 body.home[data-hero="line"] .hero .intro { margin-top: 0; max-width: 23em; text-wrap: balance; }
 body.home[data-hero="line"] .hero .intro .last { white-space: normal; color: var(--ink-2); }
 
-/* ───────── About, two more ways (lab: About) ─────────
-   Paragraph: the photo, then the short version at reading size, like the paragraph at the top.
-   Index: the photo and the line, then a short list of facts, a label and a value a row (Peng's work list). */
+/* ───────── About: the index ─────────
+   A short list of facts, a label and a value a row (Peng's work list). Laid out by "Index + contact" below. */
 .about-index { display: none; }
-body:is([data-about="para"], [data-about="index"]) .about { display: block; padding-top: 120px; text-align: center; }
-body:is([data-about="para"], [data-about="index"]) .about > :not(:first-child, .about-short, .about-index),
-body[data-about="para"] .about > :first-child > :not(.about-photo), body[data-about="index"] .about-where { display: none; }
-body:is([data-about="para"], [data-about="index"]) .about-photo { margin: 0 auto 28px; }
-body[data-about="para"] .about-photo { width: 76px; height: 76px; }
-body[data-about="index"] .about-photo { width: 104px; height: 104px; }
-body[data-about="para"] .about-short { display: block; max-width: 23em; margin: 0 auto; }
-body[data-about="para"] .about-short p { max-width: none; font: inherit; letter-spacing: inherit; color: var(--ink); text-wrap: pretty; }
-body[data-about="para"] .about-short p + p { color: var(--ink-2); }
-body[data-about="index"] .about-index { display: grid; gap: 12px; width: fit-content; margin: 44px auto 0; font-size: clamp(16px, 1.3vw, 19px); text-align: left; }
 .about-index div { display: grid; grid-template-columns: 8.5em minmax(0, 24em); gap: 22px; }
 .about-index dt { color: var(--whisper); text-align: right; }
 .about-index dd { color: var(--ink); text-wrap: balance; }
 @media (max-width: 700px) {
   body.home[data-hero="line"] .hero { padding-top: 120px; padding-bottom: 230px; }
-  body.home[data-hero="line"] .hero .intro, body[data-about="para"] .about-short { font-size: 20px; }
-  body:is([data-about="para"], [data-about="index"]) .about { padding-top: 64px; }
-  body[data-about="index"] .about-index { text-align: center; margin-top: 32px; }
+  body.home[data-hero="line"] .hero .intro { font-size: 20px; }
   .about-index div { grid-template-columns: 1fr; gap: 2px; }
   .about-index dt { text-align: center; }
 }
@@ -355,21 +312,6 @@ body.home[data-air="airy"] .hero { display: flex; flex-direction: column; justif
 body.home[data-air="airy"] .hero { min-height: calc(82svh + 150px); }
 body.home[data-air="airy"] .hero .stage { display: none; }
 
-/* ───────── About: Built for me (lab: About) ─────────
-   The photo, the line and where I work on the left; on the right, the tools I actually built, a name and a line each.
-   With the paragraph at the top (which already says where I work), the left drops the two logos. */
-.about-mine { display: none; }
-body[data-about="mine"] :is(.about-body, .about-short, .about-art, .about-off, .about-line, .about-index) { display: none; }
-body[data-about="mine"] .about { align-items: end; }
-body[data-about="mine"] .about-mine { display: block; }
-body[data-about="mine"][data-hero="line"] .about-where { display: none; }
-.about-mine ul { list-style: none; display: grid; gap: 26px; margin-top: 18px; }
-.about-mine li { display: grid; grid-template-columns: 1fr auto; align-items: center; column-gap: 18px; font-size: 18px; line-height: 1.45; }
-.about-mine li > :not(img) { grid-column: 1; }
-.about-mine li > img { grid-column: 2; grid-row: 1 / span 2; }
-.about-mine b { font-weight: 400; color: var(--ink); }
-.about-mine span { color: var(--ink-2); }
-.about-mine img { width: 64px; height: auto; border-radius: 3px; rotate: 3deg; box-shadow: 0 .3em .8em rgb(0 0 0 / .25); }
 @media (max-width: 700px) {
   body.home[data-air="airy"] .hero { min-height: calc(76svh + 150px); }
 }
@@ -379,6 +321,8 @@ body[data-about="mine"][data-hero="line"] .about-where { display: none; }
    room that screen had: it fills the screen on its own. */
 .about-say { display: none !important; }
 body[data-about="together"] .about-say { display: grid !important; }
+/* Contact in the nav (and /#contact from other pages) lands on this row, part way down the screen. */
+.about-say { scroll-margin-top: 40svh; }
 /* No underlines at rest: "Say hello" and an email address already read as links. Underline on hover, like the case pages. */
 .about-say a { text-decoration: underline; text-decoration-color: transparent; text-underline-offset: 3px; transition: text-decoration-color .2s var(--ease); }
 .about-say a:hover { text-decoration-color: color-mix(in srgb, var(--ink) 40%, transparent); }
@@ -406,3 +350,40 @@ body[data-about="together"] .contact { display: none; }
 .js .home .work .item.reveal.in { translate: none; }
 .js .home .work .item.reveal > .card > .media { scale: 1.045; transition: scale 1.6s var(--ease) var(--d, 0s); }
 .js .home .work .item.reveal.in > .card > .media { scale: 1; }
+
+/* ───────── Options for review (?hero=, ?text=, ?caps=, ?toggle= in the address; see the script after <body>) ─────────
+   None of these is on by default. */
+
+/* Hero: six other tops, each its own line, line under it and height (--hero-h: how much of the first screen it
+   takes before the work tucks in under it). Roman then italic, Spectral 300, like the headline today. */
+.hero-v { display: none; }
+body.home:is([data-hero="a"], [data-hero="b"], [data-hero="c"], [data-hero="d"], [data-hero="e"], [data-hero="f"]) .hero-copy > :is(h1, .intro) { display: none; }
+body.home[data-hero="a"] .hero-v[data-v="a"], body.home[data-hero="b"] .hero-v[data-v="b"], body.home[data-hero="c"] .hero-v[data-v="c"],
+body.home[data-hero="d"] .hero-v[data-v="d"], body.home[data-hero="e"] .hero-v[data-v="e"], body.home[data-hero="f"] .hero-v[data-v="f"] { display: block; }
+body.home[data-hero="a"] { --hero-h: 62svh; }
+body.home[data-hero="b"] { --hero-h: 56svh; }
+body.home[data-hero="c"] { --hero-h: 66svh; }
+body.home[data-hero="d"] { --hero-h: 58svh; }
+body.home[data-hero="e"] { --hero-h: 48svh; }
+body.home[data-hero="f"] { --hero-h: 60svh; }
+body.home:is([data-hero="a"], [data-hero="b"], [data-hero="c"], [data-hero="d"], [data-hero="e"], [data-hero="f"]) .hero { min-height: calc(var(--hero-h) + 150px); padding-top: 88px; }
+
+/* Text: the body words (--ink-2) and the tile captions (--whisper) a little brighter after dark, same weight and the
+   same soft, see-through look. Today: 68% and 52%. A: 76% and 60%. B: a step further, 82% and 66%. */
+[data-theme="dark"] body.home[data-text="a"] { --ink-2: rgba(242, 240, 235, .76); --whisper: rgba(242, 240, 235, .6); }
+[data-theme="dark"] body.home[data-text="b"] { --ink-2: rgba(242, 240, 235, .82); --whisper: rgba(242, 240, 235, .66); }
+
+/* Tile captions: the name at full ink, DM Sans 400 (as today), and one plain outcome or an honest tag after it. */
+.cap-v { display: none; }
+body.home[data-caps="b"] .item-cap:has(.cap-v) > span:not(.cap-v) { display: none; }
+body.home[data-caps="b"] .item-cap .cap-v { display: inline; }
+
+/* Theme toggle: in the pill, right of Contact. A 32px button with a 16px moon (or sun after dark) in the links' grey. */
+body.home[data-toggle="on"] .links .theme-toggle { display: grid; width: 32px; height: 32px; margin-left: -8px; border-radius: 10px; color: var(--ink-2);
+  transition: background-color .2s var(--ease), color .2s var(--ease); }
+body.home[data-toggle="on"] .theme-toggle:hover { color: var(--ink); background: var(--pill-on, rgb(255 255 255 / .5)); }
+[data-theme="dark"] body.home[data-toggle="on"] .theme-toggle:hover { background: var(--pill-on, rgb(255 255 255 / .12)); }
+body.home[data-toggle="on"] .theme-toggle:focus-visible { outline: 2px solid var(--ink-2); outline-offset: 2px; }
+.theme-toggle .ti { grid-area: 1 / 1; width: 16px; height: 16px; }
+.theme-toggle .ti-sun, [data-theme="dark"] .theme-toggle .ti-moon { display: none; }
+[data-theme="dark"] .theme-toggle .ti-sun { display: block; }

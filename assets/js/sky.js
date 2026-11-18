@@ -1,7 +1,7 @@
 /* The sky for sheawilson.uk. The page follows the sun where the visitor is: white while it's up, the eclipse
    after dark, and a slow fade through dusk and dawn rather than a switch. A sun travels along the horizon
    during the day, the ring leans cooler in winter and warmer in summer, and the favicon is a square of the same sky.
-   The toggle clicks through Sky, Light and Dark. The sun only comes out with the time bar (tap the full stop).
+   The toggle flips Light and Dark; Shift+D goes back to the sky. The sun only comes out with the time bar (tap the full stop).
 
    Runs in <head>, before first paint, so there's no flash of the wrong theme. Its styles are assets/css/sky.css.
    The /sky/ board is linked from the time bar everywhere except sheawilson.uk and vercel.app (add ?lab there).
@@ -222,8 +222,8 @@
   }
 
   /* ───────── Modes ─────────
-     Sky (the default), Light or Dark. The toggle clicks through them, always changing what you see first:
-     from Sky it goes to the opposite of what's showing, then the other fixed theme, then back to Sky. */
+     Sky (the default), Light or Dark. The toggle flips to the opposite of what's showing; D does the same,
+     and Shift+D goes back to Sky. */
   let mode = 'sky';
   try { const m = localStorage.getItem('sky-mode'); if (m === 'light' || m === 'dark') mode = m; } catch (e) {}
   let barOpen = false; // the time bar always shows the sky
@@ -323,20 +323,15 @@
     if (toggle && last) {
       let hint = toggle.querySelector('.tt-hint');
       if (!hint) { hint = document.createElement('span'); hint.className = 'tt-hint'; hint.setAttribute('aria-hidden', 'true'); toggle.append(hint); }
-      const next = nextMode();
-      const label = next === 'sky' ? 'Follow the sun' : next === 'dark' ? 'Lights off' : 'Lights on';
-      const pressed = String(last.theme === 'dark'), aria = next === 'sky' ? 'Follow the time of day' : `Switch to ${next} mode`, html = `<b>${label}</b>${hintLine}`;
+      // The button flips light and dark; Shift+D goes back to following the sky.
+      const next = last.theme === 'dark' ? 'light' : 'dark';
+      const label = next === 'dark' ? 'Lights off' : 'Lights on';
+      const pressed = String(last.theme === 'dark'), aria = `Switch to ${next} mode`, html = `<b>${label}</b>${hintLine}`;
       if (toggle.getAttribute('aria-pressed') !== pressed) toggle.setAttribute('aria-pressed', pressed);
       if (toggle.getAttribute('aria-label') !== aria) toggle.setAttribute('aria-label', aria);
       if (hint.innerHTML !== html) hint.innerHTML = html;
     }
   }
-  const nextMode = () => {
-    if (!last) return 'dark';
-    const auto = lookAt(last.n.min, last.n.ymd).theme;
-    if (last.mode === 'sky') return last.theme === 'dark' ? 'light' : 'dark';
-    return last.mode === auto ? 'sky' : auto;
-  };
   // The hint's second line: what's happening now. Worked out when the pointer arrives, not every paint.
   let hintLine = '';
   function refreshHint() {
@@ -432,7 +427,7 @@
     root.classList.add('theme-switching');
     document.startViewTransition(apply).finished.finally(() => root.classList.remove('theme-switching'));
   }
-  window.__skyToggle = (e) => { if (barOpen) closeBar(); setMode(nextMode(), e); };
+  window.__skyToggle = (e) => { if (barOpen) closeBar(); setMode(root.dataset.theme === 'dark' ? 'light' : 'dark', e); };
   // The theme button is hidden. D flips light and dark; Shift+D goes back to following the sky.
   addEventListener('keydown', (e) => {
     if (e.metaKey || e.ctrlKey || e.altKey || e.target.closest('input, textarea, [contenteditable]')) return;
