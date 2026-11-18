@@ -6,7 +6,6 @@
   if (live && !new URLSearchParams(location.search).has('lab')) return;
   // [attribute, label, options, the recommended one, the pages it's for (a selector on <body>)]
   const ROWS = [
-    ['button', 'Sky button (top right)', [['tile', 'Sky tile'], ['orbit', 'Orbit'], ['orbit-hz', 'Orbit, horizon only'], ['orbit-trk', 'Orbit, path only'], ['orbit-bare', 'Orbit, just sun and moon'], ['glow', 'Sun or moon']], 'orbit-hz', 'body'],
   ].filter((r) => document.body.matches(r[4]));
   if (!ROWS.length) return; // nothing open just now
   const KEY = 'home-lab-16'; // home-lab-16: Meridian in Brain Dump's place, 15 Nov
@@ -30,7 +29,7 @@
   bar.className = 'lab'; bar.setAttribute('aria-label', 'Lab');
   bar.innerHTML = `<div class="lab-head"><b>Lab</b><button type="button" data-shut>Hide</button></div>` + ROWS.map(([k, label, opts, rec]) =>
     `<div class="lab-row"><p>${label}</p><div class="lab-opts">${opts.map(([v, name]) =>
-      `<button type="button" data-k="${k}" data-v="${v}" class="${v === rec ? 'is-pick' : ''}" aria-pressed="${(el(k).dataset[k] ?? opts[0][0]) === v}">${name}</button>`).join('')}</div></div>`).join('');
+      `<button type="button" data-k="${k}" data-v="${v}" class="${v === rec ? 'is-pick' : ''}" aria-pressed="${el(k).dataset[k] === v}">${name}</button>`).join('')}</div></div>`).join('');
   document.body.append(bar);
   bar.addEventListener('click', (e) => {
     if (e.target.closest('[data-shut]')) { bar.classList.toggle('is-shut'); e.target.textContent = bar.classList.contains('is-shut') ? 'Show' : 'Hide'; return; }

@@ -302,44 +302,21 @@
       const wash = document.createElement('div'); wash.className = 'sky-wash'; wash.setAttribute('aria-hidden', 'true');
       hero.prepend(wash);
     }
-    // The nav's sky button opens the time card. Live: a tile of the sky as it is now (like the favicon), the sun
-    // arcing across it from sunrise to sunset and the moon through the night. The lab tries looks without the tile
-    // (data-button on <body>): Orbit (sun and moon opposite each other on a wheel, setting below a horizon), with or
-    // without its dotted path and horizon line, and Sun or moon (one body that stays put: deep orange low, pale gold
-    // at noon, and as the sky darkens a shadow slides across it until it's a crescent moon).
+    // The nav's sky button opens the time card. It's the sun or the moon, never both: one body that stays put,
+    // deep orange low, pale gold at noon, and as the sky darkens it pales and a shadow slides in from the right
+    // until it's a crescent moon.
     const toggle = document.querySelector('.theme-toggle');
     if (toggle) {
-      if (!toggle.querySelector('.sbt-tile')) toggle.innerHTML = `<span class="sbt-tile" aria-hidden="true"><i class="sbt-sun"></i><i class="sbt-moon"></i></span>
-        <svg class="sbt-sky" viewBox="0 0 24 20" aria-hidden="true"><defs><clipPath id="sbt-above"><rect x="-4" y="-6" width="32" height="20"/></clipPath>
-          <mask id="sbt-bite"><rect width="24" height="20" fill="#fff"/><circle class="bite" cy="8.4" r="3.8" fill="#000"/></mask></defs>
-          <g class="v-orbit"><path class="trk" d="M4 14A8 8 0 0 1 20 14"/><path class="hz" d="M1 14H23"/><g clip-path="url(#sbt-above)"><circle class="d-sun" r="2.6"/><circle class="d-moon" r="2.2"/></g></g>
-          <g class="v-glow"><circle class="halo" cx="12" cy="10" r="6.5"/><circle class="d-body" cx="12" cy="10" r="4" mask="url(#sbt-bite)"/></g></svg>`;
+      if (!toggle.querySelector('.sbt-sky')) toggle.innerHTML = `<svg class="sbt-sky" viewBox="0 0 24 20" aria-hidden="true"><defs><mask id="sbt-bite"><rect width="24" height="20" fill="#fff"/><circle class="bite" cy="8.4" r="3.8" fill="#000"/></mask></defs>
+        <circle class="halo" cx="12" cy="10" r="6.5"/><circle class="body" cx="12" cy="10" r="4" mask="url(#sbt-bite)"/></svg>`;
       if (last && toggle.dataset.at !== `${last.n.min}|${last.n.ymd}`) {
         const n = last.n, h = height(n.min, n);
         toggle.dataset.at = `${n.min}|${n.ymd}`;
-        // How far through the day (sunrise to sunset) or the night (sunset to sunrise) we are, or null.
-        const dayF = wrap(n.min - n.rise) < wrap(n.set - n.rise) ? wrap(n.min - n.rise) / (wrap(n.set - n.rise) || 1) : null;
-        const nightF = dayF == null ? wrap(n.min - n.set) / (wrap(n.rise - n.set) || 1) : null;
-        const sunA = clamp((h + .08) / .12, 0, 1), moonA = clamp((-h + .08) / .12, 0, 1);
-        const arc = (k, from, to, up) => {
-          const f = clamp(wrap(n.min - from) / (wrap(to - from) || 1), -.1, 1.1);
-          toggle.style.setProperty(`--bt-${k}x`, `${(12 + 76 * f).toFixed(1)}%`);
-          toggle.style.setProperty(`--bt-${k}y`, `${(84 - 58 * Math.max(0, up)).toFixed(1)}%`);
-          toggle.style.setProperty(`--bt-${k}`, clamp((up + .08) / .12, 0, 1).toFixed(2));
-        };
-        if (dayF != null || h >= 0) arc('s', n.rise, n.set, h); else toggle.style.setProperty('--bt-s', '0');
-        if (nightF != null || h <= 0) arc('m', n.set, n.rise, -h); else toggle.style.setProperty('--bt-m', '0');
-        const put = (sel, at) => { const el = toggle.querySelector(sel); Object.entries(at).forEach(([k, v]) => el.setAttribute(k, typeof v === 'number' ? v.toFixed(2) : v)); };
-        // Orbit: the sun on top at noon, the moon on top at midnight, each on the horizon at sunrise and sunset.
-        const ang = dayF != null ? -Math.PI / 2 + Math.PI * dayF : Math.PI / 2 + Math.PI * nightF;
-        put('.v-orbit .d-sun', { cx: 12 + 8 * Math.sin(ang), cy: 14 - 8 * Math.cos(ang) });
-        put('.v-orbit .d-moon', { cx: 12 - 8 * Math.sin(ang), cy: 14 + 8 * Math.cos(ang) });
-        // Sun or moon: one body. Deep orange low, pale gold at noon; through twilight it pales and a shadow slides
-        // in from the right until it's a crescent, so the sun and moon never show at once.
         const dark = smooth(clamp((.12 - h) / .3, 0, 1)), sunC = mix('#ff8a3d', '#ffd36b', clamp(h, 0, 1));
-        put('.v-glow .d-body', { fill: mix(sunC, '#eef1fb', dark) });
-        put('#sbt-bite .bite', { cx: 22.5 - 8.1 * dark });
-        put('.v-glow .halo', { fill: sunC, opacity: (.18 + .22 * clamp(h, 0, 1)) * (1 - dark) });
+        const put = (sel, at) => { const el = toggle.querySelector(sel); Object.entries(at).forEach(([k, v]) => el.setAttribute(k, typeof v === 'number' ? v.toFixed(2) : v)); };
+        put('.body', { fill: mix(sunC, '#eef1fb', dark) });
+        put('.bite', { cx: 22.5 - 8.1 * dark });
+        put('.halo', { fill: sunC, opacity: (.18 + .22 * clamp(h, 0, 1)) * (1 - dark) });
       }
       const open = String(barOpen);
       if (toggle.getAttribute('aria-label') !== 'Time of day') { toggle.setAttribute('aria-label', 'Time of day'); toggle.setAttribute('aria-haspopup', 'dialog'); toggle.removeAttribute('aria-pressed'); }
@@ -421,9 +398,9 @@
     if (next === 'sky' && !quiet && !matchMedia('(prefers-reduced-motion: reduce)').matches) { sweep(); return; }
     const after = next === 'sky' ? lookAt(last.n.min, last.n.ymd).theme : next;
     // The umbra spreads from the middle of the sky button, however the switch happened (D, the card, a click).
-    const btn = document.querySelector('.theme-toggle'), tile = btn?.querySelector('.sbt-tile'), from = tile?.getClientRects().length ? tile : btn;
-    if (from?.getClientRects().length) {
-      const r = from.getBoundingClientRect();
+    const btn = document.querySelector('.theme-toggle');
+    if (btn?.getClientRects().length) {
+      const r = btn.getBoundingClientRect();
       root.style.setProperty('--vx', `${r.left + r.width / 2}px`);
       root.style.setProperty('--vy', `${r.top + r.height / 2}px`);
     }

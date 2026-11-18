@@ -94,29 +94,11 @@
 @media (pointer: coarse) { .sb-modes button { height: 40px; } }
 
 /* ───────── The sky button ─────────
-   Top right of the nav; it opens the time card. The sky tile, or in the lab (data-button on <body>) looks without
-   the tile, drawn in one small SVG (sky.js moves the sun and moon). */
-.theme-toggle .tt, .theme-toggle > :is(.sbt-tile, .sbt-sky), .sbt-sky > g { display: none; }
-:is(body:not([data-button]), body[data-button="tile"]) .theme-toggle .sbt-tile,
-body:is([data-button^="orbit"], [data-button="glow"]) .theme-toggle .sbt-sky, body[data-button^="orbit"] .v-orbit, body[data-button="glow"] .v-glow { display: block; }
-/* Orbit with only the horizon, only the path, or just the sun and moon. */
-body:is([data-button="orbit-hz"], [data-button="orbit-bare"]) .v-orbit .trk, body:is([data-button="orbit-trk"], [data-button="orbit-bare"]) .v-orbit .hz { display: none; }
-/* A tile of the sky as it is now, like the favicon. The sun arcs across it by day, the moon by night. */
-.sbt-tile { position: relative; width: 20px; height: 20px; border-radius: 6px; overflow: hidden;
-  background: radial-gradient(70% 60% at 50% 108%, color-mix(in srgb, var(--sky-sunglow, #fff1e2) calc(var(--sky-ga, 0) * 100%), transparent), transparent),
-    linear-gradient(var(--sky-top, #9ec0e9), var(--sky-mid, #cdd9e9) 58%, var(--sky-low, #f9ede2));
-  box-shadow: inset 0 0 0 .5px rgb(255 255 255 / .6), 0 1px 3px rgb(10 20 40 / .2); transition: scale .35s cubic-bezier(.3, 1.6, .5, 1); }
-.sbt-tile i { position: absolute; border-radius: 50%; translate: -50% -50%; }
-.sbt-sun { left: var(--bt-sx, 50%); top: var(--bt-sy, 40%); width: 5px; height: 5px; background: #ffb347; box-shadow: 0 0 4px #ffa23a; opacity: var(--bt-s, 0); }
-.sbt-moon { left: var(--bt-mx, 50%); top: var(--bt-my, 40%); width: 4px; height: 4px; background: #eef1fb; box-shadow: 0 0 3px rgb(220 230 255 / .7); opacity: var(--bt-m, 0); }
-.theme-toggle:hover :is(.sbt-tile, .sbt-sky) { scale: 1.1; }
-.theme-toggle:active :is(.sbt-tile, .sbt-sky), .theme-toggle[aria-expanded="true"] :is(.sbt-tile, .sbt-sky) { scale: .92; }
-/* The looks without the tile: a dotted path and a horizon in the links' grey, an amber sun, a pale moon. */
+   Top right of the nav; it opens the time card. The sun, or the moon after dark (sky.js turns one into the other). */
+.theme-toggle .tt { display: none; }
 .sbt-sky { width: 24px; height: 20px; overflow: visible; transition: scale .35s cubic-bezier(.3, 1.6, .5, 1); }
-.sbt-sky .trk { fill: none; stroke: color-mix(in srgb, var(--ink) 34%, transparent); stroke-width: 1; stroke-dasharray: .1 2.2; stroke-linecap: round; }
-.sbt-sky .hz { fill: none; stroke: color-mix(in srgb, var(--ink) 40%, transparent); stroke-width: 1.1; stroke-linecap: round; }
-.sbt-sky .d-sun { fill: #ffb347; filter: drop-shadow(0 0 1.6px rgb(255 160 50 / .8)); }
-.sbt-sky .d-moon { fill: #eef1fb; stroke: color-mix(in srgb, var(--ink) 30%, transparent); stroke-width: .5; filter: drop-shadow(0 0 1.4px rgb(210 222 255 / .6)); }
+.theme-toggle:hover .sbt-sky { scale: 1.1; }
+.theme-toggle:active .sbt-sky, .theme-toggle[aria-expanded="true"] .sbt-sky { scale: .92; }
 .sbt-sky .halo { filter: blur(2px); }
-.sbt-sky .d-body { filter: drop-shadow(0 0 1.4px rgb(255 200 140 / .5)); }
-.sbt-sky :is(.d-sun, .d-moon, .halo, .d-body, .bite) { transition: cx .6s var(--ease), cy .6s var(--ease), opacity .6s var(--ease), fill .6s var(--ease); }
+.sbt-sky .body { filter: drop-shadow(0 0 1.4px rgb(255 200 140 / .5)); }
+.sbt-sky :is(.halo, .body, .bite) { transition: cx .6s var(--ease), opacity .6s var(--ease), fill .6s var(--ease); }
