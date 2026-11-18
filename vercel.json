@@ -10,7 +10,25 @@
       ]
     },
     {
-      "source": "/assets/(media|fonts)/(.*)",
+      "source": "/assets/media/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=604800, stale-while-revalidate=86400"
+        }
+      ]
+    },
+    {
+      "source": "/assets/fonts/(.*)\\.(woff2|ttf)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=604800, stale-while-revalidate=86400"
+        }
+      ]
+    },
+    {
+      "source": "/assets/fonts/(.*)\\.css",
       "headers": [
         {
           "key": "Cache-Control",

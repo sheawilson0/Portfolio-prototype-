@@ -34,7 +34,7 @@
 .js .case .facts.in > div:nth-child(3) { transition-delay: .14s; }
 .js .case .facts.in > div:nth-child(4) { transition-delay: .21s; }
 .js .case .facts.in > div:nth-child(5) { transition-delay: .28s; }
-.js .case .nav { transition: opacity .9s var(--ease) .3s; }
+.js .case .nav { transition: opacity .9s var(--ease) .3s, padding var(--nav-t) var(--nav-ease); }
 .js .case:has(main > :first-child:not(.is-ready)) .nav { opacity: 0; }
 /* Coming from another page (html.hop): no build-up. The top picture, the title and the nav are simply there, so the
    card you clicked grows straight into the picture and the crossfade lands on a finished page. */
