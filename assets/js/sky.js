@@ -1,6 +1,6 @@
 /* The sky for sheawilson.uk. The page follows the sun where the visitor is: white while it's up, the eclipse
    after dark, and a slow fade through dusk and dawn rather than a switch. A sun travels along the horizon
-   during the day, the ring leans cooler in winter and warmer in summer, and the favicon's sky matches the page.
+   during the day, the ring leans cooler in winter and warmer in summer, and the favicon is a square of the same sky.
    The toggle clicks through Sky, Light and Dark. The sun only comes out with the time bar (tap the full stop).
 
    Runs in <head>, before first paint, so there's no flash of the wrong theme. Its styles are assets/css/sky.css.
@@ -442,20 +442,22 @@
 
   /* ───────── Favicon ───────── */
   // The eclipse, drawn in the page's colours: a white disc by day, dark after sunset, ring in the sky's colours.
-  // The favicon is the S on the sky: the day sky by day, the night sky once the page goes dark.
+  // The favicon is a square of the sky as it is right now, painted from the same colours as the page.
   let favKey = '', favLink = null, favReady = false;
   idle(() => { favReady = true; favicon(); });
   function favicon() {
     if (!favReady || !last) return;
-    const key = last.theme === 'dark' ? 'night' : 'day';
+    const k = street(last.n.min, last.n.ymd, last.mode), ga = k.ga.toFixed(2);
+    const key = `${k.top}${k.mid}${k.low}${k.glow}${ga}`;
     if (key === favKey) return;
     favKey = key;
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><defs><linearGradient id="a" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${k.top}"/><stop offset=".58" stop-color="${k.mid}"/><stop offset="1" stop-color="${k.low}"/></linearGradient><radialGradient id="b" cx=".5" cy="1.02" r=".62"><stop offset="0" stop-color="${k.glow}" stop-opacity="${ga}"/><stop offset="1" stop-color="${k.glow}" stop-opacity="0"/></radialGradient></defs><rect width="64" height="64" rx="14" fill="url(#a)"/><rect width="64" height="64" rx="14" fill="url(#b)"/></svg>`;
     if (!favLink) {
       document.querySelectorAll('link[rel~="icon"]').forEach((l) => l.remove());
       favLink = document.createElement('link'); favLink.rel = 'icon'; favLink.type = 'image/svg+xml';
       document.head.append(favLink);
     }
-    favLink.href = `/assets/icons/favicon-${key}.svg`;
+    favLink.href = 'data:image/svg+xml,' + encodeURIComponent(svg);
   }
 
   /* ───────── The time bar ─────────
