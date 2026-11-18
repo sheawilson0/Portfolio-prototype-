@@ -529,16 +529,31 @@
       dial.live = false; dial.to = to; run();
     });
   }
-  // The card hangs under the nav's sky button and pours out of it. Pages without one get it at the bottom.
+  // The card hangs under the nav's sky button and pours out of it. At the top of the page it lines up with the button;
+  // once the nav has shrunk into its pill it hangs centred under the pill. Pages without a button get it at the bottom.
   const button = () => { const b = document.querySelector('.theme-toggle'); return b && b.getClientRects().length ? b : null; };
   function place() {
-    const b = button(), W = bar.offsetWidth;
+    const b = button(), W = bar.offsetWidth, pill = document.querySelector('.nav.is-scrolled .nav-pill');
     if (b) {
-      const r = b.getBoundingClientRect();
+      const r = b.getBoundingClientRect(), p = pill && pill.getBoundingClientRect();
       bar.classList.remove('is-docked');
-      bar.style.left = `${clamp(r.right + 6 - W, 12, innerWidth - W - 12)}px`;
-      bar.style.top = `${r.bottom + 8}px`;
+      bar.style.left = `${clamp(p ? (p.left + p.right - W) / 2 : r.right + 6 - W, 12, innerWidth - W - 12)}px`;
+      bar.style.top = `${(p ? p.bottom : r.bottom) + 8}px`;
     } else { bar.classList.add('is-docked'); bar.style.left = bar.style.top = ''; }
+  }
+  // If the nav shrinks or grows while the card is open, the card follows it there over the nav's own 280ms.
+  // Set up the first time the card opens, since this script runs before the nav exists.
+  let navWatch = null;
+  function watchNav() {
+    const nav = document.querySelector('.nav');
+    if (navWatch || !nav) return;
+    navWatch = new MutationObserver(() => {
+      if (!barOpen) return;
+      const until = performance.now() + 340;
+      const follow = () => { if (!barOpen) return; place(); if (performance.now() < until) requestAnimationFrame(follow); };
+      requestAnimationFrame(follow);
+    });
+    navWatch.observe(nav, { attributes: true, attributeFilter: ['class'] });
   }
   function source() {
     const b = !bar.classList.contains('is-docked') && button();
@@ -551,7 +566,7 @@
     barOpen = true;
     root.classList.add('sun-on');
     bar.classList.add('is-open');
-    place();
+    watchNav(); place();
     if (!dial.raf) { dial.live = !frozen; dial.pos = dial.to = now().min; dial.vel = 0; }
     dial.key = '';
     paint(true); paintNow(true);
