@@ -6,7 +6,7 @@
   if (live && !new URLSearchParams(location.search).has('lab')) return;
   // [attribute, label, options, the recommended one, the pages it's for (a selector on <body>)]
   const ROWS = [
-    ['button', 'Sky button (top right)', [['tile', 'Sky tile'], ['time', 'Time'], ['timepill', 'Time in a pill']], 'tile', 'body'],
+    ['button', 'Sky button (top right)', [['tile', 'Sky tile'], ['arc', 'Arc'], ['horizon', 'Rise and set'], ['orbit', 'Orbit'], ['glow', 'Sun or moon']], 'arc', 'body'],
   ].filter((r) => document.body.matches(r[4]));
   if (!ROWS.length) return; // nothing open just now
   const KEY = 'home-lab-16'; // home-lab-16: Meridian in Brain Dump's place, 15 Nov
