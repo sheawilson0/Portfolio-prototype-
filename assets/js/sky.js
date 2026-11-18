@@ -567,7 +567,15 @@
   }
   const toggleBar = () => (barOpen ? closeBar() : openBar());
   addEventListener('keydown', (e) => { if (e.key === 'Escape' && barOpen) { closeBar(); button()?.focus({ preventScroll: true }); } });
-  document.addEventListener('pointerdown', (e) => { if (barOpen && !bar.contains(e.target) && !e.target.closest?.('.theme-toggle')) closeBar(); }, true);
+  // While the light/dark fade plays, the browser hands every tap to the page rather than to what's under it. So taps are
+  // judged by where they land: inside the card they don't close it, and one on Light, Dark or Live still presses it.
+  const hit = (el, e) => { const r = el.getBoundingClientRect(); return e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom; };
+  document.addEventListener('pointerdown', (e) => { if (barOpen && !bar.contains(e.target) && !hit(bar, e) && !e.target.closest?.('.theme-toggle')) closeBar(); }, true);
+  document.addEventListener('click', (e) => {
+    if (!barOpen || bar.contains(e.target)) return;
+    const b = [...bar.querySelectorAll('[data-m]')].find((x) => hit(x, e));
+    if (b) { e.preventDefault(); b.click(); }
+  }, true);
   addEventListener('resize', () => { if (barOpen) { place(); dial.key = ''; renderDial(); } });
 
   /* ── The path ── */
