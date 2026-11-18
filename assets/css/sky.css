@@ -94,12 +94,13 @@
 @media (pointer: coarse) { .sb-modes button { height: 40px; } }
 
 /* ───────── The sky button ─────────
-   Top right of the nav; it opens the time card. The sky tile, or in the lab (data-button on <body>) four looks
-   without the tile, drawn in one small SVG (sky.js moves the sun and moon). */
+   Top right of the nav; it opens the time card. The sky tile, or in the lab (data-button on <body>) looks without
+   the tile, drawn in one small SVG (sky.js moves the sun and moon). */
 .theme-toggle .tt, .theme-toggle > :is(.sbt-tile, .sbt-sky), .sbt-sky > g { display: none; }
 :is(body:not([data-button]), body[data-button="tile"]) .theme-toggle .sbt-tile,
-body:is([data-button="arc"], [data-button="horizon"], [data-button="orbit"], [data-button="glow"]) .theme-toggle .sbt-sky,
-body[data-button="arc"] .v-arc, body[data-button="horizon"] .v-horizon, body[data-button="orbit"] .v-orbit, body[data-button="glow"] .v-glow { display: block; }
+body:is([data-button^="orbit"], [data-button="glow"]) .theme-toggle .sbt-sky, body[data-button^="orbit"] .v-orbit, body[data-button="glow"] .v-glow { display: block; }
+/* Orbit with only the horizon, only the path, or just the sun and moon. */
+body:is([data-button="orbit-hz"], [data-button="orbit-bare"]) .v-orbit .trk, body:is([data-button="orbit-trk"], [data-button="orbit-bare"]) .v-orbit .hz { display: none; }
 /* A tile of the sky as it is now, like the favicon. The sun arcs across it by day, the moon by night. */
 .sbt-tile { position: relative; width: 20px; height: 20px; border-radius: 6px; overflow: hidden;
   background: radial-gradient(70% 60% at 50% 108%, color-mix(in srgb, var(--sky-sunglow, #fff1e2) calc(var(--sky-ga, 0) * 100%), transparent), transparent),
@@ -117,4 +118,5 @@ body[data-button="arc"] .v-arc, body[data-button="horizon"] .v-horizon, body[dat
 .sbt-sky .d-sun { fill: #ffb347; filter: drop-shadow(0 0 1.6px rgb(255 160 50 / .8)); }
 .sbt-sky .d-moon { fill: #eef1fb; stroke: color-mix(in srgb, var(--ink) 30%, transparent); stroke-width: .5; filter: drop-shadow(0 0 1.4px rgb(210 222 255 / .6)); }
 .sbt-sky .halo { filter: blur(2px); }
-.sbt-sky :is(.d-sun, .d-moon, .halo) { transition: cx .6s var(--ease), cy .6s var(--ease), opacity .6s var(--ease); }
+.sbt-sky .d-body { filter: drop-shadow(0 0 1.4px rgb(255 200 140 / .5)); }
+.sbt-sky :is(.d-sun, .d-moon, .halo, .d-body, .bite) { transition: cx .6s var(--ease), cy .6s var(--ease), opacity .6s var(--ease), fill .6s var(--ease); }
