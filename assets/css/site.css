@@ -122,8 +122,8 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .fold > span { min-width: 0; overflow: hidden; padding-right: .08em; margin-right: -.08em; transition: opacity .45s var(--ease); }
 .nav.is-scrolled .fold { grid-template-columns: 0fr; }
 .nav.is-scrolled .fold > span { opacity: 0; }
-/* Just my name, Work and Contact. The theme button is hidden: press D for light or dark, Shift+D to follow the sky. */
-.links a[href$="#about"], .links .theme-toggle { display: none; }
+/* My name, Work, Contact and the sky button, which opens the time of day (sky.js). D still flips light and dark. */
+.links a[href$="#about"] { display: none; }
 .links { display: flex; align-items: center; gap: 26px; font-size: 14px; font-weight: 400; }
 .links a { color: var(--ink-2); transition: color .3s var(--ease); }
 .links a:hover { color: var(--ink); }

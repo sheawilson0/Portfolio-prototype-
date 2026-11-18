@@ -1,7 +1,7 @@
 /* The sky for sheawilson.uk. The page follows the sun where the visitor is: white while it's up, the eclipse
    after dark, and a slow fade through dusk and dawn rather than a switch. A sun travels along the horizon
    during the day, the ring leans cooler in winter and warmer in summer, and the favicon is a square of the same sky.
-   The toggle clicks through Sky, Light and Dark. The sun only comes out with the time bar (tap the full stop).
+   The nav's sky button opens the time bar (Light, Dark, Live and the day to drag). The sun only comes out with it.
 
    Runs in <head>, before first paint, so there's no flash of the wrong theme. Its styles are assets/css/sky.css.
    The /sky/ board is linked from the time bar everywhere except sheawilson.uk and vercel.app (add ?lab there).
@@ -214,12 +214,6 @@
     return { top: mix(a.top, b.top, k), mid: midC, low: mix(a.low, b.low, k), glow: mix(a.glow, b.glow, k), ga: a.ga + (b.ga - a.ga) * k, dark: lum(midC) < .26 };
   }
 
-  // The next time the page crosses between light and dark, in minutes from now.
-  function nextCross(n) {
-    const start = lookAt(n.min, n.ymd).theme;
-    for (let step = 5; step <= 1440; step += 5) if (lookAt(wrap(n.min + step), n.ymd).theme !== start) return step;
-    return 1440;
-  }
 
   /* ───────── Modes ─────────
      Sky (the default), Light or Dark. The toggle clicks through them, always changing what you see first:
@@ -307,45 +301,14 @@
       eclipse.querySelector('.corona').after(sunEl);
       const wash = document.createElement('div'); wash.className = 'sky-wash'; wash.setAttribute('aria-hidden', 'true');
       hero.prepend(wash);
-      // The easter egg: the headline's full stop is a little sun. Tap it and the time bar opens.
-      const em = hero.querySelector('h1 em');
-      if (em && em.lastChild?.nodeType === 3 && em.lastChild.data.endsWith('.')) {
-        em.lastChild.data = em.lastChild.data.slice(0, -1);
-        const dot = document.createElement('span');
-        dot.className = 'sky-dot'; dot.textContent = '.'; dot.tabIndex = 0;
-        dot.setAttribute('role', 'button'); dot.setAttribute('aria-label', 'Play with the time of day');
-        dot.addEventListener('click', () => toggleBar());
-        dot.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleBar(); } });
-        em.append(dot);
-      }
     }
+    // The nav's sky button opens the time card.
     const toggle = document.querySelector('.theme-toggle');
-    if (toggle && last) {
-      let hint = toggle.querySelector('.tt-hint');
-      if (!hint) { hint = document.createElement('span'); hint.className = 'tt-hint'; hint.setAttribute('aria-hidden', 'true'); toggle.append(hint); }
-      const next = nextMode();
-      const label = next === 'sky' ? 'Follow the sun' : next === 'dark' ? 'Lights off' : 'Lights on';
-      const pressed = String(last.theme === 'dark'), aria = next === 'sky' ? 'Follow the time of day' : `Switch to ${next} mode`, html = `<b>${label}</b>${hintLine}`;
-      if (toggle.getAttribute('aria-pressed') !== pressed) toggle.setAttribute('aria-pressed', pressed);
-      if (toggle.getAttribute('aria-label') !== aria) toggle.setAttribute('aria-label', aria);
-      if (hint.innerHTML !== html) hint.innerHTML = html;
+    if (toggle) {
+      const open = String(barOpen);
+      if (toggle.getAttribute('aria-label') !== 'Time of day') { toggle.setAttribute('aria-label', 'Time of day'); toggle.setAttribute('aria-haspopup', 'dialog'); toggle.removeAttribute('aria-pressed'); }
+      if (toggle.getAttribute('aria-expanded') !== open) toggle.setAttribute('aria-expanded', open);
     }
-  }
-  const nextMode = () => {
-    if (!last) return 'dark';
-    const auto = lookAt(last.n.min, last.n.ymd).theme;
-    if (last.mode === 'sky') return last.theme === 'dark' ? 'light' : 'dark';
-    return last.mode === auto ? 'sky' : auto;
-  };
-  // The hint's second line: what's happening now. Worked out when the pointer arrives, not every paint.
-  let hintLine = '';
-  function refreshHint() {
-    if (!last) return;
-    if (last.mode === 'sky') {
-      const at = wrap(last.n.min + nextCross(last.n));
-      hintLine = `<small>Following the sun, ${last.theme === 'dark' ? 'light' : 'dark'} about ${fmt(Math.round(at / 5) * 5 % 1440)}</small>`;
-    } else hintLine = `<small>Lights ${last.mode === 'dark' ? 'off' : 'on'} for now</small>`;
-    decorate();
   }
 
   /* ───────── The switch ───────── */
@@ -409,7 +372,7 @@
     if (!root.classList.contains('sky-sweep')) return;
     cancelAnimationFrame(sweepRaf); frozen = null;
     root.classList.remove('sky-sweep');
-    paint(true); refreshHint();
+    paint(true);
   }
 
   function setMode(next, e, quiet) {
@@ -418,7 +381,7 @@
     mode = next;
     try { next === 'sky' ? localStorage.removeItem('sky-mode') : localStorage.setItem('sky-mode', next); } catch (err) {}
     switchSound(next);
-    const apply = () => { paint(true); refreshHint(); };
+    const apply = () => paint(true);
     if (next === 'sky' && !quiet && !matchMedia('(prefers-reduced-motion: reduce)').matches) { sweep(); return; }
     const after = next === 'sky' ? lookAt(last.n.min, last.n.ymd).theme : next;
     const toggle = document.querySelector('.theme-toggle');
@@ -432,7 +395,7 @@
     root.classList.add('theme-switching');
     document.startViewTransition(apply).finished.finally(() => root.classList.remove('theme-switching'));
   }
-  window.__skyToggle = (e) => { if (barOpen) closeBar(); setMode(nextMode(), e); };
+  window.__skyToggle = () => toggleBar(); // site.js hands the nav's sky button to us
   // The theme button is hidden. D flips light and dark; Shift+D goes back to following the sky.
   addEventListener('keydown', (e) => {
     if (e.metaKey || e.ctrlKey || e.altKey || e.target.closest('input, textarea, [contenteditable]')) return;
@@ -461,7 +424,7 @@
   }
 
   /* ───────── The time bar ─────────
-     After Peng's (pengzhe.ng). A small glass card that pours out of the full stop like a genie and back into it,
+     After Peng's (pengzhe.ng). A small glass card that pours out of the nav's sky button like a genie and back into it,
      with Light, Dark and Live along the top and the day drawn underneath as the sun's path. Drag the sun, tap
      anywhere on the path, or tap the little Now dot to go back. The sun springs rather than jumps, the minutes
      roll, and the day makes a sound as it moves: air at night, a glide through twilight, a soft chord at noon.
@@ -548,19 +511,20 @@
       dial.live = false; dial.to = to; run();
     });
   }
-  // The full stop is where the card comes from. Pages without one get it at the bottom of the screen.
+  // The card hangs under the nav's sky button and pours out of it. Pages without one get it at the bottom.
+  const button = () => { const b = document.querySelector('.theme-toggle'); return b && b.getClientRects().length ? b : null; };
   function place() {
-    const dot = document.querySelector('.sky-dot'), W = bar.offsetWidth;
-    if (dot && dot.getClientRects().length) {
-      const r = dot.getBoundingClientRect();
+    const b = button(), W = bar.offsetWidth;
+    if (b) {
+      const r = b.getBoundingClientRect();
       bar.classList.remove('is-docked');
-      bar.style.left = `${clamp((r.left + r.right) / 2 - W / 2, 12, innerWidth - W - 12) + scrollX}px`;
-      bar.style.top = `${r.bottom + scrollY + 10}px`;
+      bar.style.left = `${clamp(r.right + 6 - W, 12, innerWidth - W - 12)}px`;
+      bar.style.top = `${r.bottom + 8}px`;
     } else { bar.classList.add('is-docked'); bar.style.left = bar.style.top = ''; }
   }
   function source() {
-    const dot = !bar.classList.contains('is-docked') && document.querySelector('.sky-dot');
-    if (dot) return dot.getBoundingClientRect();
+    const b = !bar.classList.contains('is-docked') && button();
+    if (b) return b.getBoundingClientRect();
     return { left: innerWidth / 2 - 30, right: innerWidth / 2 + 30, width: 60, top: innerHeight + 20, bottom: innerHeight + 20 };
   }
   function openBar() {
@@ -582,10 +546,11 @@
     dial.drag = null; dial.hp = null;
     if (frozen || frozenDate) goLive(); // the sky glides back to now as the card pours away
     genie(false);
+    decorate();
   }
   const toggleBar = () => (barOpen ? closeBar() : openBar());
-  addEventListener('keydown', (e) => { if (e.key === 'Escape' && barOpen) closeBar(); });
-  document.addEventListener('pointerdown', (e) => { if (barOpen && !bar.contains(e.target) && !e.target.closest?.('.sky-dot')) closeBar(); }, true);
+  addEventListener('keydown', (e) => { if (e.key === 'Escape' && barOpen) { closeBar(); button()?.focus({ preventScroll: true }); } });
+  document.addEventListener('pointerdown', (e) => { if (barOpen && !bar.contains(e.target) && !e.target.closest?.('.theme-toggle')) closeBar(); }, true);
   addEventListener('resize', () => { if (barOpen) { place(); dial.key = ''; renderDial(); } });
 
   /* ── The path ── */
@@ -783,7 +748,7 @@
 
   /* ── The genie ──
      While the card moves, its glass is one layer cut to the funnel's outline, and its contents are 6px slices,
-     each warped onto its own strip of the funnel. Rows near the full stop narrow first, then everything pours in.
+     each warped onto its own strip of the funnel. Rows near the button narrow first, then everything pours in.
      The same shape as Peng's genie: bend over the first half, pour over the last three quarters. */
   let gen = null;
   function genie(open) {
@@ -967,8 +932,6 @@
     if (params.has('bar')) openBar();
     const toggle = document.querySelector('.theme-toggle');
     if (!toggle) return;
-    toggle.addEventListener('pointerenter', refreshHint);
-    toggle.addEventListener('focus', refreshHint);
   });
   setInterval(() => { if (!document.hidden && !frozen) paint(); }, 10000);
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && !frozen) paint(); });

@@ -39,26 +39,10 @@
 @keyframes tt-spin { to { rotate: 1turn; } }
 @keyframes tt-bloom { 0% { opacity: 0; scale: .5; } 45% { opacity: .75; scale: 1.5; } 100% { opacity: 0; scale: 2.2; } }
 
-/* ───────── The full stop ───────── */
-.sky-dot { cursor: pointer; border-radius: 50%; outline: none; transition: color .5s var(--ease), text-shadow .6s var(--ease); }
-.sky-dot:hover, .sky-dot:focus-visible { color: var(--p2, #ff6a1a); text-shadow: 0 0 .3em color-mix(in srgb, var(--p2, #ff6a1a) 70%, transparent); }
-:root.sun-on .sky-dot { color: var(--sun-c, #ffc65c); }
-
-/* ───────── The toggle's hint ───────── */
-.tt-hint { position: absolute; top: calc(100% + 10px); right: -4px; display: grid; gap: 3px; justify-items: end; padding: 8px 12px; border-radius: 12px;
-  font-size: 12px; line-height: 1.2; white-space: nowrap; color: var(--ink); pointer-events: none;
-  background: var(--glass-strong); border: 1px solid var(--glass-edge); box-shadow: 0 10px 30px rgba(0, 0, 0, .12);
-  -webkit-backdrop-filter: blur(16px) saturate(1.6); backdrop-filter: blur(16px) saturate(1.6);
-  opacity: 0; translate: 0 -4px; transition: opacity .3s var(--ease), translate .4s var(--ease); }
-.tt-hint b { font-weight: 500; }
-.tt-hint small { font-size: 11px; color: var(--whisper); }
-@media (hover: hover) { .theme-toggle:hover .tt-hint { opacity: 1; translate: 0 0; transition-delay: .35s; } }
-.theme-toggle:focus-visible .tt-hint { opacity: 1; translate: 0 0; }
-
 /* ───────── The time bar ─────────
-   After Peng's: a small card of the sky's own glass that pours out of the full stop (sky.js does the genie).
+   After Peng's: a small card of the sky's own glass that pours out of the nav's sky button (sky.js does the genie).
    Light, Dark and Live along the top, the sun's path underneath. */
-.sky-bar { position: absolute; z-index: 120; width: min(312px, calc(100vw - 24px)); border-radius: 22px; color: var(--ink);
+.sky-bar { position: fixed; z-index: 120; width: min(312px, calc(100vw - 24px)); border-radius: 22px; color: var(--ink);
   font: 400 14px/1 var(--sans); letter-spacing: -.005em;
   --sb-bg: color-mix(in srgb, color-mix(in oklab, var(--sky-mid, #cdd9e9) 45%, #fff) 64%, transparent);
   background: var(--sb-bg); -webkit-backdrop-filter: blur(18px) saturate(1.7); backdrop-filter: blur(18px) saturate(1.7);
@@ -66,7 +50,7 @@
 [data-theme="dark"] .sky-bar { --sb-bg: color-mix(in srgb, color-mix(in oklab, var(--sky-mid, #12264b) 86%, #fff) 62%, transparent);
   box-shadow: 0 14px 40px rgb(0 0 0 / .32), inset 0 0 0 .5px rgb(255 255 255 / .1); }
 .sky-bar:not(.is-open) { display: none; }
-.sky-bar.is-docked { position: fixed; left: 50%; bottom: max(18px, env(safe-area-inset-bottom)); translate: -50% 0; }
+.sky-bar.is-docked { left: 50%; bottom: max(18px, env(safe-area-inset-bottom)); translate: -50% 0; }
 /* While it pours: no card of its own, just the warped glass and slices. */
 .sky-bar.is-genie { background: none; box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; transition: none; }
 .sky-bar.is-genie > .sb-in { visibility: hidden; }
