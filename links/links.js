@@ -223,7 +223,7 @@
         <canvas class="ar-sun" width="48" height="48" aria-hidden="true"></canvas>
         <h1 class="ar-title">Shea<br>Wilson</h1>
         <p class="ar-class">Class: design engineer</p>
-        <p class="ar-quest">Quest: always making something</p>
+        <p class="ar-quest">Quest: probably making something</p>
         <p class="ar-select">Select a link</p>
         <ul class="ar-menu">
           ${links.map((l, i) => `<li><a class="ar-item${i === 0 ? ' is-sel' : ''}" ${attrs(l)}>

@@ -180,7 +180,7 @@ export function environment(renderer, RoomEnvironment) {
 /* ───────── The objects ───────── */
 
 // The homepage's hero as an object: a standing slab whose face is the sky (top, middle, horizon) with
-// "Always making something." on it. It replaces the old disc and its ring of colour. setSky() repaints it.
+// "Probably making something right now." on it. It replaces the old disc and its ring of colour. setSky() repaints it.
 export function skyCanvas(s, { w = 1024, h = 640, headline = true, name = false } = {}) {
   const [c, g] = canvas(w, h);
   const lg = g.createLinearGradient(0, 0, 0, h);
@@ -194,7 +194,7 @@ export function skyCanvas(s, { w = 1024, h = 640, headline = true, name = false 
   }
   if (headline) {
     const size = Math.round(h * .17);
-    const t = textCanvas([[['Always making ', `300 ${size}px Spectral`], ['something.', `italic 300 ${size}px Spectral`]]], { color: s.ink || '#0a0a0a', scale: 1, tracking: -size * .02 });
+    const t = textCanvas([[['Probably making something', `300 ${size}px Spectral`]], [['right now.', `italic 300 ${size}px Spectral`]]], { color: s.ink || '#0a0a0a', scale: 1, tracking: -size * .02, align: 'center' });
     const k = Math.min(1, (w * .84) / t.width);
     g.drawImage(t, (w - t.width * k) / 2, h * (name ? .3 : .36), t.width * k, t.height * k);
     if (name) {

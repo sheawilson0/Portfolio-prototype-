@@ -63,10 +63,10 @@ const sky = buildSky();
 const eclipse = buildEclipse();
 const ground = buildGround(panes);
 ground.setPanes(panes);
-// The homepage's headline: one line on a wide screen, two on an upright one
+// The homepage's headline, with "right now." on a line to itself: two lines on a wide screen, three on an upright one
 const headlines = {
-  one: buildType([[['Probably making something ', false], ['right now.', true]]], { height: 3.1 }),
-  two: buildType([[['Probably making', false]], [['something ', false], ['right now.', true]]], { height: 6.2 }),
+  one: buildType([[['Probably making something', false]], [['right now.', true]]], { height: 6.2 }),
+  two: buildType([[['Probably making', false]], [['something', false]], [['right now.', true]]], { height: 9.3 }),
 };
 let headline = headlines.one;
 
@@ -150,7 +150,7 @@ function buildPath() {
   headline = portrait ? headlines.two : headlines.one;
   headlines.one.mesh.visible = !portrait; headlines.two.mesh.visible = portrait;
   // as wide as the homepage's: about half a desktop screen on one line
-  const hw = (portrait ? .84 : lerp(.8, h < 520 ? .46 : .54, wide)) * 2 * D * t0 * aspect;
+  const hw = (portrait ? .72 : lerp(.8, h < 520 ? .46 : .54, wide)) * 2 * D * t0 * aspect;
   const scale = hw / headline.width;
   const halfH = headline.height * scale / 2 / D / t0; // in NDC
   headline.mesh.scale.setScalar(scale);

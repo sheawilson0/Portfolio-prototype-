@@ -14,6 +14,9 @@
 .home .corona { opacity: .6; animation-duration: 180s; }
 .home .hero-copy { position: relative; z-index: 6; left: auto; top: auto; translate: none; width: min(100%, 720px); margin: 0 auto; padding: 8px 0 0; }
 .home .hero h1 { font-size: clamp(40px, 5.2vw, 76px); line-height: 1.05; }
+/* "right now." always has a line to itself. On a wide screen the first line is longer than the column, so the headline
+   reaches past it on both sides; on a phone the first line breaks in two. */
+@media (min-width: 1000px) { .home .hero h1 { margin-inline: -120px; } }
 .home .hero .intro { margin-top: 20px; max-width: 34em; font-size: clamp(16px, 1.2vw, 18px); }
 .last { color: var(--ink); white-space: nowrap; }
 .last a { text-decoration: underline; text-decoration-color: color-mix(in srgb, var(--ink) 25%, transparent); text-underline-offset: 3px; transition: text-decoration-color .2s var(--ease); }
