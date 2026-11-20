@@ -6,6 +6,8 @@ Redesigned 16 Nov 2026 to wear the site as it is now: every page and every scene
 
 Any card printed from the old file has the old back, so `print/card-back.png` and `assets/card.mind` (what the camera tracks) are left as they were. `print/card-back.webp` and `card-front.webp` are the new design. Before printing new cards, render the print art from `print/card.html`, recompile the target and check the tile positions.
 
+20 Nov 2026: the card says Design engineer and "Probably making something *right now.*" (one line on the back, 4.3 mm, so it clears the tiles). `card-front.webp`, `card-back.webp`, the print art and `shea-wilson-card.pdf` are re-rendered; `card-back.png` and `card.mind` still match the cards already handed out. Recompile the target only when the new cards are printed.
+
 | Page | What it is | Runs on |
 | --- | --- | --- |
 | `card.html` | Point a phone at the back of the printed card: the four tiles lift off into pockets and the disc rises out of a slot. Tap a project to open it. `?preview` shows it on a virtual card instead. | Any phone browser with a camera (MindAR image tracking) |
