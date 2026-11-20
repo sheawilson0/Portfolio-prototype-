@@ -889,7 +889,7 @@
   const TOP = '.hero-shot, .film-frame, .stage-media, main .card .media';
   const named = (el) => { document.querySelectorAll('[style*="view-transition-name: project"]').forEach((x) => { x.style.viewTransitionName = ''; }); if (el) el.style.viewTransitionName = 'project'; };
   document.addEventListener('click', (e) => {
-    const a = e.target.closest?.('.work a[href$=".html"], .cs-next a[href$=".html"]');
+    const a = e.target.closest?.('.work a:not([target="_blank"], [href^="shipped"]), .cs-next a');
     if (a && !e.metaKey && !e.ctrlKey && !e.shiftKey) named(a.closest('.item')?.querySelector('.card') || a);
   });
   addEventListener('pagereveal', (e) => {

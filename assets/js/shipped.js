@@ -8,7 +8,7 @@
   const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const day = (d) => new Date(`${d}T12:00:00`);
-  const short = (d) => { const x = day(d); return `${MONTHS[x.getMonth()]} ${x.getDate()}`; };
+  const short = (d) => { const x = day(d); return `${x.getDate()} ${MONTHS[x.getMonth()]}`; };
   function when(d) {
     const t = new Date(); t.setHours(12, 0, 0, 0);
     const n = Math.round((t - day(d)) / 864e5);
@@ -192,7 +192,7 @@
     chev: '<path d="M4.5 6.5 8 10l3.5-3.5" stroke-linecap="round" stroke-linejoin="round"/>',
   };
   const svg = (k) => `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">${ICON[k]}</svg>`;
-  const longDate = (d) => { const x = day(d); return `${MONTHS[x.getMonth()]} ${x.getDate()}, ${x.getFullYear()}`; };
+  const longDate = (d) => { const x = day(d); return `${x.getDate()} ${MONTHS[x.getMonth()]} ${x.getFullYear()}`; };
 
   /* The sky over the street, after Peng's: a tall gradient from the sky at the top to a warm horizon, a glow
      where the sun is coming up or going down, and a fine grain. The colours come from sky.js (street), which

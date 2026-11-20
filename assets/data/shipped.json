@@ -165,7 +165,7 @@
       "k": "personal",
       "t": "Quit28 case study",
       "l": "With the launch film at the top.",
-      "href": "/quit28.html",
+      "href": "/quit28",
       "minor": true
     },
     {
@@ -195,7 +195,7 @@
       "k": "work",
       "t": "Quit28 launched",
       "l": "A 28-day quit plan for the NHS campaign. 40 quit dates saved in its first week.",
-      "href": "/quit28.html",
+      "href": "/quit28",
       "img": "/assets/media/shipped/quit28.webp",
       "o": "cutout",
       "w": 1300,
@@ -286,7 +286,7 @@
       "k": "work",
       "t": "Live Snapshot results in JumpStart",
       "l": "The campaign's numbers now arrive on their own.",
-      "href": "/jumpstart.html",
+      "href": "/jumpstart",
       "img": "/assets/media/shipped/jumpstart-results.webp",
       "o": "screen",
       "minor": true,
@@ -315,7 +315,7 @@
       "o": "screen",
       "w": 1600,
       "h": 900,
-      "href": "/snapshot.html",
+      "href": "/snapshot",
       "video": "/assets/media/snapshot/film/snapshot-film-wide.mp4"
     },
     {
@@ -393,7 +393,7 @@
       "k": "work",
       "t": "JumpStart pilot",
       "l": "Paid media reporting that explains itself, in pilot with the National Football Museum.",
-      "href": "/jumpstart.html",
+      "href": "/jumpstart",
       "img": "/assets/media/shipped/jumpstart-results.webp",
       "o": "screen",
       "w": 1070,
@@ -413,7 +413,7 @@
       "k": "work",
       "t": "Smoking Snapshot",
       "l": "A one-minute calculator for the NHS campaign. Used more than 1,000 times.",
-      "href": "/snapshot.html",
+      "href": "/snapshot",
       "img": "/assets/media/shipped/snapshot.webp",
       "o": "cutout",
       "w": 720,

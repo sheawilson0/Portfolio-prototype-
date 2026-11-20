@@ -51,6 +51,7 @@ createServer(async (req, res) => {
       file = path.join(file, 'index.html');
       stat = await fs.stat(file).catch(() => null);
     }
+    if (!stat && !path.extname(file)) { file += '.html'; stat = await fs.stat(file).catch(() => null); } // /quit28 is quit28.html, as on the live site
     if (!stat) return res.writeHead(404, { 'content-type': 'text/plain' }).end('Not found');
 
     const type = TYPES[path.extname(file).toLowerCase()] || 'application/octet-stream';

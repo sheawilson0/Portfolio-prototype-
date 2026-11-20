@@ -65,8 +65,8 @@ const ground = buildGround(panes);
 ground.setPanes(panes);
 // The homepage's headline: one line on a wide screen, two on an upright one
 const headlines = {
-  one: buildType([[['Always making ', false], ['something.', true]]], { height: 3.1 }),
-  two: buildType([[['Always making', false]], [['something.', true]]], { height: 6.2 }),
+  one: buildType([[['Probably making something ', false], ['right now.', true]]], { height: 3.1 }),
+  two: buildType([[['Probably making', false]], [['something ', false], ['right now.', true]]], { height: 6.2 }),
 };
 let headline = headlines.one;
 
@@ -776,7 +776,7 @@ fetch(new URL('../../assets/data/shipped.json', import.meta.url)).then((r) => r.
   if (!latest) return;
   const day = (d) => new Date(`${d}T12:00:00`), today = new Date(); today.setHours(12, 0, 0, 0);
   const n = Math.round((today - day(latest.d)) / 864e5), x = day(latest.d);
-  const when = n <= 0 ? 'today' : n === 1 ? 'yesterday' : `on ${['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][x.getMonth()]} ${x.getDate()}`;
+  const when = n <= 0 ? 'today' : n === 1 ? 'yesterday' : `on ${x.getDate()} ${['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][x.getMonth()]}`;
   const link = document.createElement('a');
   link.href = `../shipped/#${latest.d}-${latest.t.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}`;
   link.textContent = latest.t;

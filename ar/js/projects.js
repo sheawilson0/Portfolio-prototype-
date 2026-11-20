@@ -4,7 +4,7 @@ export const asset = (p) => new URL(p, ROOT).href;
 
 export const SITE = {
   name: 'Shea Wilson',
-  role: 'Product designer',
+  role: 'Design engineer',
   email: 'design@sheawilson.uk',
   url: 'https://sheawilson.uk',
   linkedin: 'https://www.linkedin.com/in/sheawilson0/',

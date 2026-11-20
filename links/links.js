@@ -58,13 +58,13 @@
   const W = '/links/work/';
   const jumpScreen = (cls, name) => `<span class="mk-screen ${cls}"><img class="img-light" src="${W}${name}.webp" alt="" loading="lazy"><img class="img-dark" src="${W}${name}-dark.webp" alt="" loading="lazy"></span>`;
   const WORK = [
-    { name: 'Smoking Snapshot', note: '1,000+ uses', href: 'https://sheawilson.uk/snapshot.html', tone: '#ed1652',
+    { name: 'Smoking Snapshot', note: '1,000+ uses', href: 'https://sheawilson.uk/snapshot', tone: '#ed1652',
       art: `<span class="mk mk-snap"><span class="mk-screen s1"><img src="${W}snapshot-results.webp" alt="" loading="lazy"></span><img class="mk-phone" src="${W}snapshot-phone.webp" alt="" loading="lazy"></span>` },
-    { name: 'Quit28', note: 'Live now', href: 'https://sheawilson.uk/quit28.html', tone: '#00a7fa',
+    { name: 'Quit28', note: 'Live now', href: 'https://sheawilson.uk/quit28', tone: '#00a7fa',
       art: `<span class="mk mk-q28"><img src="${W}quit28-set.webp" alt="" loading="lazy"></span>` },
-    { name: 'JumpStart', note: 'In pilot', href: 'https://sheawilson.uk/jumpstart.html', tone: '#4fae86',
+    { name: 'JumpStart', note: 'In pilot', href: 'https://sheawilson.uk/jumpstart', tone: '#4fae86',
       art: `<span class="mk mk-jump">${jumpScreen('j1', 'jumpstart-agency')}${jumpScreen('j2', 'jumpstart-report')}${jumpScreen('j3', 'jumpstart-export')}</span>` },
-    { name: 'Brain Dump', note: 'In beta', href: 'https://sheawilson.uk/braindump.html', tone: '#8a3cff',
+    { name: 'Brain Dump', note: 'In beta', href: 'https://sheawilson.uk/braindump', tone: '#8a3cff',
       art: `<span class="mk mk-one mk-tall"><img src="${W}brain.webp" alt="" loading="lazy"></span>` },
   ];
 
@@ -148,7 +148,7 @@
         <header class="sk-head">
           <span class="sk-photo"><img src="${PHOTO}" srcset="/links/shea-160.webp 160w, /links/shea-320.webp 320w, /links/shea-480.webp 480w" sizes="120px" alt="Shea Wilson" width="240" height="240"></span>
           <h1 data-egg>Shea Wilson</h1>
-          <p class="sk-role">Product designer. Always making <em>something.</em></p>
+          <p class="sk-role">Design engineer. Probably making something <em>right now.</em></p>
         </header>
         <main class="sk">
           <ul class="sk-icons">${socials.map((l, i) => `<li style="--i:${i}"><a class="sk-icon pane" ${linkAttrs(l)} aria-label="${esc(l.label)}, ${esc(l.sub)}" title="${esc(l.label)}">${icon(l.icon)}</a></li>`).join('')}</ul>
@@ -222,7 +222,7 @@
       <main class="ar">
         <canvas class="ar-sun" width="48" height="48" aria-hidden="true"></canvas>
         <h1 class="ar-title">Shea<br>Wilson</h1>
-        <p class="ar-class">Class: product designer</p>
+        <p class="ar-class">Class: design engineer</p>
         <p class="ar-quest">Quest: always making something</p>
         <p class="ar-select">Select a link</p>
         <ul class="ar-menu">

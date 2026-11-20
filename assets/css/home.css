@@ -249,7 +249,9 @@ body[data-layout="peng"] .socials a::before { content: "·"; display: inline-blo
    html.intro hides the first screen until it starts; .intro-go plays it; .intro-land brings the work in.
    --intro-land is when the sun has settled. The stage stops clipping it, so it comes up through the soft fade at
    the foot of the hero, as if over a horizon, big, and shrinks into its place above the headline. */
-:root { --intro-land: 1.8s; }
+/* The sun is off (data-arc="none"), so nothing rises and the words don't wait for it: they start almost at once
+   and the work follows about a second in. If the sun comes back, give it its 1.8s again. */
+:root { --intro-land: .6s; }
 .intro:not(.intro-go) :is(.home .hero-copy, .home .eclipse, .nav), .intro:not(.intro-land) #work { opacity: 0; }
 .intro-go .home .stage { overflow: visible; -webkit-mask: none; mask: none; }
 .intro-go .home .eclipse { z-index: 5; will-change: transform; animation: sun-rise 2.2s cubic-bezier(.4, 0, .2, 1) both; }

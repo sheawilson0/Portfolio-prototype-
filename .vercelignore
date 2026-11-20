@@ -14,3 +14,6 @@ ar/README.md
 # Private draft evidence stays in the local review checkout.
 /assets/media/shipped/drafts/private
 /shipped/draft-sources.md
+
+# Tools for making things (share cards, the Shipped data sync), not pages.
+/tools

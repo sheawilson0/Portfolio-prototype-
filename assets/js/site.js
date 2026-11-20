@@ -226,7 +226,7 @@
   /* ── The next page, ready before the click ──
      Chrome draws a page in the background while you rest on its link. Safari can't, so it fetches the page and the
      pictures on its first screen instead, and the click finds them already here. */
-  const NEXT = 'a[href$=".html"], a[href="index.html"], a[href="/"], a[href^="shipped"], a[href^="/shipped"]';
+  const NEXT = 'a[href]:not([href^="http"], [href^="mailto"], [href^="#"], [href$=".pdf"], [target="_blank"])'; // every link to another page of this site
   if (HTMLScriptElement.supports?.('speculationrules')) {
     const rules = document.createElement('script');
     rules.type = 'speculationrules';
